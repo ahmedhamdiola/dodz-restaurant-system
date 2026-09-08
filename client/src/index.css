@@ -1,1 +1,6 @@
 @import "tailwindcss";
+:root {
+  --primary-red: #e10000;
+  --deep-crimson: #960000;
+  --dark-red-shadow: #1a0000;
+}
