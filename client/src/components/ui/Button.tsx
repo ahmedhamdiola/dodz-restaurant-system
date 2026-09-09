@@ -1,7 +1,9 @@
 interface ButtonProps {
-    title: string
+    title: string,
+    className?: string
+
 }
-const Button = ({ title }: ButtonProps) => {
+const Button = ({ title, className }: ButtonProps) => {
     return (
         <button
             className={`
@@ -18,6 +20,7 @@ const Button = ({ title }: ButtonProps) => {
                 outline-none cursor-pointer
                 leading-none
                 text-white bg-gradient-to-r from-red-600 via-red-500 to-red-700
+                ${className}
             `}
         >
             {title}

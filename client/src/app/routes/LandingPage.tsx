@@ -11,7 +11,7 @@ const LandingPage = () => {
                 />
             </Helmet>
             <div>
-                Landing Page
+                Landing Pageaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
             </div>
         </>
     )

@@ -1,4 +1,8 @@
 @import "tailwindcss";
+
+/* Class-based dark mode: `dark:` utilities apply when .dark is on <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --primary-red: #e10000;
   --deep-crimson: #960000;
