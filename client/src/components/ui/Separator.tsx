@@ -3,7 +3,7 @@ interface SeparatorProps {
 }
 const Separator = ({ className = "" }: SeparatorProps) => {
     return (
-        <div className={`border-b border-black/10 dark:border-white/10 h-1 mx-3 ` + className} />
+        <div className={`border-b border-border h-1 mx-3 ` + className} />
     )
 }
 

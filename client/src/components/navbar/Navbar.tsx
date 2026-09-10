@@ -14,7 +14,7 @@ const Navbar = () => {
 
     return (
         <>
-            <nav className="relative z-20 sticky top-0 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-black/10 dark:border-white/10 shadow-lg shadow-black/10 dark:shadow-black/20 select-none">
+            <nav className="relative z-20 sticky top-0 bg-navbar backdrop-blur-md border-b border-border shadow-lg shadow-black/10 dark:shadow-black/20 select-none">
                 <div className="flex items-center justify-between min-h-[80px] px-3 sm:px-5 py-3">
                     <div className="flex gap-2 items-center">
                         <button
@@ -22,7 +22,7 @@ const Navbar = () => {
                             aria-label="Open menu"
                             aria-expanded={isSidebar}
                             onClick={() => setIsSidebar(true)}
-                            className="p-2 -ml-2 rounded-lg text-neutral-900 dark:text-white transition-colors duration-200 hover:bg-black/5 dark:hover:bg-white/10 active:scale-95 cursor-pointer"
+                            className="p-2 -ml-2 rounded-lg text-secondary transition-colors duration-200 hover:bg-muted active:scale-95 cursor-pointer"
                         >
                             <Bars3Icon className="w-6 lg:w-8 " />
                         </button>
@@ -35,8 +35,8 @@ const Navbar = () => {
                     <div className="flex gap-2 sm:gap-3 items-center">
                         <LocationSelector />
                         <div className="relative">
-                            <ShoppingCartIcon className="w-7 sm:w-8 text-neutral-900 dark:text-white cursor-pointer" />
-                            <span className="absolute -top-1 -right-1 text-[10px] text-white rounded-full bg-red-500 px-1">
+                            <ShoppingCartIcon className="w-7 sm:w-8 text-secondary cursor-pointer" />
+                            <span className="absolute -top-1 -right-1 text-[10px] text-white rounded-full bg-brand px-1">
                                 0
                             </span>
                         </div>

@@ -24,7 +24,7 @@ const OrderButton = ({ title, isActive, Icon, onClick }: OrderBurttonProps) => {
 
                 ${isActive
                     ? "text-white bg-gradient-to-r from-red-600 via-red-500 to-red-700"
-                    : "bg-neutral-900/10 text-neutral-900/40 dark:bg-gray-700/40 dark:text-white"
+                    : "bg-muted text-muted-foreground"
                 }
             `}
             onClick={onClick}

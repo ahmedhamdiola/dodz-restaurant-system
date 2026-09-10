@@ -24,8 +24,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 className={`
                     fixed top-0 left-0 z-50 h-dvh w-72 sm:w-80
                     flex flex-col
-                    bg-white text-neutral-900
-                    dark:bg-neutral-950 dark:text-white
+                    bg-primary text-secondary
                     shadow-2xl shadow-black/50
                     transition-transform duration-300 ease-in-out
                     ${isOpen ? "" : "pointer-events-none"}

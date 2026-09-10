@@ -10,8 +10,8 @@ const LandingPage = () => {
                     content="DODZ Fried Chicken is a restaurant that serves fried chicken with premium quality for everyone."
                 />
             </Helmet>
-            <div>
-                Landing Pageaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+            <div className="min-h-screen bg-primary">
+                <p className="text-secondary">HELLO WORLD</p>
             </div>
         </>
     )
