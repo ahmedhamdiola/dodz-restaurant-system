@@ -7,6 +7,7 @@
 - Heroicons
 - Axios
 - React Helmet Async
+- Swiper
 
 ### Features:
 - Landing Page with Carousel, Categories, Best Sellers, and Reviews Section.

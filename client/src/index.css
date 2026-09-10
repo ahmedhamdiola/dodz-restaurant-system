@@ -27,3 +27,52 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
+
+/* Hero carousel (Swiper) */
+.carousel-hero {
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.35);
+}
+
+.carousel-hero .swiper-button-prev,
+.carousel-hero .swiper-button-next {
+  width: 30px;
+  height: 30px;
+  color: #ffffff;
+}
+.carousel-hero .swiper-button-prev:hover,
+.carousel-hero .swiper-button-next:hover {
+  color: #ffffff8a;
+  transition: color 0.25s ease;
+}
+.carousel-hero .swiper-button-prev::after,
+.carousel-hero .swiper-button-next::after {
+  font-size: 16px;
+  font-weight: 700;
+  color: #e10000;
+}
+
+.carousel-hero .swiper-pagination {
+  bottom: 16px;
+}
+.carousel-hero .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  opacity: 1;
+  transition:
+    width 0.25s ease,
+    background-color 0.25s ease;
+}
+.carousel-hero .swiper-pagination-bullet-active {
+  width: 24px;
+  border-radius: 9999px;
+  background: #ffffff;
+}
+@media (max-width: 768px) {
+  .carousel-hero .swiper-button-prev,
+  .carousel-hero .swiper-button-next {
+    display: none;
+  }
+}

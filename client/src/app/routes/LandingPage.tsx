@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import Hero from "../../features/landing/hero/Hero";
 
 const LandingPage = () => {
     return (
@@ -10,8 +11,8 @@ const LandingPage = () => {
                     content="DODZ Fried Chicken is a restaurant that serves fried chicken with premium quality for everyone."
                 />
             </Helmet>
-            <div className="min-h-screen bg-primary">
-                <p className="text-secondary">HELLO WORLD</p>
+            <div className="min-h-screen bg-primary px-5 pt-10">
+                <Hero />
             </div>
         </>
     )
