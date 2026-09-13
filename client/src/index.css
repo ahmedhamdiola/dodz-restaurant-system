@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Poppins";
+  src: url("./fonts/Poppins-Regular.ttf");
+}
+
+* {
+  font-family: "Poppins", sans-serif;
+}
 @custom-variant dark (&:where(.dark, .dark *));
 @theme {
   --color-primary: #ffffff;
@@ -34,7 +42,6 @@
   overflow: hidden;
   box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.35);
 }
-
 .carousel-hero .swiper-button-prev,
 .carousel-hero .swiper-button-next {
   width: 30px;
@@ -52,7 +59,6 @@
   font-weight: 700;
   color: #e10000;
 }
-
 .carousel-hero .swiper-pagination {
   bottom: 16px;
 }
@@ -70,6 +76,7 @@
   border-radius: 9999px;
   background: #ffffff;
 }
+
 @media (max-width: 768px) {
   .carousel-hero .swiper-button-prev,
   .carousel-hero .swiper-button-next {

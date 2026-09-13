@@ -1,5 +1,5 @@
 import Carousel from "../../../components/ui/carousel/Carousel";
-import { heroSlides } from "./data.ts";
+import { heroSlides } from "../../../data";
 import HeroMockSlide from "./HeroMockSlide";
 
 const Hero = () => {

@@ -1,7 +1,9 @@
 import { Helmet } from "react-helmet-async";
 import Hero from "../../features/landing/hero/Hero";
+import CategoriesSection from "../../features/landing/categories/CategoriesSection";
 
 const LandingPage = () => {
+
     return (
         <>
             <Helmet>
@@ -13,6 +15,7 @@ const LandingPage = () => {
             </Helmet>
             <div className="min-h-screen bg-primary px-5 pt-10">
                 <Hero />
+                <CategoriesSection />
             </div>
         </>
     )
