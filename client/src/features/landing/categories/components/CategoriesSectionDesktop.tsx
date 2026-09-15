@@ -17,30 +17,34 @@ const CategoriesSectionDesktop = () => {
 
 
     return (
-        <div className="hidden lg:flex relative px-14 mx-14">
-            <SliderButton swiper={swiper} direction="left" isBeginning={isBeginning} />
-            <SliderButton swiper={swiper} direction="right" isEnd={isEnd} />
-            <Swiper
-                modules={[Virtual]}
-                spaceBetween={20}
-                slidesPerView={5}
-                onSwiper={setSwiper}
-                onSlideChange={(s) => {
-                    setIsBeginning(s.isBeginning);
-                    setIsEnd(s.isEnd);
-                }}
-                onReachBeginning={() => setIsBeginning(true)}
-                onReachEnd={() => setIsEnd(true)}
-                virtual
-            >
-                {slides.map((_, index) => (
-                    <SwiperSlide key={index} virtualIndex={index}>
-                        <div className="aspect-square overflow-hidden rounded-xl cursor-pointer">
-                            <img src={CategoryImg} alt="Category Image" className="w-full h-full object-cover" />
-                        </div>
-                    </SwiperSlide>
-                ))}
-            </Swiper>
+        <div className="hidden lg:block px-14 mx-14">
+            <div className="relative">
+                <SliderButton swiper={swiper} direction="left" isBeginning={isBeginning} />
+                <SliderButton swiper={swiper} direction="right" isEnd={isEnd} />
+                <Swiper
+                    modules={[Virtual]}
+                    spaceBetween={20}
+                    slidesPerView={5}
+                    onSwiper={(s) => {
+                        setSwiper(s);
+                        setIsBeginning(s.isBeginning);
+                        setIsEnd(s.isEnd);
+                    }}
+                    onSlideChange={(s) => {
+                        setIsBeginning(s.isBeginning);
+                        setIsEnd(s.isEnd);
+                    }}
+                    virtual
+                >
+                    {slides.map((_, index) => (
+                        <SwiperSlide key={index} virtualIndex={index}>
+                            <div className="aspect-square overflow-hidden rounded-xl cursor-pointer">
+                                <img src={CategoryImg} alt="Category Image" className="w-full h-full object-cover" />
+                            </div>
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
+            </div>
         </div>)
 }
 

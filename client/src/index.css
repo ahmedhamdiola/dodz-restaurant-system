@@ -10,9 +10,10 @@
 }
 @custom-variant dark (&:where(.dark, .dark *));
 @theme {
-  --color-primary: #ffffff;
+  --color-primary: #f1f3f6;
   --color-secondary: #000000;
   --color-navbar: #ffffff;
+  --color-card: #ffffff;
   --color-muted: #e7e7e7;
   --color-muted-foreground: #737373;
   --color-border: rgba(0, 0, 0, 0.1);
@@ -22,6 +23,7 @@
   --color-primary: #1b2027;
   --color-secondary: #ffffff;
   --color-navbar: #000000;
+  --color-card: #1b222a;
   --color-muted: hsla(216, 16%, 12%, 0.651);
   --color-muted-foreground: rgba(255, 255, 255, 0.6);
   --color-border: rgba(255, 255, 255, 0.1);

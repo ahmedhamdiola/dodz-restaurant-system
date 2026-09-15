@@ -14,8 +14,9 @@ const SliderButton = ({ swiper, direction, isBeginning, isEnd }: SliderButtonPro
     return (
         <button
             onClick={() => direction === 'left' ? swiper?.slidePrev() : swiper?.slideNext()}
-            className={`${SLIDER_CLASS_NAME(direction)} ${isDisabled ? 'opacity-40 hover:bg-secondary' : ''}`}
+            className={`${SLIDER_CLASS_NAME(direction)} ${isDisabled ? 'opacity-40 cursor-not-allowed' : ''}`}
             disabled={isDisabled}
+            aria-label={direction === 'left' ? 'Previous slide' : 'Next slide'}
         >
             {direction === 'left' ?
                 <ChevronLeftIcon className="w-7" /> :

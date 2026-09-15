@@ -1,9 +1,10 @@
 interface SeparatorProps {
     className?: string
+    cut?: boolean
 }
-const Separator = ({ className = "" }: SeparatorProps) => {
+const Separator = ({ className = "", cut = false }: SeparatorProps) => {
     return (
-        <div className={`border-b border-border h-1 mx-3 ` + className} />
+        <div className={`border-b border-primary h-1 ${cut ? 'mx-3' : ''} ` + className} />
     )
 }
 
