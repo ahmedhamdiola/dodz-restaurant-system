@@ -1,0 +1,178 @@
+import type { MenuCategory, MenuProduct } from "./types";
+
+const image = (path: string) =>
+    `https://talabat.dhmedia.io/image/talabat/MenuItems/${path}?width=400`;
+
+const vendorImage = (vendor: string, id: string) =>
+    `https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/${vendor}/product/${id}.jpg?width=400`;
+
+export const MENU_CATEGORIES: MenuCategory[] = [
+    {
+        id: 20150884,
+        slug: "bundles",
+        name: "Bundles",
+        image: image("WhatsApp_Image_20260111_a639038074343767288.jpeg"),
+    },
+    {
+        id: 19653587,
+        slug: "single-meals",
+        name: "Single Meals",
+        image: image("mmw_638938145051185287"),
+    },
+    {
+        id: 19653585,
+        slug: "family-meals",
+        name: "Family Meals",
+        image: image("mmw_638938148358404917"),
+    },
+    {
+        id: 19653589,
+        slug: "kids-meals",
+        name: "Kids Meals",
+        image: image("mmw_638946579749596278"),
+    },
+    {
+        id: 19653594,
+        slug: "sandwiches",
+        name: "Sandwiches",
+        image: image("WhatsApp_Image_20250918_a638938028900195085.jpeg"),
+    },
+    {
+        id: 19653595,
+        slug: "burger",
+        name: "Burger",
+        image: vendorImage("771285", "f1a59e0a-3b1e-45e6-abc3-613941c895c0"),
+    },
+    {
+        id: 19896634,
+        slug: "chicken-wings",
+        name: "Chicken Wings",
+        image: vendorImage("771237", "2579257726/8a2b0a4a-8585-419e-9222-14c1a8d4cbd1"),
+    },
+    {
+        id: 19653592,
+        slug: "appetizers",
+        name: "Appetizers",
+        image: image("mmw_638944933890527259"),
+    },
+    {
+        id: 19653588,
+        slug: "sauces",
+        name: "Sauces",
+        image: vendorImage("771285", "b02e95a4-352e-4f94-85f3-f00a0021c538"),
+    },
+    {
+        id: 19653591,
+        slug: "add-ons",
+        name: "Add Ons",
+        image: image("mmw_638946582330610512"),
+    },
+    {
+        id: 19653593,
+        slug: "drinks",
+        name: "Drinks",
+        image: image("WhatsApp_Image_20250918_a638938043011836257.jpeg"),
+    },
+];
+
+export const MENU_PRODUCTS: MenuProduct[] = [
+    { id: 2632120032, categorySlug: "bundles", name: "Solo Crave", description: "Your choice of sandwich, a piece of chicken, fries, coleslaw, and a drink.", price: 317.6, image: image("WhatsApp_Image_20260111_a639038074343767288.jpeg") },
+    { id: 2632270222, categorySlug: "bundles", name: "Double Dip", description: "2 sandwiches of your choice, 2 Nashville tender pieces, cheese fries, cup sauce, 2 drinks", price: 652.8, image: image("Double639038075270608746.jpg") },
+    { id: 2632270383, categorySlug: "bundles", name: "Festival Box", description: "4 chicken pieces, 4 tenders, 4 wings, 2 sandwiches, 3 sauces, and family fries", price: 966.7, image: image("Fes639038075839187358.jpg") },
+    { id: 2632272931, categorySlug: "bundles", name: "Nashy", description: "2 Nashville Sandwiches, cheese fries, hot honey wings", price: 694.8, image: image("Nashi639038076505419137.jpg") },
+
+    { id: 2200312651, categorySlug: "single-meals", name: "Doodz Snack", description: "2 pieces fried chicken, French fries, coleslaw, bread", price: 160, image: image("mmw_638938145051185287") },
+    { id: 2575462418, categorySlug: "single-meals", name: "Nashville Tenders", description: "3 delicious tenders with our signature Nashville sauce and tasty Dodz sauce, served with fresh toast and crispy fried corn.", price: 265, image: vendorImage("771283", "7028a4a9-c2e3-4cd3-95d2-6cdf3cc6238b") },
+    { id: 2575462421, categorySlug: "single-meals", name: "Super Nashville Tender", description: "5 chicken tenders with Nashville sauce, delicious Dude sauce, fresh toast, and tasty fried corn.", price: 370, image: vendorImage("771283", "e200754b-454d-4cf7-b67d-977f485441bb") },
+    { id: 2200312652, categorySlug: "single-meals", name: "Doodz Diner", description: "3 pieces of fried chicken, fries, coleslaw, bread", price: 260, image: image("mmw_638938145443321047") },
+    { id: 2200312658, categorySlug: "single-meals", name: "Super Doodz", description: "4 pieces of fried chicken, French fries, coleslaw, bread", price: 310, image: image("mmw_638943317018292375") },
+    { id: 2200312661, categorySlug: "single-meals", name: "Tender Box", description: "3 tender pieces, French fries, coleslaw, bread", price: 185, image: image("mmw_638943316917907892") },
+    { id: 2200312664, categorySlug: "single-meals", name: "Super Tender Box", description: "5 pieces of tenders, fries, coleslaw, bread", price: 275, image: image("mmw_638943315226246026") },
+    { id: 2200312655, categorySlug: "single-meals", name: "Mix Box", description: "2 pieces fried chicken, 2 chicken tenders, French fries, coleslaw, bread", price: 265, image: image("mmw_638938146064885004") },
+
+    { id: 2200312681, categorySlug: "family-meals", name: "Family Meal", description: "8 pieces fried chicken, family fries, family coleslaw, bread, 1 liter soft drink", price: 690, image: image("mmw_638938148358404917") },
+    { id: 2307358519, categorySlug: "family-meals", name: "Family Mix Meal", description: "6 pieces fried chicken, 6 pieces chicken tenders, family fries, family coleslaw, bread, 1 liter soda.", price: 805, image: image("mmw_638942535452388590") },
+    { id: 2200312684, categorySlug: "family-meals", name: "Star Meal", description: "12 pieces of fried chicken, family fries, family coleslaw, drink, bread", price: 905, image: image("mmw_638943314567338822") },
+    { id: 2298654686, categorySlug: "family-meals", name: "Mega Star Family Meal", description: "15 pieces of fried chicken, family fries, family coleslaw, bread, 1 liter soda", price: 1035, image: image("WhatsApp_Image_20250918_a638938028588175575.jpeg") },
+    { id: 2200312688, categorySlug: "family-meals", name: "Big Family Meal", description: "18 pieces fried chicken, family fries, family coleslaw, bread, 1 liter soda", price: 1170, image: image("mmw_638938148835883809") },
+    { id: 2200312692, categorySlug: "family-meals", name: "Tender Meal", description: "10 tenders, family fries, family coleslaw, bread, 1 liter drink", price: 610, image: image("mmw_638941413730277906") },
+
+    { id: 2200312669, categorySlug: "kids-meals", name: "Tender Chicken Meal", description: "2 tender pieces, fries, bread, juice.", price: 140, image: image("mmw_638946579749596278") },
+    { id: 2200312672, categorySlug: "kids-meals", name: "Kids Fried Chicken Piece", description: "1 fried chicken piece, French fries, bread, juice.", price: 140, image: image("mmw_638946579758246861") },
+    { id: 2300019394, categorySlug: "kids-meals", name: "Kids Beef Burger Meal", description: "Beef burger sandwich, French fries, juice.", price: 140, image: image("mmw_638946581317534858") },
+    { id: 2200312675, categorySlug: "kids-meals", name: "Add toy", description: "Add a toy with the kids' meal.", price: 35, image: image("WhatsApp_Image_20250918_a638938043825906665.jpeg") },
+
+    { id: 2200312711, categorySlug: "sandwiches", name: "Twister Doods", description: "Crispy and tender chicken pieces with Twister Doods sauce, cheddar sauce, and lettuce, wrapped in a tortilla.", price: 145, image: image("WhatsApp_Image_20250918_a638938028900195085.jpeg") },
+    { id: 2200312713, categorySlug: "sandwiches", name: "Secret De Sandwich", description: "Crispy chicken breast pieces covered with American cheese, ranch sauce, buffalo sauce, mayonnaise, lettuce, and pickles.", price: 125, image: image("WhatsApp_Image_20250918_a638938030678468496.jpeg") },
+    { id: 2200312718, categorySlug: "sandwiches", name: "Super Crunchy", description: "Tender pieces covered with cheddar sauce, barbecue sauce, Dood's sauce, smoked turkey, lettuce, and pickled cucumber.", price: 230, image: image("WhatsApp_Image_20250918_a638938029072890382.jpeg") },
+    { id: 2593052710, categorySlug: "sandwiches", name: "T Ranch Sandwich", description: "Crispy chicken breast pieces topped with smoked turkey, American cheese, ranch sauce, Dodz sauce, lettuce, and pickled cucumber.", price: 130, image: image("WhatsApp_Image_20260102_a639031320168568896.jpeg") },
+    { id: 2593064946, categorySlug: "sandwiches", name: "Mighty D Sandwich", description: "Crispy chicken breast pieces covered with melted American cheese, comeback sauce, fresh lettuce, and pickled cucumber.", price: 140, image: image("WhatsApp_Image_20260102_a639031321615002112.jpeg") },
+    { id: 2593070263, categorySlug: "sandwiches", name: "Big Boss Sandwich", description: "Crispy chicken breast with smoked turkey and mozzarella bomb, cheddar sauce, BBQ mayonnaise, lettuce, and pickles.", price: 150, image: image("WhatsApp_Image_20260102_a639031325595416042.jpeg") },
+    { id: 2593095567, categorySlug: "sandwiches", name: "Hot Honey Sandwich", description: "Crispy chicken breast pieces with Nashville sauce, hot honey sauce, sriracha sauce, lettuce, and pickles.", price: 140, image: image("WhatsApp_Image_20260102_a639031327607996261.jpeg") },
+    { id: 2593104942, categorySlug: "sandwiches", name: "Herby Butter Sandwich", description: "Crispy chicken breast pieces with spicy Nashville butter sauce, lettuce, mayonnaise, and pickled cucumber.", price: 130, image: image("WhatsApp_Image_20260102_a639031329193739506.jpeg") },
+    { id: 2593104966, categorySlug: "sandwiches", name: "Cheeky Slaw Sandwich", description: "Crispy chicken breast pieces with Nashville sauce, comeback slaw sauce, and pickled cucumber", price: 125, image: image("WhatsApp_Image_20260102_a639031330783766031.jpeg") },
+    { id: 3272828975, categorySlug: "sandwiches", name: "Fire D Sandwich", description: "Crispy chicken breast pieces topped with spicy cheddar sticks, comeback sauce, jalapeños, lettuce, and pickled cucumbers.", price: 145, image: vendorImage("771286", "1daaa2ea-80e9-4aa0-b15e-4d9eb9fc840c") },
+
+    { id: 2579654473, categorySlug: "burger", name: "Mushroom Honey Sandwich", description: "Smash burger covered with American cheese, mushrooms, honey BBQ sauce, comeback sauce, onions, lettuce, and pickles.", price: 160, image: vendorImage("771285", "f1a59e0a-3b1e-45e6-abc3-613941c895c0") },
+    { id: 2579666873, categorySlug: "burger", name: "Truffle D Sandwich", description: "Smash burger with beef bacon, emmental cheese, truffle mayonnaise, onion, and pickled cucumber.", price: 175, image: vendorImage("771285", "e5f9e2fc-782d-4597-a279-739d17dbe24c") },
+    { id: 2579966900, categorySlug: "burger", name: "Smoky D Sandwich", description: "Smash burger topped with American cheese, smoky sauce, onion, lettuce, and pickled cucumber.", price: 165, image: vendorImage("771283", "1ecbe826-dfaf-4584-8272-77fbae3bf02e") },
+
+    { id: 2579239395, categorySlug: "chicken-wings", name: "Sriracha Chicken Wings", description: "6 pieces of chicken wings with sriracha mayonnaise sauce.", price: 115, image: vendorImage("771237", "2579239395/976f843b-6b17-4ff1-b03a-5ae3a9c1d7f5") },
+    { id: 2579257726, categorySlug: "chicken-wings", name: "4 Buffalo Ranch Chicken Wings", description: "Crispy wings topped with buffalo and ranch sauce", price: 85, image: vendorImage("771237", "2579257726/8a2b0a4a-8585-419e-9222-14c1a8d4cbd1") },
+    { id: 2579257727, categorySlug: "chicken-wings", name: "6 Buffalo Ranch Chicken Wings", description: "Crispy wing pieces coated in buffalo and ranch sauce", price: 115, image: vendorImage("771237", "2579257727/6d615a49-30d4-41e3-8aa0-f8a70d96ea41") },
+    { id: 2579263334, categorySlug: "chicken-wings", name: "6 Smoked Chicken Wings", description: "Crispy wing pieces covered in smoky sauce", price: 115, image: vendorImage("771286", "267b69d1-1286-473f-822d-eb5ca95474a0") },
+    { id: 2579263339, categorySlug: "chicken-wings", name: "4 Pcs Hot Honey Chicken Wings", description: "Crispy chicken wing pieces coated in hot honey sauce", price: 85, image: vendorImage("771286", "9778ba83-c529-46d2-bf6f-a49bef6e6065") },
+    { id: 2579263367, categorySlug: "chicken-wings", name: "6 Spicy Honey Chicken Wings", description: "Crispy chicken wing pieces coated in hot honey sauce.", price: 115, image: vendorImage("771237", "2579263367/7b217b22-1ebd-46ac-9ee8-1e1094a83a99") },
+    { id: 2579267455, categorySlug: "chicken-wings", name: "4 Sriracha Mayo Chicken Wings", description: "Crispy chicken wing pieces coated with sriracha mayonnaise sauce.", price: 85, image: vendorImage("771286", "5a289971-f07e-462a-b98d-1f033a301ec7") },
+    { id: 2579267505, categorySlug: "chicken-wings", name: "4 Smoked Chicken Wings", description: "Crispy chicken wings pieces covered with smoky sauce", price: 85, image: vendorImage("771286", "0df8c4ce-2dd8-4a35-99c7-60196792b24e") },
+
+    { id: 2579285511, categorySlug: "appetizers", name: "Chicken Risotto Medium", description: "Risotto with strips and sauce (Tiger or BBQ), hot or regular", price: 70, image: vendorImage("771286", "b94ad029-4eeb-458c-a3a3-91f9480a586d") },
+    { id: 2579701468, categorySlug: "appetizers", name: "Max Platter", description: "Fried mozzarella cheese with two pieces of spicy cheddar cheese, fried onion rings, and curly fries.", price: 215, image: vendorImage("771285", "817ebfd7-740c-4ebf-8ee0-bb2459e64824") },
+    { id: 2579719846, categorySlug: "appetizers", name: "Curly Fries", description: "Plate of curly fries.", price: 105, image: vendorImage("771285", "e71dd46c-5bc7-4a0f-8385-84b54affb6d0") },
+    { id: 2580031331, categorySlug: "appetizers", name: "Nashville Loaded Fries", description: "Fries with Dodz sauce, Nashville tender, and pickles", price: 145, image: vendorImage("771283", "3f8152e5-0e57-431e-8244-f4c7a5f093ff") },
+    { id: 2200312743, categorySlug: "appetizers", name: "Cheesy Fries", description: "Golden fried potatoes topped with cheddar cheese sauce.", price: 105, image: image("mmw_638944933890527259") },
+    { id: 2200312744, categorySlug: "appetizers", name: "Curly Cheesy Fries", description: "Curly fries covered with cheddar sauce", price: 145, image: vendorImage("771237", "2200312744/6ae1bba4-f8a1-4e68-a092-b7f107d2f3d2") },
+    { id: 2200312747, categorySlug: "appetizers", name: "Chicken Rizo", description: "Spiced rice with chicken pieces in barbecue or Tiger sauce.", price: 115, image: vendorImage("771237", "2200312747/3673cbaa-c037-40d6-8cd2-2eb92861ae8b") },
+    { id: 2200312749, categorySlug: "appetizers", name: "Mac and Cheese", description: "Creamy pasta covered with cheddar sauce.", price: 75, image: vendorImage("771285", "2200312749/ad2a1f26-9661-4efe-a02f-583ba525cb58") },
+    { id: 2200312750, categorySlug: "appetizers", name: "Chicken Mac & Cheese", description: "Creamy pasta topped with cheddar sauce, ranch, and crispy chicken strips.", price: 130, image: vendorImage("771237", "2200312750/71ce5d86-5563-43ab-bfbc-c360c1197a9b") },
+
+    { id: 2579423676, categorySlug: "sauces", name: "Hot Honey", description: "Small hot honey sauce cup", price: 40, image: vendorImage("771285", "b02e95a4-352e-4f94-85f3-f00a0021c538") },
+    { id: 2579423679, categorySlug: "sauces", name: "Hot Honey", description: "Medium hot honey sauce cup", price: 70, image: vendorImage("771285", "13b8ad81-08bd-442d-823f-b3b02bce67fc") },
+    { id: 2579680770, categorySlug: "sauces", name: "Ranch", description: "Small ranch sauce cup", price: 40, image: vendorImage("771285", "f8d88158-e51b-4c81-bf69-03c966f64b4a") },
+    { id: 2579680771, categorySlug: "sauces", name: "Ranch", description: "Medium ranch sauce cup", price: 65, image: vendorImage("771285", "40028c11-af88-46ab-8e48-3a4f53033d00") },
+    { id: 2579680772, categorySlug: "sauces", name: "Sriracha Mayo", description: "Small sriracha mayo sauce cup", price: 45, image: vendorImage("771285", "8c2bbc06-4a2e-4bf3-825a-2e3e2b5cf67a") },
+    { id: 2579680773, categorySlug: "sauces", name: "Doods", description: "Small cup of Doods sauce", price: 40, image: vendorImage("771285", "6b356ced-ea87-44d1-8de0-301c1481ee92") },
+    { id: 2579680774, categorySlug: "sauces", name: "Sriracha Mayo", description: "Medium sriracha mayo sauce cup", price: 65, image: vendorImage("771285", "adfb211b-d1c8-497a-b220-a5c22b0f96cc") },
+    { id: 2579680775, categorySlug: "sauces", name: "Dods", description: "Medium Dods sauce cup", price: 70, image: vendorImage("771285", "0494628a-4ff7-4043-820a-38e845c3694e") },
+    { id: 2579680798, categorySlug: "sauces", name: "Come Back", description: "Medium come back sauce cup", price: 70, image: vendorImage("771285", "db641c1d-1022-4529-8bed-66b72033adf0") },
+    { id: 2579682147, categorySlug: "sauces", name: "Comeback", description: "Small comeback cup with sauce", price: 40, image: vendorImage("771285", "58c9f90d-fffe-4c7d-abe5-471f70ac46c5") },
+    { id: 2579685824, categorySlug: "sauces", name: "Barbecue", description: "Small barbecue sauce cup", price: 35, image: vendorImage("771285", "78bddf3e-14be-4a09-b0d2-59b9f23c8919") },
+    { id: 2579685826, categorySlug: "sauces", name: "Barbecue", description: "Medium barbecue sauce cup", price: 55, image: vendorImage("771285", "6d95cb47-3ce4-4938-8dd5-a5d8e563c4fc") },
+    { id: 2579694531, categorySlug: "sauces", name: "Smoky", description: "Small smoky sauce cup", price: 40, image: vendorImage("771285", "68594202-87f3-434f-86d9-c6c682ee0ac6") },
+    { id: 2579694532, categorySlug: "sauces", name: "Smoky", description: "Medium smoky sauce cup", price: 65, image: vendorImage("771285", "8e69dd4a-ccf7-46d4-98ee-919448a1fe89") },
+    { id: 2579694541, categorySlug: "sauces", name: "Buffalo", description: "Small buffalo sauce cup", price: 40, image: vendorImage("771285", "ff88b4ed-61de-46a7-a881-5b20d7e00b32") },
+    { id: 2579694559, categorySlug: "sauces", name: "Buffalo", description: "Medium buffalo sauce cup", price: 65, image: vendorImage("771285", "c9671477-9d70-41d5-9a94-cd1822f7454e") },
+    { id: 2579934668, categorySlug: "sauces", name: "Cheddar", description: "Small cup of cheddar sauce.", price: 45, image: vendorImage("771283", "157f44b2-37ff-4f16-ad89-867519b9e5af") },
+    { id: 2579934671, categorySlug: "sauces", name: "Cheddar", description: "Medium cheddar sauce cup", price: 70, image: vendorImage("771283", "33567da1-e64a-475d-881b-011e640563f6") },
+    { id: 2579934679, categorySlug: "sauces", name: "Tiger", description: "Small Tiger sauce cup", price: 40, image: vendorImage("771283", "ceda0938-9425-4722-bfff-a7013538408f") },
+    { id: 2579934921, categorySlug: "sauces", name: "Tiger", description: "Medium Tiger sauce cup", price: 65, image: vendorImage("771283", "6f12d939-1761-4d92-a357-e371fc93c5d9") },
+
+    { id: 2200312663, categorySlug: "add-ons", name: "Brioche", description: "Soft and buttery brioche bun.", price: 17, image: image("mmw_638943336047206091") },
+    { id: 2200312668, categorySlug: "add-ons", name: "Add Chicken Piece", description: "Crispy chicken piece", price: 100, image: image("mmw_638943336112133668") },
+    { id: 2200312670, categorySlug: "add-ons", name: "Chicken Fillet", description: "Crispy fillet piece", price: 100, image: image("mmw_638946582330610512") },
+    { id: 2200312673, categorySlug: "add-ons", name: "Tender Chicken", description: "Crispy tender chicken", price: 75, image: image("mmw_638946582821151041") },
+    { id: 2301413912, categorySlug: "add-ons", name: "Large Plain Risotto", description: "A generous portion of seasoned plain risotto", price: 50, image: vendorImage("771237", "2301413912/778b85ce-f630-448c-a684-985db6c45ad5") },
+    { id: 2579744738, categorySlug: "add-ons", name: "Coleslaw", description: "Medium coleslaw cup", price: 50, image: vendorImage("771285", "0a9d44c7-701a-444d-911e-8dabaebc5789") },
+    { id: 2579744739, categorySlug: "add-ons", name: "Coleslaw", description: "Small coleslaw cup", price: 40, image: vendorImage("771285", "1d50f8f8-9cd8-4819-959a-9e94c515b845") },
+    { id: 2579744741, categorySlug: "add-ons", name: "Coleslaw", description: "Family-sized cup of coleslaw", price: 90, image: vendorImage("771285", "f5969d91-c527-4e21-a80f-98cac47256fa") },
+    { id: 2579758462, categorySlug: "add-ons", name: "Fries", description: "Small fries bucket", price: 45, image: vendorImage("771285", "2a7ac851-b95e-49f5-a588-0c379d62e941") },
+    { id: 2580074502, categorySlug: "add-ons", name: "Fries", description: "Medium fries", price: 65, image: vendorImage("771237", "847f3560-3a6e-432c-89ff-434f5b025a25") },
+    { id: 2580074503, categorySlug: "add-ons", name: "Fries", description: "Family fries pack", price: 100, image: vendorImage("771237", "e72cca96-7d2d-4677-9669-95fb5d5c5979") },
+    { id: 2614738328, categorySlug: "add-ons", name: "Mozzarella Bomb", description: "Piece of mozzarella bomb", price: 75, image: vendorImage("771237", "71bce1a5-323b-49e0-833b-5d0f52860eec") },
+    { id: 2627432471, categorySlug: "add-ons", name: "Cheddar Sticks", description: "Box of three spicy cheddar sticks.", price: 75, image: vendorImage("771283", "f334924b-0f9b-4517-9280-cd6dc4c908e9") },
+
+    { id: 2200312653, categorySlug: "drinks", name: "Water", description: "Bottled drinking water", price: 15, image: image("WhatsApp_Image_20250918_a638938043157873854.jpeg") },
+    { id: 2200312656, categorySlug: "drinks", name: "Fi Cola", description: "Soft drink.", price: 35, image: image("WhatsApp_Image_20250918_a638938043011836257.jpeg") },
+    { id: 2200317409, categorySlug: "drinks", name: "Apple Juice", description: "Fresh apple juice.", price: 25, image: image("WhatsApp_Image_20250918_a638938042848143761.jpeg") },
+    { id: 2300033027, categorySlug: "drinks", name: "1 Liter Maxi Drink", description: "Large 1 liter soft drink", price: 50, image: image("mmw_638938074328282749") },
+];

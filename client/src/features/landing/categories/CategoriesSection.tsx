@@ -5,7 +5,7 @@ import HeaderSection from '../../../components/ui/HeaderSection';
 const CategoriesSection = () => {
     return (
         <div className="mt-15 flex flex-col gap-6">
-            <HeaderSection title="Pick your feast" path="/OFFERS_ID" />
+            <HeaderSection title="Pick your feast" path="/menu" />
             <CategoriesSectionDesktop />
             <CategoriesSectionMobile />
         </div>

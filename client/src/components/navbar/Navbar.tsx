@@ -6,10 +6,11 @@ import { ShoppingCartIcon } from "@heroicons/react/24/outline"
 import { useState } from "react"
 import Sidebar from "../sidebar/Sidebar"
 import { useScrollLock } from "./hooks/useScrollLock"
+import { useNavigate } from "react-router-dom"
 
 const Navbar = () => {
     const [isSidebar, setIsSidebar] = useState(false)
-
+    const navigate = useNavigate()
     useScrollLock(isSidebar)
 
     return (
@@ -30,6 +31,7 @@ const Navbar = () => {
                             src={Logo}
                             alt="DODZ Logo"
                             className="w-24 lg:w-28 cursor-pointer brightness-125"
+                            onClick={() => navigate("/")}
                         />
                     </div>
                     <div className="flex gap-2 sm:gap-3 items-center">
