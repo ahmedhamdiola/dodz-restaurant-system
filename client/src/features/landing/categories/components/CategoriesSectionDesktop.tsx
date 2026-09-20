@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import type { Swiper as SwiperType } from "swiper";
 import SliderButton from '../../../../components/ui/SliderButton';
 import { useState } from 'react';
-import CategoryImg from "../../../../assets/mock-pics/category.png";
+import CategoryImg from "../../../../assets/mock-pics/category.webp";
 
 
 const CategoriesSectionDesktop = () => {
@@ -24,7 +24,7 @@ const CategoriesSectionDesktop = () => {
                 <Swiper
                     modules={[Virtual]}
                     spaceBetween={20}
-                    slidesPerView={5}
+                    slidesPerView={7}
                     onSwiper={(s) => {
                         setSwiper(s);
                         setIsBeginning(s.isBeginning);
