@@ -17,6 +17,7 @@ const ProductGrid = ({ products }: ProductGridProps) => {
                     description={product.description}
                     image={product.image}
                     price={product.price}
+                    isCustomizable={product.isCustomizable}
                 />
             ))}
         </div>

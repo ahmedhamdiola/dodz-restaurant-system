@@ -12,4 +12,5 @@ export interface MenuProduct {
     description: string;
     price: number;
     image: string;
+    isCustomizable?: boolean;
 }

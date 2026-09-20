@@ -49,3 +49,21 @@ CREATE TABLE IF NOT EXISTS option_values (
     is_available BOOLEAN NOT NULL DEFAULT TRUE,
     sort_order INTEGER NOT NULL DEFAULT 0
 );
+
+
+CREATE TABLE IF NOT EXISTS branches(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    area VARCHAR(100) NOT NULL,
+    address VARCHAR(150) NOT NULL,
+    phone VARCHAR(11) NOT NULL,
+    
+    opening_time TIME NOT NULL,
+    closing_time TIME NOT NULL,
+
+    lat NUMERIC(10, 6) NOT NULL,
+    lng NUMERIC(10, 6) NOT NULL,
+
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

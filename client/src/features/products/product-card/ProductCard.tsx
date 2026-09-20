@@ -11,12 +11,13 @@ interface ProductCardProps {
     image: string,
     price: number,
     discount?: number,
+    isCustomizable?: boolean,
 }
 
 const formatPrice = (value: number) =>
     value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-const ProductCard = ({ id, name, description, image, price, discount }: ProductCardProps) => {
+const ProductCard = ({ id, name, description, image, price, discount, isCustomizable }: ProductCardProps) => {
     const { isFavorite, toggleFavorite } = useFavorites()
     const favorited = isFavorite(id)
     return (
@@ -39,7 +40,9 @@ const ProductCard = ({ id, name, description, image, price, discount }: ProductC
                 <div className="line-clamp-2 min-h-8 text-xs text-muted-foreground">
                     {description}
                 </div>
-                <h3 className="text-sm text-brand sm:text-xs">Customizable</h3>
+                {isCustomizable !== false && (
+                    <h3 className="text-sm text-brand sm:text-xs">Customizable</h3>
+                )}
                 <div className="mt-auto flex items-center justify-between gap-2 pt-2">
                     {discount !== undefined && discount > 0 ? (
                         <div className="relative min-w-0 flex-1 overflow-hidden">

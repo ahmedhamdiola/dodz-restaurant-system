@@ -1,13 +1,11 @@
 import { memo, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { MENU_CATEGORIES } from "../data";
+import { MENU_OPTION_CLASS_NAME } from "../../../styles";
 
 interface CategoryTabsProps {
     activeSlug?: string;
 }
-
-const baseClass =
-    "whitespace-nowrap rounded-full border px-4 py-2 text-xs sm:text-sm font-semibold uppercase tracking-wide transition-colors duration-200 cursor-pointer";
 
 const CategoryTabs = ({ activeSlug }: CategoryTabsProps) => {
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -37,7 +35,7 @@ const CategoryTabs = ({ activeSlug }: CategoryTabsProps) => {
             >
                 <Link
                     to="/menu"
-                    className={`${baseClass} ${allActive
+                    className={`${MENU_OPTION_CLASS_NAME} ${allActive
                         ? "border-brand bg-brand text-white"
                         : "border-border bg-card text-secondary hover:border-brand/50"
                         }`}
@@ -51,7 +49,7 @@ const CategoryTabs = ({ activeSlug }: CategoryTabsProps) => {
                             key={category.slug}
                             to={`/menu/${category.slug}`}
                             aria-current={isActive ? "page" : undefined}
-                            className={`${baseClass} ${isActive
+                            className={`${MENU_OPTION_CLASS_NAME} ${isActive
                                 ? "border-brand bg-brand text-white"
                                 : "border-border bg-card text-secondary hover:border-brand/50"
                                 }`}

@@ -18,6 +18,12 @@ const FooterBottom = () => {
                         {label}
                     </Link>
                 ))}
+                <Link
+                    to="/admin"
+                    className="text-xs text-white/50 transition-colors duration-200 hover:text-brand"
+                >
+                    Admin
+                </Link>
             </div>
         </div>
     )

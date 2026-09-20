@@ -30,7 +30,7 @@ export const FOOTER_COLUMNS: FooterColumnData[] = [
         links: [
             { label: "Explore Menu", href: "/menu" },
             { label: "Offers", href: "/OFFERS_ID" },
-            { label: "Sides", href: "/menu/snacks" },
+            { label: "Sides", href: "/menu/appetizers" },
             { label: "Beverages", href: "/menu/beverages" },
         ],
     },
@@ -46,7 +46,6 @@ export const FOOTER_COLUMNS: FooterColumnData[] = [
         links: [
             { label: "About Us", href: "/about" },
             { label: "Contact Us", href: "/contact" },
-            { label: "Feedback", href: "/feedback" },
         ],
     },
 ]
