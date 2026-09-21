@@ -33,8 +33,6 @@ const OrdersPage = () => {
     return (
         <div>
             <PageHeader
-                title="Orders"
-                subtitle="Live stream of incoming orders from every DODZ branch."
                 action={
                     <span className="inline-flex items-center gap-2 rounded-full bg-brand/10 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-brand">
                         <MapPinIcon className="h-4 w-4" />
@@ -53,11 +51,10 @@ const OrdersPage = () => {
                             key={value}
                             type="button"
                             onClick={() => setFilter(value)}
-                            className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-colors duration-200 ${
-                                isActive
+                            className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-wide transition-colors duration-200 ${isActive
                                     ? "border-brand bg-brand text-white"
                                     : "border-border bg-card text-muted-foreground hover:border-brand/40 hover:text-secondary"
-                            }`}
+                                }`}
                         >
                             {label}
                             <span className="ml-1.5 opacity-70">{count}</span>

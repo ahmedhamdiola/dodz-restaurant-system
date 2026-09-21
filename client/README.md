@@ -8,6 +8,7 @@
 - Axios
 - React Helmet Async
 - Swiper
+- Leaflet
 
 ### Features:
 - Landing Page with Carousel, Categories, Best Sellers, and Reviews Section.

@@ -29,8 +29,6 @@ const UsersPage = () => {
     return (
         <div>
             <PageHeader
-                title="Users"
-                subtitle={`${users.length} staff and customer accounts on this panel.`}
                 action={
                     <button
                         type="button"

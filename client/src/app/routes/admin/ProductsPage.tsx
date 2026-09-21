@@ -23,8 +23,6 @@ const ProductsPage = () => {
     return (
         <div>
             <PageHeader
-                title="Products"
-                subtitle={`${products.length} menu items managed across all branches.`}
                 action={
                     <button
                         type="button"
@@ -81,8 +79,8 @@ const ProductsPage = () => {
                                                 product.stock > 20
                                                     ? "text-emerald-600 dark:text-emerald-400"
                                                     : product.stock === 0
-                                                      ? "text-red-600 dark:text-red-400"
-                                                      : "text-amber-600 dark:text-amber-400"
+                                                        ? "text-red-600 dark:text-red-400"
+                                                        : "text-amber-600 dark:text-amber-400"
                                             }
                                         >
                                             {product.stock}

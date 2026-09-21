@@ -1,18 +1,6 @@
-import DeliveryIcon from "./assets/icons/delivery-icon.svg"
-import PickupIcon from "./assets/icons/pickup-icon.svg"
-import type { HeroSlide } from "./features/landing/hero/types";
-export const NAVBAR_ORDER_BUTTONS = [
-    {
-        title: "Delivery",
-        Icon: DeliveryIcon,
-    },
-    {
-        title: "Pickup",
-        Icon: PickupIcon,
-    }
-]
+import type { HeroSlide } from "./types"
 
-export const heroSlides: HeroSlide[] = [
+export const HERO_SLIDES: HeroSlide[] = [
     {
         eyebrow: "Crispy & Juicy",
         title: "Fried Chicken Done Right",
@@ -34,4 +22,4 @@ export const heroSlides: HeroSlide[] = [
         cta: "Track Order",
         gradient: "from-[#1b2027] via-[#5c2e2e] to-[#e10000]",
     },
-];
+]

@@ -34,8 +34,6 @@ const BranchesPage = () => {
     return (
         <div>
             <PageHeader
-                title="Branches"
-                subtitle={`${branches.length} branches across Greater Cairo.`}
                 action={
                     <button
                         type="button"

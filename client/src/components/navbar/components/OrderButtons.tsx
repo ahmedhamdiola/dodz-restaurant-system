@@ -1,31 +1,24 @@
 import OrderButton from "./OrderButton"
-import { NAVBAR_ORDER_BUTTONS } from "../../../data"
-import { useLocalStorage } from "../../../hooks/useLocalStorage"
+import { ORDER_TYPE_OPTIONS } from "../../../features/order/data"
+import { useOrderType } from "../../../features/order/useOrderType"
 
 interface OrderButtonsProps {
     className?: string
 }
 
-const ORDER_TYPES = NAVBAR_ORDER_BUTTONS.map((button) => button.title)
-
 const OrderButtons = ({ className = "" }: OrderButtonsProps) => {
-    const [activeOrder, setActiveOrder] = useLocalStorage<string>(
-        "dodz-order-type",
-        "Delivery",
-        (parsed) =>
-            typeof parsed === "string" && ORDER_TYPES.includes(parsed) ? parsed : "Delivery"
-    )
+    const { orderType, setOrderType } = useOrderType()
 
     return (
         <div className={`flex flex-wrap items-center gap-5 lg:ml-5 px-2 lg:px-0 ${className}`}>
             {
-                NAVBAR_ORDER_BUTTONS.map((button) => {
+                ORDER_TYPE_OPTIONS.map((option) => {
                     return <OrderButton
-                        key={button.title}
-                        title={button.title}
-                        Icon={button.Icon}
-                        isActive={activeOrder === button.title}
-                        onClick={() => setActiveOrder(button.title)} />
+                        key={option.title}
+                        title={option.title}
+                        Icon={option.Icon}
+                        isActive={orderType === option.title}
+                        onClick={() => setOrderType(option.title)} />
                 })
             }
         </div>

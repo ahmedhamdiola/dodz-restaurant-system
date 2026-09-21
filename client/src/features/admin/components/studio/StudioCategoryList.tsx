@@ -60,7 +60,7 @@ const StudioCategoryList = ({
 
     return (
         <>
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide lg:hidden">
+            <div className="scrollbar-x flex gap-2 overflow-x-auto pb-2 lg:hidden">
                 {items}
                 <button
                     type="button"

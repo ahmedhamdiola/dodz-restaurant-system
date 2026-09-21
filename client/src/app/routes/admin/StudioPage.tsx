@@ -124,13 +124,14 @@ const StudioPage = () => {
                     </div>
 
                     {visibleProducts.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                        <div className="scrollbar-x flex gap-4 overflow-x-auto px-1 pb-4">
                             {visibleProducts.map((product) => (
-                                <StudioProductCard
-                                    key={product.id}
-                                    product={product}
-                                    onEdit={openEditProduct}
-                                />
+                                <div key={product.id} className="w-[280px] shrink-0 sm:w-[300px]">
+                                    <StudioProductCard
+                                        product={product}
+                                        onEdit={openEditProduct}
+                                    />
+                                </div>
                             ))}
                         </div>
                     ) : (

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { CheckIcon, EnvelopeIcon, ExclamationTriangleIcon, PhoneIcon } from "@heroicons/react/24/outline";
 import DashboardCard from "../../../features/admin/components/DashboardCard";
-import PageHeader from "../../../features/admin/components/PageHeader";
 
 const inputClass =
     "w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-secondary outline-none transition-colors placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/30";
@@ -29,11 +28,6 @@ const SettingsPage = () => {
 
     return (
         <div>
-            <PageHeader
-                title="Settings"
-                subtitle="Store details, notifications, and account-wide configuration."
-            />
-
             <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
                 <div className="flex flex-col gap-6 xl:col-span-2">
                     <DashboardCard title="Store Information" subtitle="Shown publicly across the site and app.">
@@ -107,14 +101,12 @@ const SettingsPage = () => {
                                             role="switch"
                                             aria-checked={notifications[key]}
                                             onClick={() => toggle(key)}
-                                            className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ${
-                                                notifications[key] ? "bg-brand" : "bg-muted"
-                                            }`}
+                                            className={`relative h-6 w-11 shrink-0 rounded-full transition-colors duration-200 ${notifications[key] ? "bg-brand" : "bg-muted"
+                                                }`}
                                         >
                                             <span
-                                                className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all duration-200 ${
-                                                    notifications[key] ? "left-[22px]" : "left-0.5"
-                                                }`}
+                                                className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-all duration-200 ${notifications[key] ? "left-[22px]" : "left-0.5"
+                                                    }`}
                                             />
                                         </button>
                                     </li>

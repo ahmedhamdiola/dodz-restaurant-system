@@ -1,11 +1,11 @@
 import Carousel from "../../../components/ui/carousel/Carousel";
-import { heroSlides } from "../../../data";
+import { HERO_SLIDES } from "./data";
 import HeroMockSlide from "./HeroMockSlide";
 
 const Hero = () => {
     return (
         <Carousel
-            slides={heroSlides}
+            slides={HERO_SLIDES}
             renderSlide={HeroMockSlide}
             className="carousel-hero"
         />

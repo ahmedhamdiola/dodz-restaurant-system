@@ -1,11 +1,11 @@
-interface OrderBurttonProps {
+interface OrderButtonProps {
     title: string,
     isActive: boolean,
     Icon: string,
     onClick?: () => void
 }
 
-const OrderButton = ({ title, isActive, Icon, onClick }: OrderBurttonProps) => {
+const OrderButton = ({ title, isActive, Icon, onClick }: OrderButtonProps) => {
     return (
         <button
             className={`
