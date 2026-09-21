@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { CheckIcon, EnvelopeIcon, ExclamationTriangleIcon, PhoneIcon } from "@heroicons/react/24/outline";
-import DashboardCard from "../components/DashboardCard";
-import PageHeader from "../components/PageHeader";
+import DashboardCard from "../../../features/admin/components/DashboardCard";
+import PageHeader from "../../../features/admin/components/PageHeader";
 
 const inputClass =
     "w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-secondary outline-none transition-colors placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/30";

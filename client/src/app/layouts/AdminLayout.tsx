@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import { useScrollLock } from "../../../components/navbar/hooks/useScrollLock";
-import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
+import { useScrollLock } from "../../components/navbar/hooks/useScrollLock";
+import Sidebar from "../../features/admin/components/Sidebar";
+import Topbar from "../../features/admin/components/Topbar";
 
 const AdminLayout = () => {
     const [sidebarOpen, setSidebarOpen] = useState(false);

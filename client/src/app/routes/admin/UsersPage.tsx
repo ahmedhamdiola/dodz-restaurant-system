@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { ADMIN_USERS } from "../data";
-import PageHeader from "../components/PageHeader";
-import StatusBadge from "../components/StatusBadge";
+import { ADMIN_USERS } from "../../../features/admin/data";
+import PageHeader from "../../../features/admin/components/PageHeader";
+import StatusBadge from "../../../features/admin/components/StatusBadge";
 
 const UsersPage = () => {
     const [query, setQuery] = useState("");

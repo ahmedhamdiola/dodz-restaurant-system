@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
 import { PlusIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
-import { MENU_CATEGORIES, MENU_PRODUCTS } from "../../menu/data";
-import type { MenuCategory, MenuProduct } from "../../menu/types";
-import CategoryModal, { type CategoryFormValues } from "../components/studio/CategoryModal";
-import ProductModal, { type ProductFormValues } from "../components/studio/ProductModal";
-import StudioCategoryList from "../components/studio/StudioCategoryList";
-import StudioProductCard from "../components/studio/StudioProductCard";
+import { MENU_CATEGORIES, MENU_PRODUCTS } from "../../../features/menu/data";
+import type { MenuCategory, MenuProduct } from "../../../features/menu/types";
+import CategoryModal, { type CategoryFormValues } from "../../../features/admin/components/studio/CategoryModal";
+import ProductModal, { type ProductFormValues } from "../../../features/admin/components/studio/ProductModal";
+import StudioCategoryList from "../../../features/admin/components/studio/StudioCategoryList";
+import StudioProductCard from "../../../features/admin/components/studio/StudioProductCard";
 
 const StudioPage = () => {
     const [categories, setCategories] = useState<MenuCategory[]>(MENU_CATEGORIES);

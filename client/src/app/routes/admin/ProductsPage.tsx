@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { MagnifyingGlassIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { ADMIN_PRODUCTS } from "../data";
-import PageHeader from "../components/PageHeader";
-import StatusBadge from "../components/StatusBadge";
+import { ADMIN_PRODUCTS } from "../../../features/admin/data";
+import PageHeader from "../../../features/admin/components/PageHeader";
+import StatusBadge from "../../../features/admin/components/StatusBadge";
 
 const formatMoney = (price: number) =>
     `EGP ${price.toLocaleString("en-US", { maximumFractionDigits: 1 })}`;

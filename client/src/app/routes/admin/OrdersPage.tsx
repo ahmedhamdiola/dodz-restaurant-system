@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
 import { MapPinIcon } from "@heroicons/react/24/outline";
-import { ALL_ORDERS } from "../data";
-import type { OrderStatus } from "../types";
-import PageHeader from "../components/PageHeader";
-import StatusBadge from "../components/StatusBadge";
+import { ALL_ORDERS } from "../../../features/admin/data";
+import type { OrderStatus } from "../../../features/admin/types";
+import PageHeader from "../../../features/admin/components/PageHeader";
+import StatusBadge from "../../../features/admin/components/StatusBadge";
 
 const FILTERS: Array<{ label: string; value: OrderStatus | "All" }> = [
     { label: "All", value: "All" },

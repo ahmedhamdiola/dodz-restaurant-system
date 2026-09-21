@@ -1,10 +1,10 @@
-import { DASHBOARD_STATS, ORDER_STATUS_SLICES, RECENT_ORDERS, REVENUE_LAST_7_DAYS, TOP_PRODUCTS } from "../data";
-import DashboardCard from "../components/DashboardCard";
-import OrderStatusDonut from "../components/OrderStatusDonut";
-import RecentOrdersTable from "../components/RecentOrdersTable";
-import RevenueChart from "../components/RevenueChart";
-import StatCard from "../components/StatCard";
-import TopProducts from "../components/TopProducts";
+import { DASHBOARD_STATS, ORDER_STATUS_SLICES, RECENT_ORDERS, REVENUE_LAST_7_DAYS, TOP_PRODUCTS } from "../../../features/admin/data";
+import DashboardCard from "../../../features/admin/components/DashboardCard";
+import OrderStatusDonut from "../../../features/admin/components/OrderStatusDonut";
+import RecentOrdersTable from "../../../features/admin/components/RecentOrdersTable";
+import RevenueChart from "../../../features/admin/components/RevenueChart";
+import StatCard from "../../../features/admin/components/StatCard";
+import TopProducts from "../../../features/admin/components/TopProducts";
 
 const DashboardPage = () => {
     return (

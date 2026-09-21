@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { ClockIcon, MapPinIcon, PencilIcon, PhoneIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { ADMIN_BRANCHES } from "../data";
-import type { AdminBranch } from "../types";
-import BranchFormModal, { type BranchFormValues } from "../components/BranchFormModal";
-import PageHeader from "../components/PageHeader";
-import StatusBadge from "../components/StatusBadge";
+import { ADMIN_BRANCHES } from "../../../features/admin/data";
+import type { AdminBranch } from "../../../features/admin/types";
+import BranchFormModal, { type BranchFormValues } from "../../../features/admin/components/BranchFormModal";
+import PageHeader from "../../../features/admin/components/PageHeader";
+import StatusBadge from "../../../features/admin/components/StatusBadge";
 
 const BranchesPage = () => {
     const [branches, setBranches] = useState<AdminBranch[]>(ADMIN_BRANCHES);
