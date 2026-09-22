@@ -16,6 +16,10 @@ export const ProductService = () => {
         return repository.getProductsByCategoryID(id);
     }
 
+    const getAllProducts = async () => {
+        return repository.getAllProducts();
+    }
+
     const getProductByID = async (id: number) => {
         if (!id || id <= 0) {
             return null;
@@ -71,6 +75,7 @@ export const ProductService = () => {
 
     return {
         getProductsByCategoryID,
+        getAllProducts,
         getProductByID,
         getTopDealsProducts,
         createProduct,

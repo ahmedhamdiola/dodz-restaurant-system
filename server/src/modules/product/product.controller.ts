@@ -19,6 +19,14 @@ export const ProductController = () => {
         return SuccessStatus(res, products);
     }
 
+    const getAllProducts = async (req: Request, res: Response) => {
+        const products = await service.getAllProducts();
+        if (products === null) {
+            return NotFoundStatus(res, 'Products not found');
+        }
+        return SuccessStatus(res, products);
+    }
+
     const getProductByID = async (req: Request, res: Response) => {
         const id = Number(req.params.id);
         if (!CheckId(id)) {
@@ -109,6 +117,7 @@ export const ProductController = () => {
 
     return {
         getProductsByCategoryID,
+        getAllProducts,
         getProductByID,
         getTopDealsProducts,
         createProduct,

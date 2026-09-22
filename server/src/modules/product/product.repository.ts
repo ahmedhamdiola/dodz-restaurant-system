@@ -1,23 +1,38 @@
 import { pool } from "../../config/database.js";
 import { ProductInterfaceWithoutID } from "./product.types.js";
+
+const PRODUCT_SELECT = `
+    SELECT p.id, p.category_id, c.name AS category_name, c.slug AS category_slug,
+           p.name, p.description, p.price, p.image, p.is_available, p.is_customizable,
+           p.sold_amount, p.created_at, p.updated_at
+    FROM products p
+    INNER JOIN categories c ON c.id = p.category_id
+    WHERE p.is_deleted = false AND c.is_deleted = false
+`;
+
 export const ProductRepository = () => {
     const getProductsByCategoryID = async (id: number) => {
-        const result = await pool.query(`SELECT * FROM products WHERE category_id = $1 AND is_deleted = false ORDER BY created_at DESC`, [id]);
+        const result = await pool.query(`${PRODUCT_SELECT} AND p.category_id = $1 ORDER BY p.created_at DESC`, [id]);
+        return result.rows;
+    }
+
+    const getAllProducts = async () => {
+        const result = await pool.query(`${PRODUCT_SELECT} AND p.is_available = true ORDER BY c.name, p.name`);
         return result.rows;
     }
 
     const getProductByID = async (id: number) => {
-        const result = await pool.query(`SELECT * FROM products WHERE id = $1 AND is_deleted = false`, [id]);
+        const result = await pool.query(`${PRODUCT_SELECT} AND p.id = $1`, [id]);
         return result.rows[0] ?? null;
     }
 
     const getProductByName = async (name: string) => {
-        const result = await pool.query(`SELECT * FROM products WHERE name = $1 AND is_deleted = false`, [name]);
+        const result = await pool.query(`${PRODUCT_SELECT} AND p.name = $1`, [name]);
         return result.rows[0] ?? null;
     }
 
     const getTopDealsProducts = async () => {
-        const result = await pool.query(`SELECT * FROM products WHERE is_available = true AND is_deleted = false ORDER BY sold_amount DESC LIMIT 3`);
+        const result = await pool.query(`${PRODUCT_SELECT} AND p.is_available = true ORDER BY p.sold_amount DESC LIMIT 3`);
         return result.rows;
     }
 
@@ -68,6 +83,7 @@ export const ProductRepository = () => {
 
     return {
         getProductsByCategoryID,
+        getAllProducts,
         getTopDealsProducts,
         getProductByID,
         createProduct,

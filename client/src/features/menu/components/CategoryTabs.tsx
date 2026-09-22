@@ -1,13 +1,14 @@
 import { memo, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { MENU_CATEGORIES } from "../data";
 import { MENU_OPTION_CLASS_NAME } from "../../../styles";
+import type { MenuCategory } from "../types";
 
 interface CategoryTabsProps {
+    categories: MenuCategory[];
     activeSlug?: string;
 }
 
-const CategoryTabs = ({ activeSlug }: CategoryTabsProps) => {
+const CategoryTabs = ({ categories, activeSlug }: CategoryTabsProps) => {
     const scrollRef = useRef<HTMLDivElement>(null);
     const allActive = !activeSlug || activeSlug === "all";
 
@@ -42,7 +43,7 @@ const CategoryTabs = ({ activeSlug }: CategoryTabsProps) => {
                 >
                     All
                 </Link>
-                {MENU_CATEGORIES.map((category) => {
+                {categories.map((category) => {
                     const isActive = activeSlug === category.slug;
                     return (
                         <Link

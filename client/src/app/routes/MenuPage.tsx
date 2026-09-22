@@ -3,22 +3,20 @@ import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
 import CategoryTabs from "../../features/menu/components/CategoryTabs";
 import ProductGrid from "../../features/menu/components/ProductGrid";
-import { MENU_CATEGORIES, MENU_PRODUCTS } from "../../features/menu/data";
+import { useMenu } from "../../features/menu/hooks/useMenu";
 
 const MenuPage = () => {
     const { categorySlug } = useParams();
-    const activeCategory = useMemo(
-        () => MENU_CATEGORIES.find((category) => category.slug === categorySlug),
-        [categorySlug]
-    );
+    const { categories, categoryBySlug, productsByCategory, isError } = useMenu();
+
+    const activeCategory = categorySlug ? categoryBySlug.get(categorySlug) : undefined;
+
     const products = useMemo(
         () =>
-            activeCategory
-                ? MENU_PRODUCTS.filter(
-                      (product) => product.categorySlug === activeCategory.slug
-                  )
-                : MENU_PRODUCTS,
-        [activeCategory]
+            activeCategory ? (productsByCategory.get(activeCategory.slug) ?? []) : [
+                ...productsByCategory.values(),
+            ].flat(),
+        [activeCategory, productsByCategory]
     );
 
     const pageTitle = activeCategory
@@ -47,7 +45,13 @@ const MenuPage = () => {
                         </p>
                     </header>
 
-                    <CategoryTabs activeSlug={categorySlug} />
+                    <CategoryTabs categories={categories} activeSlug={categorySlug} />
+
+                    {isError && (
+                        <p className="text-center text-xs font-medium text-red-500" role="alert">
+                            Couldn't sync the latest menu. Showing cached items.
+                        </p>
+                    )}
 
                     {products.length > 0 ? (
                         <ProductGrid products={products} />

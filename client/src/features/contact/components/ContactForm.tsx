@@ -3,6 +3,7 @@ import { CheckCircleIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { useFormik } from "formik";
 import { CONTACT_SUBJECTS } from "../data";
 import { contactValidationSchema } from "../schemas";
+import { useSendContactMessage } from "../hooks/useContact";
 import type { ContactFormValues } from "../types";
 
 const initialValues: ContactFormValues = {
@@ -23,18 +24,19 @@ const ERROR_CLASS_NAME = "mt-1.5 text-xs font-medium text-red-500";
 
 const ContactForm = () => {
     const [submitted, setSubmitted] = useState(false);
+    const { mutate, isPending, error } = useSendContactMessage();
 
     const formik = useFormik<ContactFormValues>({
         initialValues,
         validationSchema: contactValidationSchema,
-        onSubmit: (_, { setSubmitting, resetForm }) => {
-            setSubmitting(true);
-            window.setTimeout(() => {
-                setSubmitting(false);
-                setSubmitted(true);
-                resetForm();
-                window.setTimeout(() => setSubmitted(false), 5000);
-            }, 800);
+        onSubmit: (values, { resetForm }) => {
+            mutate(values, {
+                onSuccess: () => {
+                    setSubmitted(true);
+                    resetForm();
+                    window.setTimeout(() => setSubmitted(false), 5000);
+                },
+            });
         },
     });
 
@@ -208,14 +210,21 @@ const ContactForm = () => {
             <div className="flex flex-col gap-3">
                 <button
                     type="submit"
-                    disabled={formik.isSubmitting}
+                    disabled={isPending}
                     className="rounded-lg bg-gradient-to-r from-red-600 via-red-500 to-red-700 px-6 py-3 text-sm font-bold uppercase tracking-wide text-white transition-opacity duration-200 outline-none hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                    {formik.isSubmitting ? "Sending…" : "Send message"}
+                    {isPending ? "Sending…" : "Send message"}
                 </button>
                 {submitted && (
                     <p className="text-center text-sm font-medium text-green-600 dark:text-green-400">
                         Thanks for reaching out! We'll get back to you soon.
+                    </p>
+                )}
+                {error && (
+                    <p className="text-center text-sm font-medium text-red-500" role="alert">
+                        {error instanceof Error
+                            ? error.message
+                            : "Something went wrong, please try again"}
                     </p>
                 )}
             </div>

@@ -67,3 +67,44 @@ CREATE TABLE IF NOT EXISTS branches(
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS contact(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    phone VARCHAR(11) NOT NULL,
+    message TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE, -- soft-deleted emails stay reserved to avoid account confusion
+    phone VARCHAR(11) UNIQUE, -- NULL for social-only accounts; UNIQUE allows multiple NULLs
+
+    -- auth: password_hash is nullable so social-login accounts (provider != 'email') can exist without a password
+    password_hash TEXT, -- set for password / social logins without password
+    provider VARCHAR(20) NOT NULL DEFAULT 'email' CHECK (provider IN ('email', 'google', 'facebook', 'apple')),
+    provider_id VARCHAR(150), -- id returned by the social provider; combined with provider to link the account
+
+    role VARCHAR(20) NOT NULL DEFAULT 'customer' CHECK (role IN ('customer', 'staff', 'admin')),
+
+    avatar TEXT, -- profile image url
+    gender VARCHAR(10) CHECK (gender IN ('male', 'female')),
+    birthdate DATE,
+
+    is_email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    is_phone_verified BOOLEAN NOT NULL DEFAULT FALSE,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    last_login_at TIMESTAMP, -- updated on successful login once auth is implemented
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+-- TODO(future migration): users_favorites table (user_id, product_id) for customer favorite products
+-- TODO(future migration): users_addresses table (user_id, address, lat, lng, ...) for delivery addresses
