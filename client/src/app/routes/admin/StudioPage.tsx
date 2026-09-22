@@ -1,105 +1,163 @@
 import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { PlusIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
-import { MENU_CATEGORIES, MENU_PRODUCTS } from "../../../features/menu/data";
 import type { MenuCategory, MenuProduct } from "../../../features/menu/types";
+import { menuKeys } from "../../../features/menu/queryKeys";
+import { useStudioMenu } from "../../../features/admin/hooks/useStudioMenu";
 import CategoryModal, { type CategoryFormValues } from "../../../features/admin/components/studio/CategoryModal";
 import ProductModal, { type ProductFormValues } from "../../../features/admin/components/studio/ProductModal";
 import StudioCategoryList from "../../../features/admin/components/studio/StudioCategoryList";
 import StudioProductCard from "../../../features/admin/components/studio/StudioProductCard";
+import { studioApi } from "../../../features/admin/services/studioApi";
 
 const StudioPage = () => {
-    const [categories, setCategories] = useState<MenuCategory[]>(MENU_CATEGORIES);
-    const [products, setProducts] = useState<MenuProduct[]>(
-        MENU_PRODUCTS.map((product) => ({ ...product, isCustomizable: true }))
-    );
-    const [activeSlug, setActiveSlug] = useState(MENU_CATEGORIES[0].slug);
+    const queryClient = useQueryClient();
+    const { categories, products, categoryBySlug, productCountsByCategory } = useStudioMenu();
 
+    const [searchParams, setSearchParams] = useSearchParams();
     const [categoryModalOpen, setCategoryModalOpen] = useState(false);
     const [productModalOpen, setProductModalOpen] = useState(false);
     const [editingProduct, setEditingProduct] = useState<MenuProduct | null>(null);
+    const [editingCategory, setEditingCategory] = useState<MenuCategory | null>(null);
+    const [apiError, setApiError] = useState("");
 
+    const activeSlug = searchParams.get("category");
     const activeCategory =
         categories.find((category) => category.slug === activeSlug) ?? categories[0];
 
+    const selectCategory = (slug: string) => {
+        setSearchParams({ category: slug }, { replace: true });
+    };
+
     const visibleProducts = useMemo(
-        () => products.filter((product) => product.categorySlug === activeSlug),
-        [products, activeSlug]
+        () => products.filter((product) => product.categorySlug === activeCategory?.slug),
+        [products, activeCategory]
     );
 
-    const productCounts = useMemo(() => {
-        const counts: Record<string, number> = {};
-        for (const product of products) {
-            counts[product.categorySlug] = (counts[product.categorySlug] ?? 0) + 1;
-        }
-        return counts;
-    }, [products]);
-
-    const nextProductId = Math.max(...products.map((product) => product.id), 0) + 1;
-    const nextCategoryId = Math.max(...categories.map((category) => category.id), 0) + 1;
+    const refreshMenu = () => {
+        queryClient.invalidateQueries({ queryKey: menuKeys.categories });
+        queryClient.invalidateQueries({ queryKey: menuKeys.products });
+    };
 
     const openAddProduct = () => {
+        setApiError("");
         setEditingProduct(null);
         setProductModalOpen(true);
     };
 
     const openEditProduct = (product: MenuProduct) => {
+        setApiError("");
         setEditingProduct(product);
         setProductModalOpen(true);
     };
 
-    const handleSaveProduct = (values: ProductFormValues, id?: number) => {
-        const price = Number(values.price);
-        if (id) {
-            setProducts((prev) =>
-                prev.map((product) =>
-                    product.id === id
-                        ? {
-                              ...product,
-                              name: values.name,
-                              description: values.description,
-                              price,
-                              image: values.image,
-                              categorySlug: values.categorySlug,
-                              isCustomizable: values.isCustomizable,
-                          }
-                        : product
-                )
-            );
-        } else {
-            setProducts((prev) => [
-                ...prev,
-                {
-                    id: nextProductId,
-                    name: values.name,
-                    description: values.description,
-                    price,
-                    image: values.image,
-                    categorySlug: values.categorySlug,
-                    isCustomizable: values.isCustomizable,
-                },
-            ]);
-        }
-        setProductModalOpen(false);
+    const openAddCategory = () => {
+        setApiError("");
+        setEditingCategory(null);
+        setCategoryModalOpen(true);
     };
 
-    const handleSaveCategory = (values: CategoryFormValues) => {
-        setCategories((prev) => [
-            ...prev,
-            { id: nextCategoryId, name: values.name, slug: values.slug, image: values.image },
-        ]);
-        setActiveSlug(values.slug);
-        setCategoryModalOpen(false);
+    const openEditCategory = (category: MenuCategory) => {
+        setApiError("");
+        setEditingCategory(category);
+        setCategoryModalOpen(true);
     };
+
+    const handleSaveProduct = async (values: ProductFormValues, id?: number) => {
+        setApiError("");
+        const categoryID = categoryBySlug.get(values.categorySlug)?.id;
+        if (!categoryID) {
+            return;
+        }
+
+        const payload = {
+            name: values.name,
+            description: values.description,
+            price: Number(values.price),
+            image: values.image,
+            categoryID,
+            isAvailable: true,
+            isCustomizable: values.isCustomizable,
+        };
+
+        try {
+            if (id) {
+                await studioApi.updateProduct(id, payload);
+            } else {
+                await studioApi.createProduct(payload);
+            }
+            setProductModalOpen(false);
+            refreshMenu();
+        } catch {
+            setApiError("Could not save the product. Try again.");
+        }
+    };
+
+    const handleSaveCategory = async (values: CategoryFormValues, id?: number) => {
+        setApiError("");
+        const payload = { name: values.name, slug: values.slug, image: values.image };
+        try {
+            if (id) {
+                await studioApi.updateCategory(id, payload);
+            } else {
+                const created = await studioApi.createCategory(payload);
+                selectCategory(created.slug);
+            }
+            setCategoryModalOpen(false);
+            refreshMenu();
+        } catch {
+            setApiError("Could not save the category. Try again.");
+        }
+    };
+
+    const handleDeleteCategory = async (category: MenuCategory) => {
+        if (!window.confirm(`Delete category "${category.name}"?`)) {
+            return;
+        }
+        try {
+            await studioApi.deleteCategory(category.id);
+            setSearchParams((current) => {
+                if (current.get("category") === category.slug) {
+                    const next = new URLSearchParams(current);
+                    next.delete("category");
+                    return next;
+                }
+                return current;
+            });
+            refreshMenu();
+        } catch {
+            setApiError("Could not delete the category. Try again.");
+        }
+    };
+
+    if (!activeCategory) {
+        return (
+            <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border bg-card/50 px-6 py-14 text-center">
+                <p className="text-sm text-muted-foreground">No categories yet.</p>
+                <button
+                    type="button"
+                    onClick={openAddCategory}
+                    className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-red-600 via-red-500 to-red-700 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-white transition-opacity hover:opacity-90"
+                >
+                    <PlusIcon className="h-4 w-4" />
+                    Add Category
+                </button>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col gap-5">
             <div className="flex flex-col gap-5 lg:flex-row">
                 <StudioCategoryList
                     categories={categories}
-                    productCounts={productCounts}
-                    activeSlug={activeSlug}
-                    onSelect={setActiveSlug}
-                    onAdd={() => setCategoryModalOpen(true)}
+                    productCounts={productCountsByCategory}
+                    activeSlug={activeCategory.slug}
+                    onSelect={selectCategory}
+                    onAdd={openAddCategory}
+                    onEdit={openEditCategory}
+                    onDelete={handleDeleteCategory}
                 />
 
                 <div className="min-w-0 flex-1">
@@ -149,6 +207,8 @@ const StudioPage = () => {
 
             {categoryModalOpen && (
                 <CategoryModal
+                    initialValues={editingCategory}
+                    error={apiError}
                     onClose={() => setCategoryModalOpen(false)}
                     onSave={handleSaveCategory}
                 />
@@ -158,7 +218,8 @@ const StudioPage = () => {
                 <ProductModal
                     categories={categories}
                     initialValues={editingProduct}
-                    defaultCategorySlug={activeSlug}
+                    defaultCategorySlug={activeCategory.slug}
+                    error={apiError}
                     onClose={() => setProductModalOpen(false)}
                     onSave={handleSaveProduct}
                 />

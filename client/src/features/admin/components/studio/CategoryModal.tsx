@@ -1,6 +1,8 @@
 import { useState, type ChangeEvent } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { slugify } from "./utils";
+import ImageUploader from "./ImageUploader";
+import type { MenuCategory } from "../../../menu/types";
 
 export interface CategoryFormValues {
     name: string;
@@ -14,26 +16,31 @@ const errorInputClass =
     "w-full rounded-lg border border-red-500 bg-primary px-3.5 py-2.5 text-sm text-secondary outline-none transition-colors placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/30";
 
 interface CategoryModalProps {
+    initialValues?: MenuCategory | null;
+    error?: string;
     onClose: () => void;
-    onSave: (values: CategoryFormValues) => void;
+    onSave: (values: CategoryFormValues, id?: number) => void;
 }
 
-const CategoryModal = ({ onClose, onSave }: CategoryModalProps) => {
-    const [name, setName] = useState("");
-    const [image, setImage] = useState("");
-    const [error, setError] = useState("");
+const CategoryModal = ({ initialValues = null, error, onClose, onSave }: CategoryModalProps) => {
+    const [name, setName] = useState(initialValues?.name ?? "");
+    const [image, setImage] = useState(initialValues?.image ?? "");
+    const [validationError, setValidationError] = useState("");
 
     const handleNameChange = (event: ChangeEvent<HTMLInputElement>) => {
         setName(event.target.value);
-        setError("");
+        setValidationError("");
     };
 
     const handleSubmit = () => {
         if (!name.trim()) {
-            setError("Category name is required");
+            setValidationError("Category name is required");
             return;
         }
-        onSave({ name: name.trim(), image: image.trim(), slug: slugify(name) });
+        onSave(
+            { name: name.trim(), image: image.trim(), slug: slugify(name) },
+            initialValues?.id
+        );
     };
 
     return (
@@ -46,16 +53,18 @@ const CategoryModal = ({ onClose, onSave }: CategoryModalProps) => {
             <div
                 role="dialog"
                 aria-modal="true"
-                aria-label="Add a new category"
+                aria-label={initialValues ? `Edit ${initialValues.name}` : "Add a new category"}
                 className="relative flex w-full max-w-md flex-col overflow-hidden rounded-xl border border-border bg-card shadow-2xl"
             >
                 <header className="flex items-center justify-between border-b border-border px-5 py-4">
                     <div>
                         <h2 className="text-base font-bold uppercase tracking-tight text-secondary">
-                            Add Category
+                            {initialValues ? "Edit Category" : "Add Category"}
                         </h2>
                         <p className="text-xs text-muted-foreground">
-                            A new tab in the product playground.
+                            {initialValues
+                                ? "Tweak the category and hit save."
+                                : "A new tab in the product playground."}
                         </p>
                     </div>
                     <button
@@ -78,30 +87,29 @@ const CategoryModal = ({ onClose, onSave }: CategoryModalProps) => {
                             onChange={handleNameChange}
                             placeholder="e.g. Breakfast Combos"
                             autoFocus
-                            className={error ? errorInputClass : inputClass}
+                            className={validationError ? errorInputClass : inputClass}
                         />
-                        {error && (
-                            <span className="text-xs font-medium text-red-500">{error}</span>
+                        {validationError && (
+                            <span className="text-xs font-medium text-red-500">
+                                {validationError}
+                            </span>
                         )}
                     </label>
 
-                    <label className="flex flex-col gap-1.5">
-                        <span className="text-xs font-semibold uppercase tracking-wide text-secondary">
-                            Image URL <span className="normal-case text-muted-foreground">(optional)</span>
-                        </span>
-                        <input
-                            value={image}
-                            onChange={(event) => setImage(event.target.value)}
-                            placeholder="https://…"
-                            dir="ltr"
-                            className={inputClass}
-                        />
-                    </label>
+                    <ImageUploader
+                        value={image}
+                        onChange={setImage}
+                        label="Category Image (optional)"
+                    />
 
                     {name.trim() && (
                         <p className="text-xs text-muted-foreground">
                             Slug: <span className="font-mono text-brand">#{slugify(name)}</span>
                         </p>
+                    )}
+
+                    {error && (
+                        <span className="text-xs font-medium text-red-500">{error}</span>
                     )}
                 </div>
 
@@ -118,7 +126,7 @@ const CategoryModal = ({ onClose, onSave }: CategoryModalProps) => {
                         onClick={handleSubmit}
                         className="rounded-lg bg-gradient-to-r from-red-600 via-red-500 to-red-700 px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-white transition-opacity hover:opacity-90"
                     >
-                        Create category
+                        {initialValues ? "Save changes" : "Create category"}
                     </button>
                 </footer>
             </div>

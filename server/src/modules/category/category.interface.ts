@@ -7,3 +7,10 @@ export interface CategoryInterface {
     coverImage: string,
     iconImage: string,
 }
+
+export interface CategoryInput {
+    name: string,
+    slug: string,
+    coverImage: string,
+    iconImage: string,
+}

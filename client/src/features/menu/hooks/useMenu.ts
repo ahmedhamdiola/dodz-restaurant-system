@@ -2,10 +2,9 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { MENU_CATEGORIES, MENU_PRODUCTS } from "../data";
 import { menuService } from "../services/menuService";
-import { menuKeys } from "../queryKeys";
+import { menuKeys, MENU_STALE_TIME } from "../queryKeys";
 import type { MenuCategory, MenuProduct } from "../types";
 
-const MENU_STALE_TIME = 5 * 60_000;
 const TOP_DEALS_PLACEHOLDER = MENU_PRODUCTS.slice(0, 3);
 
 const toCategoryMap = (categories: MenuCategory[]) =>

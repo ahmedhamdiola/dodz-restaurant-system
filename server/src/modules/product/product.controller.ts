@@ -3,6 +3,7 @@ import type { Request, Response } from 'express';
 import { ProductService } from './product.service.js';
 import { ProductInterfaceWithoutID } from './product.types.js';
 import { BadRequestStatus, CheckId, ConflictStatus, CreateStatus, DeletedStatus, NotFoundStatus, SuccessStatus } from '../../utils/response.js';
+import { resolveImageOrRespond } from '../../utils/image.js';
 
 const service = ProductService();
 
@@ -50,11 +51,16 @@ export const ProductController = () => {
 
 
     const createProduct = async (req: Request, res: Response) => {
+        const image = await resolveImageOrRespond(req.body.image, res, "product image");
+        if (image === null) {
+            return;
+        }
+
         const product: ProductInterfaceWithoutID = {
             name: req.body.name,
             description: req.body.description,
             price: Number(req.body.price),
-            image: req.body.image,
+            image,
             categoryID: Number(req.body.categoryID),
             isAvailable: req.body.isAvailable ?? true,
             isCustomizable: req.body.isCustomizable ?? false,
@@ -74,21 +80,32 @@ export const ProductController = () => {
     }
 
     const updateProduct = async (req: Request, res: Response) => {
+        const id = Number(req.params.id);
+        if (!CheckId(id)) {
+            return BadRequestStatus(res, "Invalid product id");
+        }
+
+        const existingProduct = await service.getProductByID(id);
+        if (existingProduct === null) {
+            return NotFoundStatus(res, 'Product not found');
+        }
+
+        const image = await resolveImageOrRespond(req.body.image ?? existingProduct.image, res, "product image");
+        if (image === null) {
+            return;
+        }
+
         const product: ProductInterfaceWithoutID = {
-            name: req.body.name,
-            description: req.body.description,
-            price: Number(req.body.price),
-            image: req.body.image,
-            categoryID: Number(req.body.categoryID),
+            name: req.body.name ?? existingProduct.name,
+            description: req.body.description ?? existingProduct.description,
+            price: req.body.price !== undefined ? Number(req.body.price) : existingProduct.price,
+            image,
+            categoryID: req.body.categoryID !== undefined ? Number(req.body.categoryID) : existingProduct.category_id,
             isAvailable: req.body.isAvailable ?? true,
             isCustomizable: req.body.isCustomizable ?? false,
             isDeleted: false,
         };
 
-        const id = Number(req.params.id);
-        if (!CheckId(id)) {
-            return BadRequestStatus(res, "Invalid product id");
-        }
         if (!CheckId(product.categoryID)) {
             return BadRequestStatus(res, "Invalid category id");
         }

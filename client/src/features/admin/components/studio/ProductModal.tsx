@@ -1,6 +1,7 @@
 import { useState, type ChangeEvent } from "react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import type { MenuCategory, MenuProduct } from "../../../menu/types";
+import ImageUploader from "./ImageUploader";
 
 export interface ProductFormValues {
     name: string;
@@ -20,6 +21,7 @@ interface ProductModalProps {
     categories: MenuCategory[];
     initialValues?: MenuProduct | null;
     defaultCategorySlug: string;
+    error?: string;
     onClose: () => void;
     onSave: (values: ProductFormValues, id?: number) => void;
 }
@@ -28,6 +30,7 @@ const ProductModal = ({
     categories,
     initialValues = null,
     defaultCategorySlug,
+    error,
     onClose,
     onSave,
 }: ProductModalProps) => {
@@ -138,18 +141,11 @@ const ProductModal = ({
                         </label>
                     </div>
 
-                    <label className="flex flex-col gap-1.5">
-                        <span className="text-xs font-semibold uppercase tracking-wide text-secondary">
-                            Image URL
-                        </span>
-                        <input
-                            value={form.image}
-                            onChange={update("image")}
-                            placeholder="https://…"
-                            dir="ltr"
-                            className={inputClass}
-                        />
-                    </label>
+                    <ImageUploader
+                        label="Image"
+                        value={form.image}
+                        onChange={(url) => setForm((prev) => ({ ...prev, image: url }))}
+                    />
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                         <label className="flex flex-col gap-1.5">
@@ -241,6 +237,10 @@ const ProductModal = ({
                             Saving as “<span className="font-semibold text-secondary">{form.name}</span>
                             ” in <span className="font-semibold text-brand">{categoryName}</span>.
                         </p>
+                    )}
+
+                    {error && (
+                        <span className="text-xs font-medium text-red-500">{error}</span>
                     )}
                 </div>
 
