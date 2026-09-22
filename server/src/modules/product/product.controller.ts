@@ -21,7 +21,8 @@ export const ProductController = () => {
     }
 
     const getAllProducts = async (req: Request, res: Response) => {
-        const products = await service.getAllProducts();
+        const includeUnavailable = req.query.includeUnavailable === "true";
+        const products = await service.getAllProducts(includeUnavailable);
         if (products === null) {
             return NotFoundStatus(res, 'Products not found');
         }

@@ -16,8 +16,10 @@ export const ProductRepository = () => {
         return result.rows;
     }
 
-    const getAllProducts = async () => {
-        const result = await pool.query(`${PRODUCT_SELECT} AND p.is_available = true ORDER BY c.name, p.name`);
+    const getAllProducts = async (includeUnavailable = false) => {
+        const result = await pool.query(
+            `${PRODUCT_SELECT}${includeUnavailable ? "" : " AND p.is_available = true"} ORDER BY c.name, p.name`
+        );
         return result.rows;
     }
 

@@ -1,6 +1,7 @@
 import { useRef, useState, type ChangeEvent } from "react";
 import { ArrowUpTrayIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import { api, unwrap } from "../../../../lib/api";
+import { useToast } from "../../../../components/toast/context";
 
 const inputClass =
     "w-full rounded-lg border border-border bg-primary px-3.5 py-2.5 text-sm text-secondary outline-none transition-colors placeholder:text-muted-foreground focus:border-brand focus:ring-2 focus:ring-brand/30";
@@ -30,6 +31,7 @@ const ImageUploader = ({ value, onChange, label = "Image" }: ImageUploaderProps)
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [uploading, setUploading] = useState(false);
     const [uploadError, setUploadError] = useState("");
+    const toast = useToast();
 
     const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
@@ -58,8 +60,10 @@ const ImageUploader = ({ value, onChange, label = "Image" }: ImageUploaderProps)
                 api.post("/uploads", { image: dataUrl })
             );
             onChange(uploaded.url);
+            toast.success("Image uploaded");
         } catch {
             setUploadError("Upload failed. Try again or paste a URL below.");
+            toast.error("Image upload failed");
         } finally {
             setUploading(false);
         }

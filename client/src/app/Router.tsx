@@ -1,12 +1,16 @@
 import { Route, Routes } from "react-router-dom"
 import LandingPage from "./routes/LandingPage"
 import MainLayout from "./layouts/MainLayout"
+import AuthPage from "./routes/AuthPage"
 import MenuPage from "./routes/MenuPage"
 import StoreLocationsPage from "./routes/StoreLocationsPage"
 import ContactPage from "./routes/ContactPage"
 import TermsPage from "./routes/TermsPage"
 import PrivacyPolicyPage from "./routes/PrivacyPolicyPage"
 import AdminLayout from "./layouts/AdminLayout"
+import RequireAuth from "../features/auth/components/RequireAuth"
+import RequireLogin from "../features/auth/components/RequireLogin"
+import ProfilePage from "./routes/ProfilePage"
 import DashboardPage from "./routes/admin/DashboardPage"
 import StudioPage from "./routes/admin/StudioPage"
 import ProductsPage from "./routes/admin/ProductsPage"
@@ -27,7 +31,24 @@ const Router = () => {
                 <Route path="/terms-and-conditions" element={<TermsPage />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             </Route>
-            <Route path="/admin" element={<AdminLayout />}>
+            <Route path="/login" element={<AuthPage mode="login" />} />
+            <Route path="/signup" element={<AuthPage mode="signup" />} />
+            <Route
+                path="/profile"
+                element={
+                    <RequireLogin>
+                        <ProfilePage />
+                    </RequireLogin>
+                }
+            />
+            <Route
+                path="/admin"
+                element={
+                    <RequireAuth>
+                        <AdminLayout />
+                    </RequireAuth>
+                }
+            >
                 <Route index element={<DashboardPage />} />
                 <Route path="studio" element={<StudioPage />} />
                 <Route path="products" element={<ProductsPage />} />

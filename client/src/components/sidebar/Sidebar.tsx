@@ -33,7 +33,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                 <SidebarHeader onClose={onClose} />
                 <SidebarNavLinks onNavigate={onClose} />
 
-                <SidebarFooter />
+                <SidebarFooter onNavigate={onClose} />
             </aside>
         </>
     )

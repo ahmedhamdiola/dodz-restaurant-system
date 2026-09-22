@@ -6,8 +6,6 @@ import {
 } from "@heroicons/react/24/outline";
 import type {
     AdminBranch,
-    AdminOrder,
-    AdminProduct,
     AdminUser,
     OrderStatusSlice,
     RevenuePoint,
@@ -65,40 +63,6 @@ export const TOP_PRODUCTS: TopProduct[] = [
     { name: "Super Nashville Tender", sold: 812, revenue: 300400, share: 58 },
     { name: "Family Meal", sold: 764, revenue: 527200, share: 49 },
     { name: "Solo Crave", sold: 655, revenue: 208000, share: 41 },
-];
-
-export const RECENT_ORDERS: AdminOrder[] = [
-    { id: "DZ-10482", customer: "Omar Khaled", items: "Festival Box, 2 Fizzy Cola", total: 966.7, status: "Completed", date: "Sep 20, 6:42 PM" },
-    { id: "DZ-10481", customer: "Sara Mostafa", items: "Super Nashville Tender", total: 370, status: "On the way", date: "Sep 20, 6:21 PM" },
-    { id: "DZ-10480", customer: "Youssef Adel", items: "Mega Star Family Meal", total: 1035, status: "Preparing", date: "Sep 20, 5:58 PM" },
-    { id: "DZ-10479", customer: "Mariam Nabil", items: "Doodz Snack", total: 160, status: "Completed", date: "Sep 20, 5:47 PM" },
-    { id: "DZ-10478", customer: "Ahmed Samir", items: "Double Dip, Hot Honey", total: 652.8, status: "Cancelled", date: "Sep 20, 5:16 PM" },
-];
-
-export const ALL_ORDERS: AdminOrder[] = [
-    { id: "DZ-10482", customer: "Omar Khaled", items: "Festival Box, 2 Fizzy Cola", total: 966.7, status: "Completed", date: "Sep 20, 6:42 PM" },
-    { id: "DZ-10481", customer: "Sara Mostafa", items: "Super Nashville Tender", total: 370, status: "On the way", date: "Sep 20, 6:21 PM" },
-    { id: "DZ-10480", customer: "Youssef Adel", items: "Mega Star Family Meal", total: 1035, status: "Preparing", date: "Sep 20, 5:58 PM" },
-    { id: "DZ-10479", customer: "Mariam Nabil", items: "Doodz Snack", total: 160, status: "Completed", date: "Sep 20, 5:47 PM" },
-    { id: "DZ-10478", customer: "Ahmed Samir", items: "Double Dip, Hot Honey", total: 652.8, status: "Cancelled", date: "Sep 20, 5:16 PM" },
-    { id: "DZ-10477", customer: "Nour El Din", items: "Nashy", total: 694.8, status: "Completed", date: "Sep 20, 4:03 PM" },
-    { id: "DZ-10476", customer: "Hana Ibrahim", items: "Family Mix Meal", total: 805, status: "Preparing", date: "Sep 20, 3:41 PM" },
-    { id: "DZ-10475", customer: "Karim Hassan", items: "Secret De Sandwich, Curly Fries", total: 230, status: "Completed", date: "Sep 20, 3:12 PM" },
-    { id: "DZ-10474", customer: "Laila Mohamed", items: "Tender Meal", total: 610, status: "On the way", date: "Sep 20, 2:48 PM" },
-    { id: "DZ-10473", customer: "Mohamed Tarek", items: "Cheesy Fries, T Ranch", total: 235, status: "Cancelled", date: "Sep 20, 2:09 PM" },
-    { id: "DZ-10472", customer: "Farah Ali", items: "Buffalo Ranch Wings, Fizzy Cola", total: 120, status: "Completed", date: "Sep 20, 1:37 PM" },
-    { id: "DZ-10471", customer: "Seif Adel", items: "Star Meal", total: 905, status: "Completed", date: "Sep 20, 12:55 PM" },
-];
-
-export const ADMIN_PRODUCTS: AdminProduct[] = [
-    { id: 1, name: "Festival Box", category: "Bundles", price: 966.7, stock: 42, sold: 1284, status: "Active" },
-    { id: 2, name: "Mega Star Family Meal", category: "Family Meals", price: 1035, stock: 18, sold: 967, status: "Active" },
-    { id: 3, name: "Double Dip", category: "Bundles", price: 652.8, stock: 0, sold: 986, status: "Out of stock" },
-    { id: 4, name: "Super Nashville Tender", category: "Single Meals", price: 370, stock: 73, sold: 812, status: "Active" },
-    { id: 5, name: "Nashville Loaded Fries", category: "Appetizers", price: 145, stock: 12, sold: 521, status: "Active" },
-    { id: 6, name: "Truffle D Sandwich", category: "Burger", price: 175, stock: 60, sold: 433, status: "Active" },
-    { id: 7, name: "Hot Honey Wings", category: "Chicken Wings", price: 85, stock: 0, sold: 88, status: "Out of stock" },
-    { id: 8, name: "Mango Summer Breeze", category: "Drinks", price: 45, stock: 0, sold: 0, status: "Draft" },
 ];
 
 export const ADMIN_USERS: AdminUser[] = [

@@ -16,8 +16,8 @@ export const ProductService = () => {
         return repository.getProductsByCategoryID(id);
     }
 
-    const getAllProducts = async () => {
-        return repository.getAllProducts();
+    const getAllProducts = async (includeUnavailable = false) => {
+        return repository.getAllProducts(includeUnavailable);
     }
 
     const getProductByID = async (id: number) => {

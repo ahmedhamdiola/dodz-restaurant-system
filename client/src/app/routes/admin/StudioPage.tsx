@@ -10,9 +10,11 @@ import ProductModal, { type ProductFormValues } from "../../../features/admin/co
 import StudioCategoryList from "../../../features/admin/components/studio/StudioCategoryList";
 import StudioProductCard from "../../../features/admin/components/studio/StudioProductCard";
 import { studioApi } from "../../../features/admin/services/studioApi";
+import { useToast } from "../../../components/toast/context";
 
 const StudioPage = () => {
     const queryClient = useQueryClient();
+    const toast = useToast();
     const { categories, products, categoryBySlug, productCountsByCategory } = useStudioMenu();
 
     const [searchParams, setSearchParams] = useSearchParams();
@@ -84,13 +86,16 @@ const StudioPage = () => {
         try {
             if (id) {
                 await studioApi.updateProduct(id, payload);
+                toast.success("Product updated");
             } else {
                 await studioApi.createProduct(payload);
+                toast.success("Product created");
             }
             setProductModalOpen(false);
             refreshMenu();
         } catch {
             setApiError("Could not save the product. Try again.");
+            toast.error("Could not save the product");
         }
     };
 
@@ -100,14 +105,17 @@ const StudioPage = () => {
         try {
             if (id) {
                 await studioApi.updateCategory(id, payload);
+                toast.success("Category updated");
             } else {
                 const created = await studioApi.createCategory(payload);
                 selectCategory(created.slug);
+                toast.success("Category created");
             }
             setCategoryModalOpen(false);
             refreshMenu();
         } catch {
             setApiError("Could not save the category. Try again.");
+            toast.error("Could not save the category");
         }
     };
 
@@ -126,8 +134,10 @@ const StudioPage = () => {
                 return current;
             });
             refreshMenu();
+            toast.success("Category deleted");
         } catch {
             setApiError("Could not delete the category. Try again.");
+            toast.error("Could not delete the category");
         }
     };
 

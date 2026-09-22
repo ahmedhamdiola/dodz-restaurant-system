@@ -11,6 +11,14 @@ const formatMoney = (value: number) =>
         : `EGP ${(value / 1_000).toFixed(0)}k`;
 
 const TopProducts = ({ products }: TopProductsProps) => {
+    if (products.length === 0) {
+        return (
+            <DashboardCard title="Top Products" subtitle="Best sellers by units sold">
+                <p className="py-8 text-center text-sm text-muted-foreground">No sales yet</p>
+            </DashboardCard>
+        );
+    }
+
     const maxShare = Math.max(...products.map((product) => product.share));
 
     return (

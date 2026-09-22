@@ -106,5 +106,38 @@ CREATE TABLE IF NOT EXISTS users (
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
+CREATE TABLE IF NOT EXISTS orders (
+    id SERIAL PRIMARY KEY,
+    branch_id INTEGER NOT NULL REFERENCES branches(id),
+
+    customer_name VARCHAR(150) NOT NULL,
+    customer_phone VARCHAR(11),
+
+    status VARCHAR(20) NOT NULL DEFAULT 'Preparing'
+        CHECK (status IN ('Completed', 'Preparing', 'On the way', 'Cancelled')),
+
+    total NUMERIC(10, 2) NOT NULL CHECK (total >= 0),
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE INDEX IF NOT EXISTS idx_orders_branch_id ON orders (branch_id);
+CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders (created_at);
+
+CREATE TABLE IF NOT EXISTS order_items (
+    id SERIAL PRIMARY KEY,
+    order_id INTEGER NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    product_id INTEGER NOT NULL REFERENCES products(id),
+
+    product_name VARCHAR(150) NOT NULL, -- snapshot so renames don't rewrite history
+    unit_price NUMERIC(10, 2) NOT NULL CHECK (unit_price >= 0),
+    quantity INTEGER NOT NULL CHECK (quantity > 0),
+    subtotal NUMERIC(10, 2) NOT NULL CHECK (subtotal >= 0)
+);
+
+CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items (order_id);
+
 -- TODO(future migration): users_favorites table (user_id, product_id) for customer favorite products
 -- TODO(future migration): users_addresses table (user_id, address, lat, lng, ...) for delivery addresses

@@ -3,12 +3,50 @@ import type { ComponentType, SVGProps } from "react";
 export type OrderStatus = "Completed" | "Preparing" | "On the way" | "Cancelled";
 
 export interface AdminOrder {
-    id: string;
-    customer: string;
+    id: number;
+    branchId: number;
+    branchName: string;
+    customerName: string;
+    customerPhone?: string;
     items: string;
     total: number;
     status: OrderStatus;
     date: string;
+}
+
+export interface Branch {
+    id: number;
+    name: string;
+    area: string;
+}
+
+export interface BranchOrderCount {
+    branchId: number;
+    branchName: string;
+    area: string;
+    totalOrders: number;
+    completed: number;
+    preparing: number;
+    onTheWay: number;
+    cancelled: number;
+    revenue: number;
+}
+
+export interface DashboardStats {
+    totalRevenue: number;
+    avgOrderValue: number;
+    orderCount: number;
+    ordersToday: number;
+    statusSlices: OrderStatusSlice[];
+    revenueLast7Days: RevenuePoint[];
+    topProducts: TopProduct[];
+    recentOrders: AdminOrder[];
+}
+
+export interface OrdersFilters {
+    branchId?: number;
+    status?: OrderStatus | "All";
+    customerPhone?: string;
 }
 
 export interface AdminProduct {
@@ -16,9 +54,9 @@ export interface AdminProduct {
     name: string;
     category: string;
     price: number;
-    stock: number;
     sold: number;
-    status: "Active" | "Out of stock" | "Draft";
+    isAvailable: boolean;
+    status: "Active" | "Out of stock";
 }
 
 export interface AdminUser {

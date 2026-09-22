@@ -104,3 +104,174 @@ INSERT INTO products (category_id, name, description, price, image, is_customiza
 (19653593, 'Fi Cola', 'Soft drink.', 35, 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938043011836257.jpeg?width=400', false),
 (19653593, 'Apple Juice', 'Fresh apple juice.', 25, 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938042848143761.jpeg?width=400', false),
 (19653593, '1 Liter Maxi Drink', 'Large 1 liter soft drink', 50, 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638938074328282749?width=400', false);
+
+-- Branches (mirrors client/src/features/store-locations/data.ts)
+INSERT INTO branches (id, name, area, address, phone, opening_time, closing_time, lat, lng) VALUES
+(1, 'DODZ El Tagamoa', 'New Cairo', 'The Place Mall, Dr. Ahmed Okasha St., El Banafseg services, First Settlement, New Cairo', '16974', '10:00', '03:30', 30.04386, 31.467604),
+(2, 'DODZ Nasr City', 'Nasr City', 'End of Mostafa El-Nahhas St., next to Carrefour, Mahdy Arafa, Nasr City', '16974', '10:00', '03:30', 30.054776, 31.348243),
+(3, 'DODZ Ain Shams', 'Ain Shams', '36 Ain Shams Main St., Al-Naam Square, in front of Haty Ahmed Neda', '16974', '10:00', '03:30', 30.12429, 31.318853),
+(4, 'DODZ Almaza', 'Heliopolis', '72 El-Horreya St., Almaza, Heliopolis, next to Yokal Restaurant', '16974', '10:00', '03:30', 30.088608, 31.34773),
+(5, 'DODZ Hadayek El Kobba', 'Hadayek El Kobba', 'Saraya Mall, Wali Al Ahd St., Al Qobba Gardens, next to McDonald''s', '16974', '10:00', '03:30', 30.087563, 31.283938)
+ON CONFLICT (id) DO NOTHING;
+
+-- Sample orders + items (only when no orders exist so re-running the seed stays idempotent)
+DO $$
+DECLARE
+    v_oid INTEGER;
+BEGIN
+    IF (SELECT count(*) FROM orders) > 0 THEN
+        RETURN;
+    END IF;
+
+    -- Branch 1 - DODZ El Tagamoa
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (1, 'Omar Khaled', '01012345671', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '1 hour') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Festival Box' LIMIT 1), 'Festival Box', 966.7, 1, 966.7);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (1, 'Farah Ali', '01012345672', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '4 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='4 Buffalo Ranch Chicken Wings' LIMIT 1), '4 Buffalo Ranch Chicken Wings', 85, 1, 85),
+        (v_oid, (SELECT id FROM products WHERE name='Fi Cola' LIMIT 1), 'Fi Cola', 35, 1, 35);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (1, 'Karim Hassan', '01012345673', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '1 day' - INTERVAL '1 hour') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Secret De Sandwich' LIMIT 1), 'Secret De Sandwich', 125, 1, 125),
+        (v_oid, (SELECT id FROM products WHERE name='Curly Fries' LIMIT 1), 'Curly Fries', 105, 1, 105);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (1, 'Dina Sherif', '01012345674', 'On the way', 0, CURRENT_TIMESTAMP - INTERVAL '2 days' - INTERVAL '3 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Twister Doods' LIMIT 1), 'Twister Doods', 145, 1, 145),
+        (v_oid, (SELECT id FROM products WHERE name='Doods' LIMIT 1), 'Doods', 40, 1, 40);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (1, 'Mohamed Tarek', '01012345675', 'Cancelled', 0, CURRENT_TIMESTAMP - INTERVAL '5 days' - INTERVAL '1 hour') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Hot Honey Sandwich' LIMIT 1), 'Hot Honey Sandwich', 140, 1, 140),
+        (v_oid, (SELECT id FROM products WHERE name='Cheesy Fries' LIMIT 1), 'Cheesy Fries', 105, 1, 105);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (1, 'Mariam Nabil', '01012345676', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '6 days' - INTERVAL '4 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Double Dip' LIMIT 1), 'Double Dip', 652.8, 1, 652.8);
+
+    -- Branch 2 - DODZ Nasr City
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (2, 'Youssef Adel', '01098765432', 'Preparing', 0, CURRENT_TIMESTAMP - INTERVAL '3 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Mega Star Family Meal' LIMIT 1), 'Mega Star Family Meal', 1035, 1, 1035);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (2, 'Mariam Nabil', '01098765433', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '4 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Doodz Snack' LIMIT 1), 'Doodz Snack', 160, 1, 160),
+        (v_oid, (SELECT id FROM products WHERE name='Fries' LIMIT 1), 'Fries', 65, 1, 65);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (2, 'Seif Adel', '01098765434', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '2 days' - INTERVAL '1 hour') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Star Meal' LIMIT 1), 'Star Meal', 905, 1, 905);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (2, 'Omar Youssef', '01098765435', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '2 days' - INTERVAL '2 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Super Crunchy' LIMIT 1), 'Super Crunchy', 230, 1, 230),
+        (v_oid, (SELECT id FROM products WHERE name='Fries' LIMIT 1), 'Fries', 65, 1, 65);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (2, 'Ahmed Samir', '01098765436', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '5 days' - INTERVAL '3 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Nashville Loaded Fries' LIMIT 1), 'Nashville Loaded Fries', 145, 1, 145),
+        (v_oid, (SELECT id FROM products WHERE name='Fi Cola' LIMIT 1), 'Fi Cola', 35, 1, 35);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (2, 'Nour El Din', '01098765437', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '3 days' - INTERVAL '3 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Super Tender Box' LIMIT 1), 'Super Tender Box', 275, 1, 275);
+
+    -- Branch 3 - DODZ Ain Shams
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (3, 'Ahmed Samir', '01055512345', 'Cancelled', 0, CURRENT_TIMESTAMP - INTERVAL '5 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Double Dip' LIMIT 1), 'Double Dip', 652.8, 1, 652.8);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (3, 'Nour El Din', '01055512346', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '6 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Nashy' LIMIT 1), 'Nashy', 694.8, 1, 694.8);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (3, 'Salma Fathy', '01055512347', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '3 days' - INTERVAL '1 hour') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Family Meal' LIMIT 1), 'Family Meal', 690, 1, 690),
+        (v_oid, (SELECT id FROM products WHERE name='1 Liter Maxi Drink' LIMIT 1), '1 Liter Maxi Drink', 50, 1, 50);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (3, 'Hala Mostafa', '01055512348', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '4 days' - INTERVAL '2 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Nashy' LIMIT 1), 'Nashy', 694.8, 1, 694.8);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (3, 'Seif Adel', '01055512349', 'On the way', 0, CURRENT_TIMESTAMP - INTERVAL '2 days' - INTERVAL '5 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='6 Smoked Chicken Wings' LIMIT 1), '6 Smoked Chicken Wings', 115, 1, 115),
+        (v_oid, (SELECT id FROM products WHERE name='Fries' LIMIT 1), 'Fries', 65, 1, 65);
+
+    -- Branch 4 - DODZ Almaza
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (4, 'Hana Ibrahim', '01044456789', 'Preparing', 0, CURRENT_TIMESTAMP - INTERVAL '7 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Family Mix Meal' LIMIT 1), 'Family Mix Meal', 805, 1, 805);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (4, 'Karim Hassan', '01044456780', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '1 day' - INTERVAL '2 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Truffle D Sandwich' LIMIT 1), 'Truffle D Sandwich', 175, 1, 175),
+        (v_oid, (SELECT id FROM products WHERE name='Curly Cheesy Fries' LIMIT 1), 'Curly Cheesy Fries', 145, 1, 145);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (4, 'Omar Khaled', '01044456781', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '5 days' - INTERVAL '2 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Big Family Meal' LIMIT 1), 'Big Family Meal', 1170, 1, 1170);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (4, 'Sara Mostafa', '01044456782', 'On the way', 0, CURRENT_TIMESTAMP - INTERVAL '6 days' - INTERVAL '1 hour') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Mighty D Sandwich' LIMIT 1), 'Mighty D Sandwich', 140, 1, 140),
+        (v_oid, (SELECT id FROM products WHERE name='Cheesy Fries' LIMIT 1), 'Cheesy Fries', 105, 1, 105);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (4, 'Nour Amin', '01044456783', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '3 days' - INTERVAL '4 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Sriracha Chicken Wings' LIMIT 1), 'Sriracha Chicken Wings', 115, 1, 115),
+        (v_oid, (SELECT id FROM products WHERE name='Ranch' LIMIT 1), 'Ranch', 40, 1, 40);
+
+    -- Branch 5 - DODZ Hadayek El Kobba
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (5, 'Laila Mohamed', '01011122334', 'On the way', 0, CURRENT_TIMESTAMP - INTERVAL '1 day' - INTERVAL '2 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Tender Meal' LIMIT 1), 'Tender Meal', 610, 1, 610);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (5, 'Mohamed Tarek', '01011122335', 'Cancelled', 0, CURRENT_TIMESTAMP - INTERVAL '1 day' - INTERVAL '3 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Cheesy Fries' LIMIT 1), 'Cheesy Fries', 105, 1, 105),
+        (v_oid, (SELECT id FROM products WHERE name='T Ranch Sandwich' LIMIT 1), 'T Ranch Sandwich', 130, 1, 130);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (5, 'Nour Amin', '01011122336', 'Preparing', 0, CURRENT_TIMESTAMP - INTERVAL '4 days' - INTERVAL '1 hour') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Mix Box' LIMIT 1), 'Mix Box', 265, 1, 265);
+
+    INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
+    VALUES (5, 'Youssef Adel', '01011122337', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '6 days' - INTERVAL '2 hours') RETURNING id INTO v_oid;
+    INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
+        (v_oid, (SELECT id FROM products WHERE name='Sriracha Chicken Wings' LIMIT 1), 'Sriracha Chicken Wings', 115, 1, 115),
+        (v_oid, (SELECT id FROM products WHERE name='Ranch' LIMIT 1), 'Ranch', 40, 1, 40);
+
+    -- Recompute order totals so they exactly match the sum of their items
+    UPDATE orders o SET total = COALESCE((SELECT SUM(subtotal) FROM order_items WHERE order_id = o.id), 0), updated_at = CURRENT_TIMESTAMP;
+END $$;

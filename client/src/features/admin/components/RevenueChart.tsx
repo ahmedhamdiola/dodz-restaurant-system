@@ -22,8 +22,11 @@ const RevenueChart = ({ data }: RevenueChartProps) => {
     const innerW = WIDTH - PAD_X * 2;
     const innerH = HEIGHT - PAD_TOP - PAD_BOTTOM;
 
-    const max = Math.max(...data.map((point) => point.revenue)) * 1.12;
-    const min = Math.min(...data.map((point) => point.revenue)) * 0.85;
+    const rawMin = Math.min(...data.map((point) => point.revenue));
+    const rawMax = Math.max(...data.map((point) => point.revenue));
+
+    const max = rawMax * 1.12 || 100;
+    const min = rawMin < rawMax ? rawMin * 0.85 : max * 0.85;
 
     const x = (index: number) => PAD_X + (index * innerW) / (data.length - 1);
     const y = (value: number) =>

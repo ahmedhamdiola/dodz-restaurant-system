@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import { CONTACT_SUBJECTS } from "../data";
 import { contactValidationSchema } from "../schemas";
 import { useSendContactMessage } from "../hooks/useContact";
+import { useToast } from "../../../components/toast/context";
 import type { ContactFormValues } from "../types";
 
 const initialValues: ContactFormValues = {
@@ -24,6 +25,7 @@ const ERROR_CLASS_NAME = "mt-1.5 text-xs font-medium text-red-500";
 
 const ContactForm = () => {
     const [submitted, setSubmitted] = useState(false);
+    const toast = useToast();
     const { mutate, isPending, error } = useSendContactMessage();
 
     const formik = useFormik<ContactFormValues>({
@@ -34,6 +36,7 @@ const ContactForm = () => {
                 onSuccess: () => {
                     setSubmitted(true);
                     resetForm();
+                    toast.success("Message sent — we'll get back to you soon");
                     window.setTimeout(() => setSubmitted(false), 5000);
                 },
             });
