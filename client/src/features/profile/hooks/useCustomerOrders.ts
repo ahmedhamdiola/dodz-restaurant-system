@@ -14,18 +14,18 @@ const toPastOrder = (order: AdminOrder): PastOrder => ({
 });
 
 /**
- * Loads the authenticated user's past orders (matched by the phone number on
- * their account). Disabled when the account has no phone, so the consumer can
- * rely on `data ?? []` falling back to an empty state.
+ * Loads the authenticated user's past orders. The phone number is resolved
+ * server-side from the JWT (GET /orders/my), never from a client-supplied
+ * value. Enabled only once the page knows the user is actually signed in.
  */
-export const useCustomerOrders = (phone: string | null | undefined) => {
+export const useCustomerOrders = (enabled: boolean) => {
     return useQuery({
-        queryKey: ["profile", "orders", phone ?? null],
+        queryKey: ["profile", "orders"],
         queryFn: async () => {
-            const orders = await ordersApi.getOrders({ customerPhone: phone ?? undefined });
+            const orders = await ordersApi.getMyOrders();
             return orders.map(toPastOrder);
         },
-        enabled: Boolean(phone),
+        enabled,
         staleTime: MENU_STALE_TIME,
     });
 };

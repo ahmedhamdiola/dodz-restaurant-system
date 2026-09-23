@@ -1,5 +1,6 @@
 import {
     useCallback,
+    useEffect,
     useRef,
     useState,
     type ReactNode,
@@ -12,6 +13,14 @@ let nextId = 1;
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
     const [toasts, setToasts] = useState<ToastItem[]>([]);
     const timersRef = useRef(new Map<number, ReturnType<typeof setTimeout>>());
+
+    useEffect(() => {
+        const timers = timersRef.current;
+        return () => {
+            timers.forEach((timer) => clearTimeout(timer));
+            timers.clear();
+        };
+    }, []);
 
     const dismiss = useCallback((id: number) => {
         setToasts((current) => current.filter((toast) => toast.id !== id));

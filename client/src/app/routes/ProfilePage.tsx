@@ -1,9 +1,10 @@
 import { Helmet } from "react-helmet-async";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Logo from "../../assets/logos/Logo.svg";
 import Spinner from "../../features/auth/components/Spinner";
 import { useAuth } from "../../features/auth/hooks/useAuth";
+import { useLogout } from "../../features/auth/hooks/useLogout";
 import FavoritesSection from "../../features/profile/components/FavoritesSection";
 import LogoutButton from "../../features/profile/components/LogoutButton";
 import PastOrdersSection from "../../features/profile/components/PastOrdersSection";
@@ -13,9 +14,9 @@ import { useProfileFavorites } from "../../features/profile/hooks/useProfileFavo
 import type { ProfileUser } from "../../features/profile/types";
 
 const ProfilePage = () => {
-    const navigate = useNavigate();
-    const { user, isAuthenticated, isBootstrapping, logout } = useAuth();
-    const ordersQuery = useCustomerOrders(user?.phone);
+    const { user, isAuthenticated, isBootstrapping } = useAuth();
+    const handleLogout = useLogout();
+    const ordersQuery = useCustomerOrders(Boolean(user));
     const { favoriteProducts, removeFavorite } = useProfileFavorites();
 
     if (isBootstrapping) {
@@ -35,11 +36,6 @@ const ProfilePage = () => {
         email: user.email,
         phone: user.phone,
         createdAt: user.createdAt,
-    };
-
-    const handleLogout = () => {
-        logout();
-        navigate("/");
     };
 
     return (

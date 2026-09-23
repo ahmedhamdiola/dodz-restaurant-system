@@ -1,18 +1,19 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import {
     ArrowRightOnRectangleIcon,
     ShieldCheckIcon,
     UserCircleIcon,
 } from "@heroicons/react/24/outline"
 import { useAuth } from "../../../features/auth/hooks/useAuth"
+import { useLogout } from "../../../features/auth/hooks/useLogout"
 
 interface SidebarAuthProps {
     onNavigate: () => void
 }
 
 const SidebarAuth = ({ onNavigate }: SidebarAuthProps) => {
-    const { user, isAuthenticated, isBootstrapping, logout } = useAuth()
-    const navigate = useNavigate()
+    const { user, isAuthenticated, isBootstrapping } = useAuth()
+    const logout = useLogout()
 
     if (isBootstrapping) {
         return (
@@ -88,7 +89,6 @@ const SidebarAuth = ({ onNavigate }: SidebarAuthProps) => {
                 onClick={() => {
                     onNavigate()
                     logout()
-                    navigate("/")
                 }}
                 className="flex w-full items-center gap-3 border-t border-border px-4 py-3 text-sm font-medium text-secondary transition-colors duration-200 hover:bg-muted/60"
             >

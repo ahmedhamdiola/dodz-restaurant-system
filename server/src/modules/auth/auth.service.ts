@@ -4,14 +4,17 @@ import { AuthRepository } from "./auth.repository.js";
 import { UserRepository } from "../users/user.repository.js";
 import { AuthUser, LoginResult, PublicUser, sanitizeUser, SignupResult } from "./auth.types.js";
 
-const BCRYPT_ROUNDS = 10;
+const BCRYPT_ROUNDS = 12;
 
 // Signs a JWT with payload { sub: user.id, role: user.role }
 export const signToken = (user: AuthUser): string => {
     return jwt.sign(
         { sub: String(user.id), role: user.role },
         process.env.JWT_SECRET as string,
-        { expiresIn: (process.env.JWT_EXPIRES_IN ?? "7d") as jwt.SignOptions["expiresIn"] },
+        {
+            algorithm: "HS256",
+            expiresIn: (process.env.JWT_EXPIRES_IN ?? "7d") as jwt.SignOptions["expiresIn"],
+        },
     );
 };
 

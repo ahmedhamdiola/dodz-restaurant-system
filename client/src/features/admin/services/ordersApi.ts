@@ -128,6 +128,9 @@ export const ordersApi = {
             })
         ).then((orders) => orders.map(mapOrder));
     },
+    getMyOrders(): Promise<AdminOrder[]> {
+        return unwrap<OrderDTO[]>(api.get("/orders/my")).then((orders) => orders.map(mapOrder));
+    },
     updateOrderStatus(id: number, status: OrderStatus): Promise<AdminOrder> {
         return unwrap<OrderDTO>(api.patch(`/orders/${id}/status`, { status })).then(mapOrder);
     },

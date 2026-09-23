@@ -75,14 +75,14 @@ export const UserRepository = () => {
             user.email ?? oldUser.email,
             user.phone ?? oldUser.phone,
             user.provider ?? oldUser.provider,
-            user.providerID ?? oldUser.providerID,
+            user.providerID ?? oldUser.provider_id,
             user.role ?? oldUser.role,
             user.avatar ?? oldUser.avatar,
             user.gender ?? oldUser.gender,
             user.birthdate ?? oldUser.birthdate,
-            user.isEmailVerified ?? oldUser.isEmailVerified,
-            user.isPhoneVerified ?? oldUser.isPhoneVerified,
-            user.isActive ?? oldUser.isActive,
+            user.isEmailVerified ?? oldUser.is_email_verified,
+            user.isPhoneVerified ?? oldUser.is_phone_verified,
+            user.isActive ?? oldUser.is_active,
             id
         ]);
 

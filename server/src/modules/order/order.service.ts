@@ -1,13 +1,28 @@
 import { BranchRepository } from "../branch/branch.repository.js";
+import { UserRepository } from "../users/user.repository.js";
 import { OrderRepository } from "./order.repository.js";
 import { OrderFilters, OrderInput, OrderStatus, ORDER_STATUSES, canTransitionTo } from "./order.types.js";
 
 export const OrderService = () => {
     const orderRepository = OrderRepository();
     const branchRepository = BranchRepository();
+    const userRepository = UserRepository();
 
     const getAllOrders = async (filters: OrderFilters) => {
         return orderRepository.getAllOrders(filters);
+    };
+
+    // Returns the authenticated user's orders, matched server-side by their account phone.
+    // Returns null when the user does not exist, and [] when they have no phone on file.
+    const getMyOrders = async (userId: number) => {
+        const user = await userRepository.getUserByID(userId);
+        if (!user) {
+            return null;
+        }
+        if (!user.phone) {
+            return [];
+        }
+        return orderRepository.getAllOrders({ customerPhone: user.phone });
     };
 
     const getOrderByID = async (id: number) => {
@@ -61,6 +76,7 @@ export const OrderService = () => {
 
     return {
         getAllOrders,
+        getMyOrders,
         getOrderByID,
         getOrderStats,
         getOrdersCountByBranch,

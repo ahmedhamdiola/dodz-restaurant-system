@@ -7,6 +7,7 @@ import UploadRoutes from "../modules/upload/upload.routes.js";
 import BranchRoutes from "../modules/branch/branch.routes.js";
 import OrderRoutes from "../modules/order/order.routes.js";
 import AuthRoutes from "../modules/auth/auth.routes.js";
+import CartRoutes from "../modules/cart/cart.routes.js";
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use("/uploads", UploadRoutes);
 router.use("/branches", BranchRoutes);
 router.use("/orders", OrderRoutes);
 router.use("/auth", AuthRoutes);
+router.use("/cart", CartRoutes);
 
 export default router;

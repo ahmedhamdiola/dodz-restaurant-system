@@ -52,6 +52,7 @@ export const useUpdateOrderStatus = () => {
         onSuccess: () => {
             toast.success("Order status updated");
             queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
+            queryClient.invalidateQueries({ queryKey: ["profile", "orders"] });
         },
         onError: () => {
             toast.error("Could not update the order status");

@@ -1,5 +1,86 @@
+import { PoolClient } from "pg";
 import { pool } from "../../config/database.js";
 import { OrderFilters, OrderInput, OrderStatus } from "./order.types.js";
+
+export interface PricedItem {
+    productID: number;
+    productName: string;
+    unitPrice: number;
+    quantity: number;
+    subtotal: number;
+}
+
+export interface PricedProduct {
+    id: number;
+    name: string;
+    price: number;
+    is_available: boolean;
+}
+
+/** Pure helper: snapshots prices from fetched product rows and sums each line. */
+export const priceOrderItems = (items: { productID: number; quantity: number }[], products: PricedProduct[]): PricedItem[] => {
+    const productMap = new Map(products.map((product) => [product.id, product]));
+    return items.map((item) => {
+        const product = productMap.get(item.productID);
+        if (!product) {
+            throw new Error(`Product ${item.productID} not found`);
+        }
+        const unitPrice = Number(product.price);
+        return {
+            productID: product.id,
+            productName: product.name,
+            unitPrice,
+            quantity: item.quantity,
+            subtotal: unitPrice * item.quantity,
+        };
+    });
+};
+
+export interface InsertOrderInput {
+    branchID: number;
+    customerName: string;
+    customerPhone: string | null;
+    total: number;
+    items: PricedItem[];
+    idempotencyKey?: string;
+}
+
+/** Inserts an order + its line items inside an already-open transaction (caller owns the client). */
+export const insertOrderAndItems = async (client: PoolClient, input: InsertOrderInput) => {
+    const orderResult = await client.query(
+        `INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, idempotency_key)
+         VALUES ($1, $2, $3, 'Preparing', $4, $5) RETURNING id`,
+        [input.branchID, input.customerName, input.customerPhone, input.total, input.idempotencyKey ?? null]
+    );
+    const orderID = orderResult.rows[0].id;
+
+    for (const item of input.items) {
+        await client.query(
+            `INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal)
+             VALUES ($1, $2, $3, $4, $5, $6)`,
+            [orderID, item.productID, item.productName, item.unitPrice, item.quantity, item.subtotal]
+        );
+    }
+
+    const createdResult = await client.query(
+        `SELECT o.id, o.branch_id, b.name AS branch_name, o.customer_name, o.customer_phone,
+                o.status, o.total, to_char(o.created_at, 'Mon DD, HH12:MI AM') AS created_at
+         FROM orders o JOIN branches b ON b.id = o.branch_id
+         WHERE o.id = $1`,
+        [orderID]
+    );
+
+    return {
+        ...createdResult.rows[0],
+        items: input.items.map((item) => ({
+            product_id: item.productID,
+            product_name: item.productName,
+            unit_price: item.unitPrice,
+            quantity: item.quantity,
+            subtotal: item.subtotal,
+        })),
+    };
+};
 
 export const OrderRepository = () => {
     const getAllOrders = async (filters: OrderFilters) => {
@@ -70,8 +151,7 @@ export const OrderRepository = () => {
                 `SELECT COALESCE(SUM(total) FILTER (WHERE status <> 'Cancelled'), 0)       AS revenue,
                         COALESCE(AVG(total) FILTER (WHERE status <> 'Cancelled'), 0)       AS avg_order_value,
                         COUNT(*) FILTER (WHERE status <> 'Cancelled')::int                 AS order_count,
-                        COUNT(*) FILTER (WHERE created_at::date = CURRENT_DATE)::int       AS orders_today,
-                        COUNT(*) FILTER (WHERE created_at::date = CURRENT_DATE AND status <> 'Cancelled')::int AS orders_today_active
+                        COUNT(*) FILTER (WHERE created_at::date = CURRENT_DATE AND status <> 'Cancelled')::int AS orders_today
                  FROM orders
                  WHERE is_deleted = false
                    AND ($1::int IS NULL OR branch_id = $1)`,
@@ -148,58 +228,22 @@ export const OrderRepository = () => {
             await client.query("BEGIN");
 
             const itemsQuery = await client.query(
-                `SELECT id, name, price FROM products WHERE id = ANY($1::int[]) AND is_deleted = false`,
+                `SELECT id, name, price, is_available FROM products WHERE id = ANY($1::int[]) AND is_deleted = false`,
                 [order.items.map((item) => item.productID)]
             );
-            const products = new Map(itemsQuery.rows.map((product) => [product.id, product]));
-
-            const items = order.items.map((item) => {
-                const product = products.get(item.productID);
-                if (!product) {
-                    throw new Error(`Product ${item.productID} not found`);
-                }
-                return {
-                    productID: product.id,
-                    productName: product.name,
-                    unitPrice: Number(product.price),
-                    quantity: item.quantity,
-                    subtotal: Number(product.price) * item.quantity,
-                };
-            });
-
+            const items = priceOrderItems(order.items, itemsQuery.rows as PricedProduct[]);
             const total = items.reduce((sum, item) => sum + item.subtotal, 0);
 
-            const orderResult = await client.query(
-                `INSERT INTO orders (branch_id, customer_name, customer_phone, status, total)
-                 VALUES ($1, $2, $3, 'Preparing', $4) RETURNING id`,
-                [order.branchID, order.customerName, order.customerPhone ?? null, total]
-            );
-            const orderID = orderResult.rows[0].id;
-
-            for (const item of items) {
-                await client.query(
-                    `INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal)
-                     VALUES ($1, $2, $3, $4, $5, $6)`,
-                    [orderID, item.productID, item.productName, item.unitPrice, item.quantity, item.subtotal]
-                );
-            }
-
-            const createdResult = await client.query(
-                `SELECT o.id, o.branch_id, b.name AS branch_name, o.customer_name, o.customer_phone,
-                        o.status, o.total, to_char(o.created_at, 'Mon DD, HH12:MI AM') AS created_at
-                 FROM orders o JOIN branches b ON b.id = o.branch_id
-                 WHERE o.id = $1`,
-                [orderID]
-            );
+            const created = await insertOrderAndItems(client, {
+                branchID: order.branchID,
+                customerName: order.customerName,
+                customerPhone: order.customerPhone ?? null,
+                total,
+                items,
+            });
 
             await client.query("COMMIT");
-            return { ...createdResult.rows[0], items: items.map((item) => ({
-                product_id: item.productID,
-                product_name: item.productName,
-                unit_price: item.unitPrice,
-                quantity: item.quantity,
-                subtotal: item.subtotal,
-            })) };
+            return created;
         } catch (error) {
             await client.query("ROLLBACK");
             throw error;

@@ -1,9 +1,15 @@
 import type { Request, Response } from 'express';
 import { UserService } from './user.service.js';
 import { UserInterfaceWithoutID } from './user.types.js';
-import { BadRequestStatus, CheckId, ConflictStatus, CreateStatus, DeletedStatus, NotFoundStatus, SuccessStatus } from '../../utils/response.js';
+import { AuthRequest } from '../auth/auth.middleware.js';
+import { UserRole } from '../auth/auth.types.js';
+import { BadRequestStatus, CheckId, ConflictStatus, CreateStatus, DeletedStatus, ForbiddenStatus, NotFoundStatus, SuccessStatus, UnauthorizedStatus } from '../../utils/response.js';
+
+const USER_ROLES: UserRole[] = ['customer', 'staff', 'admin'];
 
 const service = UserService();
+
+const currentUser = (req: Request) => (req as AuthRequest).user;
 
 export const UserController = () => {
     const getUsers = async (req: Request, res: Response) => {
@@ -17,6 +23,10 @@ export const UserController = () => {
         const id = Number(req.params.id);
         if (!CheckId(id)) {
             return BadRequestStatus(res, "Invalid user id");
+        }
+        const authed = currentUser(req);
+        if (authed?.role !== 'admin' && authed?.id !== id) {
+            return ForbiddenStatus(res, 'Forbidden');
         }
         const user = await service.getUserByID(id);
         if (user === null) {
@@ -38,6 +48,9 @@ export const UserController = () => {
     }
 
     const createUser = async (req: Request, res: Response) => {
+        if (req.body.role !== undefined && !USER_ROLES.includes(req.body.role)) {
+            return BadRequestStatus(res, 'Invalid role');
+        }
         const user: UserInterfaceWithoutID = {
             name: req.body.name,
             email: req.body.email,
@@ -66,6 +79,23 @@ export const UserController = () => {
         const id = Number(req.params.id);
         if (!CheckId(id)) {
             return BadRequestStatus(res, "Invalid user id");
+        }
+
+        const authed = currentUser(req);
+        if (!authed) {
+            return UnauthorizedStatus(res, 'Authentication required');
+        }
+        if (authed.role !== 'admin' && authed.id !== id) {
+            return ForbiddenStatus(res, 'Forbidden');
+        }
+        if (authed.role !== 'admin' && req.body.role !== undefined) {
+            return ForbiddenStatus(res, 'You cannot change your own role');
+        }
+        if (req.body.role !== undefined && !USER_ROLES.includes(req.body.role)) {
+            return BadRequestStatus(res, 'Invalid role');
+        }
+        if (authed.role === 'admin' && authed.id === id && req.body.role !== undefined && req.body.role !== 'admin') {
+            return BadRequestStatus(res, 'You cannot demote your own account');
         }
 
         // fields are passed through without defaults so partial updates fall back to the existing row in the repository
@@ -100,6 +130,10 @@ export const UserController = () => {
         const id = Number(req.params.id);
         if (!CheckId(id)) {
             return BadRequestStatus(res, "Invalid user id");
+        }
+        const authed = currentUser(req);
+        if (authed?.id === id) {
+            return BadRequestStatus(res, 'You cannot delete your own account');
         }
         const result = await service.deleteUser(id);
         if (result === null) {

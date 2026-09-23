@@ -39,6 +39,28 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction) => 
     }
 };
 
+// Like requireAuth but never rejects: attaches req.user when a valid bearer token is
+// present and ignores it (or an invalid one) otherwise. Used by endpoints that serve
+// both authenticated users and anonymous guests (e.g. /cart).
+export const optionalAuth = (req: Request, _res: Response, next: NextFunction) => {
+    const token = extractBearerToken(req.headers.authorization);
+    if (!token) {
+        return next();
+    }
+    try {
+        const payload = jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload & { sub?: string; role?: UserRole };
+        if (payload.sub) {
+            (req as AuthRequest).user = {
+                id: Number(payload.sub),
+                role: payload.role ?? "customer",
+            };
+        }
+    } catch {
+        // Invalid/expired token: treat the request as anonymous.
+    }
+    return next();
+};
+
 // Restricts a route to a single role (e.g. requireRole("admin")); must run after requireAuth
 export const requireRole = (role: UserRole) => {
     return (req: Request, res: Response, next: NextFunction) => {

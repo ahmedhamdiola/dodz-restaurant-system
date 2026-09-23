@@ -1,5 +1,6 @@
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartIconSolid } from "@heroicons/react/24/solid";
+import { formatPrice } from "../../../lib/format";
 import type { FavoriteProduct } from "../types";
 import SectionHeading from "./SectionHeading";
 
@@ -7,9 +8,6 @@ interface FavoritesSectionProps {
     products: FavoriteProduct[];
     onRemoveFavorite: (id: number) => void;
 }
-
-const formatPrice = (value: number): string =>
-    `EGP ${Number(value).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 const FavoritesSection = ({ products, onRemoveFavorite }: FavoritesSectionProps) => {
     if (products.length === 0) {

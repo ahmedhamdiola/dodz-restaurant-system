@@ -6,7 +6,11 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "create:admin": "tsx scripts/createAdmin.ts",
+    "migrate": "tsx scripts/migrate.ts",
+    "test": "NODE_ENV=test node --import tsx --test --test-concurrency=1 tests/auth.test.ts tests/orders.test.ts tests/users.test.ts tests/cart.test.ts",
+    "test:typecheck": "tsc --noEmit -p tsconfig.tests.json"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -14,6 +18,8 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.23.0"
   },

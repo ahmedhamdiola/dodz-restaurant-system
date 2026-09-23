@@ -2,7 +2,7 @@ import { Bars3Icon } from "@heroicons/react/16/solid"
 import Logo from "../../assets/logos/Logo.svg"
 import OrderButtons from "./components/OrderButtons"
 import LocationSelector from "./components/LocationSelector"
-import { ShoppingCartIcon } from "@heroicons/react/24/outline"
+import { CartTrigger } from "../../features/cart/components/CartTrigger"
 import { useState } from "react"
 import Sidebar from "../sidebar/Sidebar"
 import { useScrollLock } from "./hooks/useScrollLock"
@@ -36,12 +36,7 @@ const Navbar = () => {
                     </div>
                     <div className="flex gap-2 sm:gap-3 items-center">
                         <LocationSelector />
-                        <div className="relative">
-                            <ShoppingCartIcon className="w-7 sm:w-8 text-secondary cursor-pointer" />
-                            <span className="absolute -top-1 -right-1 text-[10px] text-white rounded-full bg-brand px-1">
-                                0
-                            </span>
-                        </div>
+                        <CartTrigger />
                     </div>
                 </div>
                 <div className="pb-3 lg:pb-0 lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:top-1/2 lg:-translate-y-1/2">

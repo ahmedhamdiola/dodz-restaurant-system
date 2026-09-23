@@ -43,6 +43,21 @@ const META = {
     },
 };
 
+// Only allow same-origin relative redirects. A URL parser (not a string check)
+// is required so backslash tricks like "/\evil.com" can't normalize into an
+// external URL after validation.
+const parseSafeRedirect = (raw: string | null): string | null => {
+    if (!raw) {
+        return null;
+    }
+    try {
+        const target = new URL(raw, window.location.origin);
+        return target.origin === window.location.origin ? raw : null;
+    } catch {
+        return null;
+    }
+};
+
 const AuthPage = ({ mode = "login" }: AuthPageProps) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -52,10 +67,7 @@ const AuthPage = ({ mode = "login" }: AuthPageProps) => {
 
     const meta = META[mode];
     const rawRedirect = searchParams.get("redirect");
-    const redirect =
-        rawRedirect && rawRedirect.startsWith("/") && !rawRedirect.startsWith("//")
-            ? rawRedirect
-            : null;
+    const redirect = parseSafeRedirect(rawRedirect);
     const prefillEmail = searchParams.get("email") ?? "";
     const notice =
         (location.state as { notice?: string } | null)?.notice ?? undefined;

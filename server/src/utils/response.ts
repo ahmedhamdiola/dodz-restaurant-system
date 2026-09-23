@@ -43,6 +43,9 @@ export const BadRequestStatus = (res: Response, message: string) => {
 export const UnauthorizedStatus = (res: Response, message: string) => {
     return GenerateStatus(res, 401, false, message);
 };
+export const ForbiddenStatus = (res: Response, message: string) => {
+    return GenerateStatus(res, 403, false, message);
+};
 export const ConflictStatus = (res: Response, message: string) => {
     return GenerateStatus(res, 409, false, message);
 };

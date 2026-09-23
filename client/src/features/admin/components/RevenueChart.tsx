@@ -28,7 +28,8 @@ const RevenueChart = ({ data }: RevenueChartProps) => {
     const max = rawMax * 1.12 || 100;
     const min = rawMin < rawMax ? rawMin * 0.85 : max * 0.85;
 
-    const x = (index: number) => PAD_X + (index * innerW) / (data.length - 1);
+    const span = Math.max(data.length - 1, 1);
+    const x = (index: number) => PAD_X + (index * innerW) / span;
     const y = (value: number) =>
         PAD_TOP + innerH - ((value - min) / (max - min)) * innerH;
 

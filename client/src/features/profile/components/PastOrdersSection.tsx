@@ -1,6 +1,7 @@
 import { ShoppingBagIcon } from "@heroicons/react/24/outline";
 import StatusBadge from "../../admin/components/StatusBadge";
 import ErrorAlert from "../../auth/components/ErrorAlert";
+import { formatPrice } from "../../../lib/format";
 import type { PastOrder } from "../types";
 import SectionHeading from "./SectionHeading";
 
@@ -10,9 +11,6 @@ interface PastOrdersSectionProps {
     isError?: boolean;
     onRetry?: () => void;
 }
-
-const formatTotal = (total: number): string =>
-    `EGP ${Number(total).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 const countLabel = (count: number): string => `${count} ${count === 1 ? "order" : "orders"}`;
 
@@ -112,7 +110,7 @@ const PastOrdersSection = ({
                                     Total
                                 </span>
                                 <span className="text-base font-bold text-secondary">
-                                    {formatTotal(order.total)}
+                                    {formatPrice(order.total)}
                                 </span>
                             </div>
                         </article>

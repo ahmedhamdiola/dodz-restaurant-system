@@ -44,11 +44,10 @@ export const AuthController = () => {
         }
 
         const result = await service.login({ email, password });
-        if (result.status === "invalid_credentials") {
+        if (result.status === "invalid_credentials" || result.status === "inactive") {
+            // Keep the same message for every failure so we never leak whether an
+            // email exists, is disabled, or just has a wrong password.
             return UnauthorizedStatus(res, "Invalid email or password");
-        }
-        if (result.status === "inactive") {
-            return UnauthorizedStatus(res, "Account is disabled");
         }
 
         return SuccessStatus(res, { token: result.token, user: result.user });
