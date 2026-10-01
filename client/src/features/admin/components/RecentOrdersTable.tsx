@@ -45,8 +45,11 @@ const RecentOrdersTable = ({ orders, scope = "all branches" }: RecentOrdersTable
                                     <td className="py-3 pr-4 whitespace-nowrap text-muted-foreground">
                                         {order.branchName}
                                     </td>
-                                    <td className="max-w-[200px] truncate py-3 pr-4 text-muted-foreground">
-                                        {order.items}
+                                    <td
+                                        className="max-w-[200px] py-3 pr-4 text-muted-foreground"
+                                        title={order.items}
+                                    >
+                                        <span className="line-clamp-2">{order.items}</span>
                                     </td>
                                     <td className="py-3 pr-4 whitespace-nowrap text-muted-foreground">
                                         {order.date}

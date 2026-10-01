@@ -7,6 +7,7 @@ import { ThemeProvider } from "../contexts/theme/providers/ThemeProvider";
 import { AuthProvider } from "../features/auth/providers/AuthProvider";
 import { FavoritesProvider } from "../features/products/favorites/providers/FavoritesProvider";
 import { CartProvider } from "../features/cart/providers/CartProvider";
+import { CustomizeProvider } from "../features/products/customize/providers/CustomizeProvider";
 import { OrderTypeProvider } from "../features/order/providers/OrderTypeProvider";
 import { OrderLocationProvider } from "../features/order-location/providers/OrderLocationProvider";
 import { ToastProvider } from "../components/toast/ToastProvider";
@@ -26,7 +27,9 @@ const Provider = () => {
                                     <AuthProvider>
                                         <FavoritesProvider>
                                             <CartProvider>
-                                                <Router />
+                                                <CustomizeProvider>
+                                                    <Router />
+                                                </CustomizeProvider>
                                             </CartProvider>
                                         </FavoritesProvider>
                                     </AuthProvider>

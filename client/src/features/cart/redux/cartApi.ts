@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import type { AppDispatch } from "../../../app/store";
 import { cartService } from "../services/cartApi";
-import type { CartView, CheckoutPayload, OrderView } from "../types";
+import type { AddItemPayload, CartView, CheckoutPayload, OrderView } from "../types";
 import { MAX_QUANTITY } from "../types";
 
 // ---------------------------------------------------------------------------
@@ -31,20 +32,41 @@ const recomputeDraft = (draft: CartView) => {
 
 const clamp = (quantity: number) => Math.min(Math.max(quantity, 0), MAX_QUANTITY);
 
-export interface AddItemArgs {
-    productID: number;
-    quantity?: number;
+/**
+ * Publishes the server's authoritative cart into the cache.
+ *
+ * A customised add cannot append a local line — its signature and price only
+ * exist server-side — so the mutation response is the only thing that can put
+ * the new line on screen. `upsertQueryData` is used rather than
+ * `updateQueryData` because the latter is a silent no-op when the entry holds no
+ * data yet, which would drop the response instead of caching it. Behaviour is
+ * identical once the entry is populated; this simply removes the silent-drop
+ * path.
+ */
+const publishCart = (dispatch: AppDispatch, scope: string, data: CartView): void => {
+    dispatch(cartApi.util.upsertQueryData("getCart", scope, data));
+};
+
+/**
+ * The cart line a product card "owns": the same product added without any option
+ * selections. Customized lines are intentionally excluded so a card's stepper
+ * never silently edits a customised item.
+ */
+const findPlainLine = (draft: CartView, productID: number) =>
+    draft.items.find((item) => item.product_id === productID && item.options.length === 0);
+
+export interface AddItemArgs extends AddItemPayload {
     scope: string;
 }
 
 export interface UpdateQuantityArgs {
-    productID: number;
+    cartItemID: number;
     quantity: number;
     scope: string;
 }
 
 export interface RemoveItemArgs {
-    productID: number;
+    cartItemID: number;
     scope: string;
 }
 
@@ -68,13 +90,27 @@ export const cartApi = createApi({
         }),
 
         addItem: builder.mutation<CartView, AddItemArgs>({
-            queryFn: ({ productID, quantity }) =>
-                cartService.addItem(productID, quantity ?? 1).then((data) => ({ data })),
+            queryFn: ({ productID, quantity, optionValueIDs, optionQuantities }) =>
+                cartService
+                    .addItem({
+                        productID,
+                        quantity: quantity ?? 1,
+                        optionValueIDs,
+                        // Omitted entirely when empty so plain adds stay byte-identical
+                        // to what the server saw before counted groups existed.
+                        ...(optionQuantities && optionQuantities.length > 0
+                            ? { optionQuantities }
+                            : {}),
+                    })
+                    .then((data) => ({ data })),
             onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+                // A customised add has no knowable local signature to match, so it
+                // only patches an existing plain line and otherwise waits for the
+                // server's authoritative view.
                 const patch = dispatch(
                     cartApi.util.updateQueryData("getCart", arg.scope, (draft) => {
-                        const existing = draft.items.find((item) => item.product_id === arg.productID);
-                        if (existing) {
+                        const existing = findPlainLine(draft, arg.productID);
+                        if (existing && (arg.optionValueIDs?.length ?? 0) === 0) {
                             existing.quantity = clamp(existing.quantity + (arg.quantity ?? 1));
                             existing.subtotal = existing.unit_price * existing.quantity;
                             recomputeDraft(draft);
@@ -83,7 +119,7 @@ export const cartApi = createApi({
                 );
                 try {
                     const { data } = await queryFulfilled;
-                    dispatch(cartApi.util.updateQueryData("getCart", arg.scope, () => data));
+                    publishCart(dispatch, arg.scope, data);
                 } catch {
                     patch.undo();
                 }
@@ -91,12 +127,12 @@ export const cartApi = createApi({
         }),
 
         updateQuantity: builder.mutation<CartView, UpdateQuantityArgs>({
-            queryFn: ({ productID, quantity }) =>
-                cartService.updateQuantity(productID, quantity).then((data) => ({ data })),
+            queryFn: ({ cartItemID, quantity }) =>
+                cartService.updateQuantity(cartItemID, quantity).then((data) => ({ data })),
             onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
                 const patch = dispatch(
                     cartApi.util.updateQueryData("getCart", arg.scope, (draft) => {
-                        const existing = draft.items.find((item) => item.product_id === arg.productID);
+                        const existing = draft.items.find((item) => item.id === arg.cartItemID);
                         if (existing) {
                             existing.quantity = arg.quantity;
                             existing.subtotal = existing.unit_price * arg.quantity;
@@ -106,7 +142,7 @@ export const cartApi = createApi({
                 );
                 try {
                     const { data } = await queryFulfilled;
-                    dispatch(cartApi.util.updateQueryData("getCart", arg.scope, () => data));
+                    publishCart(dispatch, arg.scope, data);
                 } catch {
                     patch.undo();
                 }
@@ -114,17 +150,17 @@ export const cartApi = createApi({
         }),
 
         removeItem: builder.mutation<CartView, RemoveItemArgs>({
-            queryFn: ({ productID }) => cartService.removeItem(productID).then((data) => ({ data })),
+            queryFn: ({ cartItemID }) => cartService.removeItem(cartItemID).then((data) => ({ data })),
             onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
                 const patch = dispatch(
                     cartApi.util.updateQueryData("getCart", arg.scope, (draft) => {
-                        draft.items = draft.items.filter((item) => item.product_id !== arg.productID);
+                        draft.items = draft.items.filter((item) => item.id !== arg.cartItemID);
                         recomputeDraft(draft);
                     })
                 );
                 try {
                     const { data } = await queryFulfilled;
-                    dispatch(cartApi.util.updateQueryData("getCart", arg.scope, () => data));
+                    publishCart(dispatch, arg.scope, data);
                 } catch {
                     patch.undo();
                 }
@@ -137,7 +173,7 @@ export const cartApi = createApi({
                 const patch = dispatch(cartApi.util.updateQueryData("getCart", scope, () => emptyCart()));
                 try {
                     const { data } = await queryFulfilled;
-                    dispatch(cartApi.util.updateQueryData("getCart", scope, () => data));
+                    publishCart(dispatch, scope, data);
                 } catch {
                     patch.undo();
                 }
@@ -149,7 +185,7 @@ export const cartApi = createApi({
             onQueryStarted: async ({ scope }, { dispatch, queryFulfilled }) => {
                 try {
                     const { data } = await queryFulfilled;
-                    dispatch(cartApi.util.updateQueryData("getCart", scope, () => data));
+                    publishCart(dispatch, scope, data);
                 } catch {
                     // Guest cart already consumed/unreachable; nothing to reconcile.
                 }
@@ -164,7 +200,7 @@ export const cartApi = createApi({
             onQueryStarted: async ({ scope }, { dispatch, queryFulfilled }) => {
                 try {
                     await queryFulfilled;
-                    dispatch(cartApi.util.updateQueryData("getCart", scope, () => emptyCart()));
+                    publishCart(dispatch, scope, emptyCart());
                 } catch {
                     // Order failed; keep the cart as-is so the user can retry.
                 }

@@ -5,7 +5,7 @@ import { useCartUI } from "../cartUIContext";
 /** Navbar cart button with a live item-count badge (capped at "99+"). */
 export const CartTrigger = () => {
     const { data: cart } = useCart();
-    const { open } = useCartUI();
+    const { open, addedCount } = useCartUI();
     const count = cart?.item_count ?? 0;
 
     return (
@@ -17,7 +17,13 @@ export const CartTrigger = () => {
         >
             <ShoppingCartIcon className="w-7 sm:w-8 text-secondary" />
             {count > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brand px-1 text-[10px] font-semibold leading-none text-white">
+                <span
+                    // Remounting on every add replays the bump without a timer.
+                    key={addedCount}
+                    className={`cart-badge-pop absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-brand px-1 text-[10px] font-semibold leading-none text-white ${
+                        addedCount > 0 ? "animate-cart-bump" : ""
+                    }`}
+                >
                     {count > 99 ? "99+" : count}
                 </span>
             )}

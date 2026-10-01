@@ -148,9 +148,12 @@ const OrdersPage = () => {
                                         <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
                                             {order.branchName}
                                         </td>
-                                        <td className="max-w-[240px] truncate px-4 py-3 text-muted-foreground">
-                                            {order.items}
-                                        </td>
+                                        <td
+                                                className="max-w-[240px] px-4 py-3 text-muted-foreground"
+                                                title={order.items}
+                                            >
+                                                <span className="line-clamp-2">{order.items}</span>
+                                            </td>
                                         <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
                                             {order.date}
                                         </td>

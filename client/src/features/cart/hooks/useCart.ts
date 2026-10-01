@@ -11,7 +11,7 @@ import {
     useRemoveItemMutation,
     useUpdateQuantityMutation,
 } from "../redux/cartApi";
-import type { CartView, CheckoutPayload, OrderView } from "../types";
+import type { AddItemPayload, CartView, CheckoutPayload, OrderView } from "../types";
 
 export const getCartScope = (user: AuthUser | null): string =>
     user ? `user:${user.id}` : `guest:${getGuestToken()}`;
@@ -49,7 +49,7 @@ export const useAddItem = () => {
     const scope = useCartScope();
     const [trigger, result] = useAddItemMutation();
     const mutate = useCallback(
-        (vars: { productID: number; quantity?: number }, options?: MutationCallbacks<CartView>) =>
+        (vars: AddItemPayload, options?: MutationCallbacks<CartView>) =>
             attach(trigger({ ...vars, scope }).unwrap(), options),
         [trigger, scope]
     );
@@ -60,7 +60,7 @@ export const useUpdateQuantity = () => {
     const scope = useCartScope();
     const [trigger, result] = useUpdateQuantityMutation();
     const mutate = useCallback(
-        (vars: { productID: number; quantity: number }, options?: MutationCallbacks<CartView>) =>
+        (vars: { cartItemID: number; quantity: number }, options?: MutationCallbacks<CartView>) =>
             attach(trigger({ ...vars, scope }).unwrap(), options),
         [trigger, scope]
     );
@@ -71,8 +71,8 @@ export const useRemoveItem = () => {
     const scope = useCartScope();
     const [trigger, result] = useRemoveItemMutation();
     const mutate = useCallback(
-        (productID: number, options?: MutationCallbacks<CartView>) =>
-            attach(trigger({ productID, scope }).unwrap(), options),
+        (cartItemID: number, options?: MutationCallbacks<CartView>) =>
+            attach(trigger({ cartItemID, scope }).unwrap(), options),
         [trigger, scope]
     );
     return { mutate, mutateAsync: mutate, isPending: isPending(result), isError: result.isError, error: result.error, reset: result.reset };

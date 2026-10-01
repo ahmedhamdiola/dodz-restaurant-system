@@ -5,8 +5,6 @@ import { menuService } from "../services/menuService";
 import { menuKeys, MENU_STALE_TIME } from "../queryKeys";
 import type { MenuCategory, MenuProduct } from "../types";
 
-const TOP_DEALS_PLACEHOLDER = MENU_PRODUCTS.slice(0, 3);
-
 const toCategoryMap = (categories: MenuCategory[]) =>
     new Map(categories.map((category) => [category.slug, category]));
 
@@ -54,7 +52,8 @@ export const useTopDeals = () => {
     return useQuery({
         queryKey: menuKeys.topDeals,
         queryFn: menuService.getTopDeals,
-        placeholderData: TOP_DEALS_PLACEHOLDER,
+        // No mock `placeholderData` here: a fake deal that can be clicked is worse
+        // than a brief skeleton, since it looks like a real offer until it is not.
         staleTime: MENU_STALE_TIME,
     });
 };

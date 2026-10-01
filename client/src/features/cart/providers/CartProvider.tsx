@@ -22,8 +22,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const prevUserRef = useRef(user);
 
     const [isOpen, setIsOpen] = useState(false);
+    const [addedCount, setAddedCount] = useState(0);
     const open = useCallback(() => setIsOpen(true), []);
     const close = useCallback(() => setIsOpen(false), []);
+    const notifyAdded = useCallback(() => setAddedCount((count) => count + 1), []);
 
     useEffect(() => {
         const prev = prevUserRef.current;
@@ -54,7 +56,10 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [user, mergeCart, toast]);
 
-    const value = useMemo(() => ({ isOpen, open, close }), [isOpen, open, close]);
+    const value = useMemo(
+        () => ({ isOpen, open, close, addedCount, notifyAdded }),
+        [isOpen, open, close, addedCount, notifyAdded]
+    );
 
     return (
         <CartUIContext.Provider value={value}>

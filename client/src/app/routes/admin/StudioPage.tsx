@@ -66,11 +66,20 @@ const StudioPage = () => {
         setCategoryModalOpen(true);
     };
 
-    const handleSaveProduct = async (values: ProductFormValues, id?: number) => {
+    /**
+     * Persists the product record only. `ProductModal` attaches the option tree
+     * afterwards (it needs the new id), so this must resolve with the saved
+     * product and must not close the modal on its own.
+     */
+    const handleSaveProduct = async (
+        values: ProductFormValues,
+        id?: number
+    ): Promise<MenuProduct | null> => {
         setApiError("");
         const categoryID = categoryBySlug.get(values.categorySlug)?.id;
         if (!categoryID) {
-            return;
+            setApiError("That category no longer exists. Pick another one and retry.");
+            return null;
         }
 
         const payload = {
@@ -84,18 +93,16 @@ const StudioPage = () => {
         };
 
         try {
-            if (id) {
-                await studioApi.updateProduct(id, payload);
-                toast.success("Product updated");
-            } else {
-                await studioApi.createProduct(payload);
-                toast.success("Product created");
-            }
-            setProductModalOpen(false);
+            const saved = id
+                ? await studioApi.updateProduct(id, payload)
+                : await studioApi.createProduct(payload);
+            toast.success(id ? "Product updated" : "Product created");
             refreshMenu();
+            return saved;
         } catch {
             setApiError("Could not save the product. Try again.");
             toast.error("Could not save the product");
+            return null;
         }
     };
 
@@ -138,6 +145,25 @@ const StudioPage = () => {
         } catch {
             setApiError("Could not delete the category. Try again.");
             toast.error("Could not delete the category");
+        }
+    };
+
+    /**
+     * Products are soft-deleted server-side (`is_deleted`), so the row disappears
+     * from the studio and storefront immediately but its option tree and any
+     * historic order lines stay intact for reference.
+     */
+    const handleDeleteProduct = async (product: MenuProduct) => {
+        if (!window.confirm(`Delete product "${product.name}"?`)) {
+            return;
+        }
+        try {
+            await studioApi.deleteProduct(product.id);
+            refreshMenu();
+            toast.success("Product deleted");
+        } catch {
+            setApiError("Could not delete the product. Try again.");
+            toast.error("Could not delete the product");
         }
     };
 
@@ -198,6 +224,7 @@ const StudioPage = () => {
                                     <StudioProductCard
                                         product={product}
                                         onEdit={openEditProduct}
+                                        onDelete={handleDeleteProduct}
                                     />
                                 </div>
                             ))}

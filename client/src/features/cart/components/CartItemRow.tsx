@@ -2,16 +2,17 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import { formatPrice } from "../../../lib/format";
 import { useRemoveItem } from "../hooks/useCart";
 import { getCartErrorMessage } from "../services/cartApi";
-import type { CartItem } from "../types";
+import type { CartLine } from "../types";
 import { QuantityStepper } from "./QuantityStepper";
 
 interface CartItemRowProps {
-    item: CartItem;
+    item: CartLine;
     onError: (message: string) => void;
 }
 
 export const CartItemRow = ({ item, onError }: CartItemRowProps) => {
     const removeItem = useRemoveItem();
+    const hasSelections = item.options.length > 0;
 
     return (
         <li className="flex gap-3 border-b border-border py-3 last:border-b-0">
@@ -24,7 +25,7 @@ export const CartItemRow = ({ item, onError }: CartItemRowProps) => {
                     <button
                         type="button"
                         onClick={() =>
-                            removeItem.mutate(item.product_id, {
+                            removeItem.mutate(item.id, {
                                 onError: (err) => onError(getCartErrorMessage(err, "Could not remove item")),
                             })
                         }
@@ -34,14 +35,20 @@ export const CartItemRow = ({ item, onError }: CartItemRowProps) => {
                         <TrashIcon className="h-4 w-4" />
                     </button>
                 </div>
-                <p className="mt-0.5 text-xs text-muted-foreground">{formatPrice(item.unit_price)} each</p>
+                {hasSelections ? (
+                    <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-muted-foreground">
+                        {item.selection_summary || item.options.map((option) => option.value_name).join(", ")}
+                    </p>
+                ) : (
+                    <p className="mt-0.5 text-xs text-muted-foreground">{formatPrice(item.unit_price)} each</p>
+                )}
                 {!item.is_available && (
                     <span className="mt-1 w-fit rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-red-600">
                         Unavailable
                     </span>
                 )}
                 <div className="mt-2 flex items-center justify-between gap-2">
-                    <QuantityStepper productId={item.product_id} quantity={item.quantity} onError={onError} />
+                    <QuantityStepper cartItemId={item.id} quantity={item.quantity} onError={onError} />
                     <span className="text-sm font-bold text-secondary">{formatPrice(item.subtotal)}</span>
                 </div>
             </div>

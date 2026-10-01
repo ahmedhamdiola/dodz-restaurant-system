@@ -171,7 +171,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                             <ul className="py-1">
                                 {data.items.map((item) => (
                                     <CartItemRow
-                                        key={item.product_id}
+                                        key={item.id}
                                         item={item}
                                         onError={(message) => toast.error(message)}
                                     />
@@ -198,6 +198,14 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                 {/* Footer */}
                 {phase !== "success" && data && data.items.length > 0 && (
                     <footer className="border-t border-border px-4 py-4">
+                        <div className="flex items-baseline justify-between gap-3">
+                            <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                                Subtotal
+                            </span>
+                            <span className="text-base font-bold text-secondary">
+                                {formatPrice(data.subtotal)}
+                            </span>
+                        </div>
                         <p className="mt-1 text-[11px] text-muted-foreground">
                             Prices are set by the kitchen and confirmed at checkout.
                         </p>

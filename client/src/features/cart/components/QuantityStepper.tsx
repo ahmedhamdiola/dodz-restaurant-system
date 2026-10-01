@@ -4,7 +4,8 @@ import { useRemoveItem, useUpdateQuantity } from "../hooks/useCart";
 import { getCartErrorMessage } from "../services/cartApi";
 
 interface QuantityStepperProps {
-    productId: number;
+    /** The cart LINE id (not the product id) — a product can have several lines. */
+    cartItemId: number;
     quantity: number;
     compact?: boolean;
     onError?: (message: string) => void;
@@ -15,7 +16,7 @@ interface QuantityStepperProps {
  * disabled while a cart mutation is in flight so rapid clicks can't race the
  * server (each op is exact-set, so overlapping requests would drop increments).
  */
-export const QuantityStepper = ({ productId, quantity, compact = false, onError }: QuantityStepperProps) => {
+export const QuantityStepper = ({ cartItemId, quantity, compact = false, onError }: QuantityStepperProps) => {
     const updateQuantity = useUpdateQuantity();
     const removeItem = useRemoveItem();
     const busy = updateQuantity.isPending || removeItem.isPending;
@@ -24,11 +25,11 @@ export const QuantityStepper = ({ productId, quantity, compact = false, onError 
 
     const decrement = () => {
         if (quantity <= 1) {
-            removeItem.mutate(productId, {
+            removeItem.mutate(cartItemId, {
                 onError: (err) => fail(err, "Could not remove item"),
             });
         } else {
-            updateQuantity.mutate({ productID: productId, quantity: quantity - 1 }, {
+            updateQuantity.mutate({ cartItemID: cartItemId, quantity: quantity - 1 }, {
                 onError: (err) => fail(err, "Could not update quantity"),
             });
         }
@@ -36,7 +37,7 @@ export const QuantityStepper = ({ productId, quantity, compact = false, onError 
 
     const increment = () => {
         if (quantity >= MAX_QUANTITY) return;
-        updateQuantity.mutate({ productID: productId, quantity: quantity + 1 }, {
+        updateQuantity.mutate({ cartItemID: cartItemId, quantity: quantity + 1 }, {
             onError: (err) => fail(err, "Could not update quantity"),
         });
     };

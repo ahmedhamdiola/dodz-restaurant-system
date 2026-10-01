@@ -72,6 +72,28 @@
   animation: toast-in 0.18s ease-out;
 }
 
+/* Cart badge bump after a successful add */
+@keyframes cart-bump {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.45);
+  }
+  70% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-cart-bump {
+  animation: cart-bump 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cart-badge-pop {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 22%, transparent);
+}
+
 /* Slim, rounded custom scrollbar */
 .scrollbar-slim {
   scrollbar-width: thin; /* Firefox */

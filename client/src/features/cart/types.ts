@@ -1,15 +1,32 @@
-export interface CartItem {
+/** A single option value attached to a cart line (mirrors the API payload). */
+export interface CartLineOption {
+    option_id: number;
+    option_name: string;
+    value_id: number;
+    value_name: string;
+    price_delta: number;
+}
+
+/**
+ * One configured cart line. `id` is the cart line identifier (NOT the product
+ * id): a single product can appear several times with different selections.
+ */
+export interface CartLine {
+    id: number;
     product_id: number;
     name: string;
     image: string;
-    unit_price: number;
     quantity: number;
+    unit_price: number;
     subtotal: number;
     is_available: boolean;
+    options_signature: string;
+    selection_summary: string;
+    options: CartLineOption[];
 }
 
 export interface CartView {
-    items: CartItem[];
+    items: CartLine[];
     distinct_item_count: number;
     item_count: number;
     subtotal: number;
@@ -40,6 +57,18 @@ export interface CheckoutPayload {
     customerName?: string;
     customerPhone?: string;
     idempotencyKey?: string;
+}
+
+/** Body of `POST /cart/items`; `optionValueIDs` configures the line. */
+export interface AddItemPayload {
+    productID: number;
+    quantity?: number;
+    optionValueIDs?: number[];
+    /**
+     * Counts for "quantity" option groups. Additive and optional, so a client
+     * that never sends it keeps working unchanged.
+     */
+    optionQuantities?: { valueId: number; quantity: number }[];
 }
 
 export const MAX_QUANTITY = 99;

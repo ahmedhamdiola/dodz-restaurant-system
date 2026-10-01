@@ -1,15 +1,16 @@
-import { PencilIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 import type { MenuProduct } from "../../../menu/types";
 
 interface StudioProductCardProps {
     product: MenuProduct;
     onEdit: (product: MenuProduct) => void;
+    onDelete: (product: MenuProduct) => void;
 }
 
 const formatPrice = (value: number) =>
     value.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-const StudioProductCard = ({ product, onEdit }: StudioProductCardProps) => {
+const StudioProductCard = ({ product, onEdit, onDelete }: StudioProductCardProps) => {
     return (
         <article className="group flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md">
             <div className="relative aspect-[4/3] overflow-hidden bg-muted">
@@ -26,14 +27,24 @@ const StudioProductCard = ({ product, onEdit }: StudioProductCardProps) => {
                         {product.name.charAt(0)}
                     </div>
                 )}
-                <button
-                    type="button"
-                    onClick={() => onEdit(product)}
-                    aria-label={`Edit ${product.name}`}
-                    className="absolute right-2.5 top-2.5 flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/95 text-secondary shadow-md transition-all duration-200 hover:border-brand hover:bg-brand hover:text-white"
-                >
-                    <PencilIcon className="h-4 w-4" />
-                </button>
+                <div className="absolute right-2.5 top-2.5 flex gap-2">
+                    <button
+                        type="button"
+                        onClick={() => onDelete(product)}
+                        aria-label={`Delete ${product.name}`}
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/95 text-muted-foreground shadow-md transition-all duration-200 hover:border-red-600 hover:bg-red-600 hover:text-white"
+                    >
+                        <TrashIcon className="h-4 w-4" />
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => onEdit(product)}
+                        aria-label={`Edit ${product.name}`}
+                        className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-card/95 text-secondary shadow-md transition-all duration-200 hover:border-brand hover:bg-brand hover:text-white"
+                    >
+                        <PencilIcon className="h-4 w-4" />
+                    </button>
+                </div>
             </div>
 
             <div className="flex flex-1 flex-col gap-1.5 p-3.5">

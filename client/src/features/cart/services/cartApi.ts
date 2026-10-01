@@ -1,6 +1,6 @@
 import { api, unwrap } from "../../../lib/api";
 import { getGuestToken } from "../lib/guestToken";
-import type { CartView, CheckoutPayload, OrderView } from "../types";
+import type { AddItemPayload, CartView, CheckoutPayload, OrderView } from "../types";
 
 const guestHeaders = () => {
     const token = getGuestToken();
@@ -47,16 +47,23 @@ export const cartService = {
         return unwrap<CartView>(api.get("/cart", { headers: guestHeaders() })).catch(toCartError);
     },
 
-    addItem(productID: number, quantity = 1): Promise<CartView> {
-        return unwrap<CartView>(api.post("/cart/items", { productID, quantity }, { headers: guestHeaders() })).catch(toCartError);
+    addItem(payload: AddItemPayload): Promise<CartView> {
+        return unwrap<CartView>(
+            api.post("/cart/items", payload, { headers: guestHeaders() })
+        ).catch(toCartError);
     },
 
-    updateQuantity(productID: number, quantity: number): Promise<CartView> {
-        return unwrap<CartView>(api.put(`/cart/items/${productID}`, { quantity }, { headers: guestHeaders() })).catch(toCartError);
+    /** Mutations address the cart LINE id, not the product id. */
+    updateQuantity(cartItemID: number, quantity: number): Promise<CartView> {
+        return unwrap<CartView>(
+            api.put(`/cart/items/${cartItemID}`, { quantity }, { headers: guestHeaders() })
+        ).catch(toCartError);
     },
 
-    removeItem(productID: number): Promise<CartView> {
-        return unwrap<CartView>(api.delete(`/cart/items/${productID}`, { headers: guestHeaders() })).catch(toCartError);
+    removeItem(cartItemID: number): Promise<CartView> {
+        return unwrap<CartView>(
+            api.delete(`/cart/items/${cartItemID}`, { headers: guestHeaders() })
+        ).catch(toCartError);
     },
 
     clear(): Promise<CartView> {
