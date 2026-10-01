@@ -9,11 +9,14 @@ import {
     UnauthorizedStatus,
 } from "../../utils/response.js";
 import { normalizePhone } from "../../utils/phone.js";
+import { MAX_LINKED_TOTAL, RequestedQuantity } from "../product/product.options.types.js";
 import { CartService, hashGuestToken } from "./cart.service.js";
 import {
     CartError,
     CartIdentity,
     GUEST_TOKEN_REGEX,
+    IDEMPOTENCY_KEY_REGEX,
+    MAX_OPTION_VALUE_IDS,
     MAX_QUANTITY,
 } from "./cart.types.js";
 
@@ -27,6 +30,62 @@ const parsePositiveInt = (value: unknown): number | undefined => {
 const parseQuantity = (value: unknown): number | undefined => {
     const quantity = Number(value);
     return Number.isInteger(quantity) && quantity >= 1 && quantity <= MAX_QUANTITY ? quantity : undefined;
+};
+
+/**
+ * Option value ids submitted by the storefront. Shape-only validation: whether
+ * the ids belong to the product, and what they cost, is decided server-side
+ * inside the add-to-cart transaction.
+ */
+const parseOptionValueIDs = (value: unknown): number[] | undefined => {
+    if (value === undefined || value === null) {
+        return [];
+    }
+    if (!Array.isArray(value) || value.length > MAX_OPTION_VALUE_IDS) {
+        return undefined;
+    }
+    const ids: number[] = [];
+    for (const entry of value) {
+        const id = Number(entry);
+        if (!Number.isInteger(id) || id <= 0) {
+            return undefined;
+        }
+        ids.push(id);
+    }
+    return ids;
+};
+
+/**
+ * Counts for "quantity" option groups, e.g. [{ valueId: 812, quantity: 6 }].
+ * Additive and optional, so clients that predate counted groups keep working by
+ * simply omitting it.
+ */
+const parseOptionQuantities = (value: unknown): RequestedQuantity[] | undefined => {
+    if (value === undefined || value === null) {
+        return [];
+    }
+    if (!Array.isArray(value) || value.length > MAX_OPTION_VALUE_IDS) {
+        return undefined;
+    }
+    const quantities: RequestedQuantity[] = [];
+    for (const entry of value) {
+        if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
+            return undefined;
+        }
+        const { valueId, quantity } = entry as Record<string, unknown>;
+        const id = Number(valueId);
+        const count = Number(quantity);
+        if (!Number.isInteger(id) || id <= 0) {
+            return undefined;
+        }
+        // Capped rather than merely non-negative: an unbounded count multiplied by
+        // a price_delta overflows NUMERIC(10,2) on the order row and 500s.
+        if (!Number.isInteger(count) || count < 0 || count > MAX_LINKED_TOTAL) {
+            return undefined;
+        }
+        quantities.push({ valueId: id, quantity: count });
+    }
+    return quantities;
 };
 
 interface ResolvedIdentity {
@@ -54,13 +113,21 @@ const resolveIdentity = (req: Request): ResolvedIdentity => {
 };
 
 const mapCartError = (res: Response, error: CartError) => {
+    // The client asked for a selection the server does not accept, and one it
+    // accepts structurally but which is no longer orderable.
+    const payload = {
+        type: error.type,
+        ...(error.unavailableProductIds ? { unavailableProductIds: error.unavailableProductIds } : {}),
+        ...(error.unavailableCartItemIds ? { unavailableCartItemIds: error.unavailableCartItemIds } : {}),
+    };
     switch (error.type) {
         case "UNAVAILABLE_PRODUCT":
-            return ConflictStatus(res, error.message);
+        case "OPTION_UNAVAILABLE":
+            return ConflictStatus(res, error.message, payload);
         case "CART_NOT_FOUND":
-            return NotFoundStatus(res, error.message);
+            return NotFoundStatus(res, error.message, payload);
         default:
-            return BadRequestStatus(res, error.message);
+            return BadRequestStatus(res, error.message, payload);
     }
 };
 
@@ -95,12 +162,17 @@ export const CartController = () => {
 
         const productID = parsePositiveInt(req.body?.productID);
         const quantity = parseQuantity(req.body?.quantity ?? 1);
+        const optionValueIDs = parseOptionValueIDs(req.body?.optionValueIDs);
+        const optionQuantities = parseOptionQuantities(req.body?.optionQuantities);
         if (productID === undefined || quantity === undefined) {
             return BadRequestStatus(res, "Invalid product or quantity");
         }
+        if (optionValueIDs === undefined || optionQuantities === undefined) {
+            return BadRequestStatus(res, "Invalid option selections");
+        }
 
         try {
-            const cart = await service.addItem(identity, productID, quantity);
+            const cart = await service.addItem(identity, productID, quantity, optionValueIDs, optionQuantities);
             return CreateStatus(res, cart);
         } catch (error) {
             if (error instanceof CartError) return mapCartError(res, error);
@@ -113,14 +185,14 @@ export const CartController = () => {
         const identity = requireIdentity(res, resolved);
         if (identity === null) return;
 
-        const productID = parsePositiveInt(req.params.productID);
+        const cartItemID = parsePositiveInt(req.params.cartItemId);
         const quantity = parseQuantity(req.body?.quantity);
-        if (productID === undefined || quantity === undefined) {
-            return BadRequestStatus(res, "Invalid product or quantity (1-99)");
+        if (cartItemID === undefined || quantity === undefined) {
+            return BadRequestStatus(res, "Invalid cart item or quantity (1-99)");
         }
 
         try {
-            const cart = await service.setItemQuantity(identity, productID, quantity);
+            const cart = await service.setItemQuantity(identity, cartItemID, quantity);
             return SuccessStatus(res, cart);
         } catch (error) {
             if (error instanceof CartError) return mapCartError(res, error);
@@ -133,13 +205,13 @@ export const CartController = () => {
         const identity = requireIdentity(res, resolved);
         if (identity === null) return;
 
-        const productID = parsePositiveInt(req.params.productID);
-        if (productID === undefined) {
-            return BadRequestStatus(res, "Invalid product");
+        const cartItemID = parsePositiveInt(req.params.cartItemId);
+        if (cartItemID === undefined) {
+            return BadRequestStatus(res, "Invalid cart item");
         }
 
         try {
-            const cart = await service.removeItem(identity, productID);
+            const cart = await service.removeItem(identity, cartItemID);
             return SuccessStatus(res, cart);
         } catch (error) {
             if (error instanceof CartError) return mapCartError(res, error);
@@ -215,7 +287,11 @@ export const CartController = () => {
 
         let idempotencyKey: string | undefined;
         if (req.body?.idempotencyKey !== undefined && req.body.idempotencyKey !== null && req.body.idempotencyKey !== "") {
-            if (typeof req.body.idempotencyKey !== "string" || req.body.idempotencyKey.length > 64) {
+            // The replay lookup is keyed only by this string, so a guessable key
+            // would let anyone read back someone else's order (name, phone, items).
+            // The web client sends crypto.randomUUID(); this is the same entropy
+            // floor, not a client-trusted format.
+            if (typeof req.body.idempotencyKey !== "string" || !IDEMPOTENCY_KEY_REGEX.test(req.body.idempotencyKey.trim())) {
                 return BadRequestStatus(res, "Invalid idempotency key");
             }
             idempotencyKey = req.body.idempotencyKey.trim();

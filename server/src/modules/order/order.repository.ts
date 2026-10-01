@@ -1,6 +1,10 @@
 import { PoolClient } from "pg";
 import { pool } from "../../config/database.js";
 import { OrderFilters, OrderInput, OrderStatus } from "./order.types.js";
+import { SelectedOptionEntry } from "../product/product.options.types.js";
+
+/** One selected option value, snapshotted onto the order line. */
+export type PricedItemOption = SelectedOptionEntry;
 
 export interface PricedItem {
     productID: number;
@@ -8,6 +12,21 @@ export interface PricedItem {
     unitPrice: number;
     quantity: number;
     subtotal: number;
+    optionsSummary: string;
+    optionsSnapshot: PricedItemOption[];
+}
+
+/**
+ * Callers may pass an authoritative unit price (the cart re-prices a customized
+ * line server-side) and the selection to snapshot. Anything omitted falls back
+ * to the plain product price with no customization.
+ */
+export interface PricedItemInput {
+    productID: number;
+    quantity: number;
+    unitPrice?: number;
+    optionsSummary?: string;
+    optionsSnapshot?: PricedItemOption[];
 }
 
 export interface PricedProduct {
@@ -15,23 +34,26 @@ export interface PricedProduct {
     name: string;
     price: number;
     is_available: boolean;
+    is_modifier?: boolean;
 }
 
 /** Pure helper: snapshots prices from fetched product rows and sums each line. */
-export const priceOrderItems = (items: { productID: number; quantity: number }[], products: PricedProduct[]): PricedItem[] => {
+export const priceOrderItems = (items: PricedItemInput[], products: PricedProduct[]): PricedItem[] => {
     const productMap = new Map(products.map((product) => [product.id, product]));
     return items.map((item) => {
         const product = productMap.get(item.productID);
         if (!product) {
             throw new Error(`Product ${item.productID} not found`);
         }
-        const unitPrice = Number(product.price);
+        const unitPrice = item.unitPrice !== undefined ? Number(item.unitPrice) : Number(product.price);
         return {
             productID: product.id,
             productName: product.name,
             unitPrice,
             quantity: item.quantity,
             subtotal: unitPrice * item.quantity,
+            optionsSummary: item.optionsSummary ?? "",
+            optionsSnapshot: item.optionsSnapshot ?? [],
         };
     });
 };
@@ -45,20 +67,44 @@ export interface InsertOrderInput {
     idempotencyKey?: string;
 }
 
-/** Inserts an order + its line items inside an already-open transaction (caller owns the client). */
+/**
+ * Inserts an order + its line items inside an already-open transaction (caller owns the client).
+ *
+ * With an idempotency key, the insert is a CLAIM: `ON CONFLICT DO NOTHING` means a
+ * concurrent request with the same key already won, and `inserted: false` tells the
+ * caller to return that order instead of raising a 23505. Two checkouts can pass
+ * the "have we seen this key before?" read at the same time, so the unique index is
+ * the only thing that actually makes the key idempotent.
+ */
 export const insertOrderAndItems = async (client: PoolClient, input: InsertOrderInput) => {
-    const orderResult = await client.query(
+    const orderResult = await client.query<{ id: number }>(
         `INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, idempotency_key)
-         VALUES ($1, $2, $3, 'Preparing', $4, $5) RETURNING id`,
+         VALUES ($1, $2, $3, 'Preparing', $4, $5)
+         ON CONFLICT (idempotency_key) WHERE idempotency_key IS NOT NULL DO NOTHING
+         RETURNING id`,
         [input.branchID, input.customerName, input.customerPhone, input.total, input.idempotencyKey ?? null]
     );
+
+    if (orderResult.rowCount === 0) {
+        return { inserted: false as const, order: null };
+    }
+
     const orderID = orderResult.rows[0].id;
 
     for (const item of input.items) {
         await client.query(
-            `INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal)
-             VALUES ($1, $2, $3, $4, $5, $6)`,
-            [orderID, item.productID, item.productName, item.unitPrice, item.quantity, item.subtotal]
+            `INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal, options_summary, options_snapshot)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)`,
+            [
+                orderID,
+                item.productID,
+                item.productName,
+                item.unitPrice,
+                item.quantity,
+                item.subtotal,
+                item.optionsSummary,
+                JSON.stringify(item.optionsSnapshot),
+            ]
         );
     }
 
@@ -71,14 +117,19 @@ export const insertOrderAndItems = async (client: PoolClient, input: InsertOrder
     );
 
     return {
-        ...createdResult.rows[0],
-        items: input.items.map((item) => ({
-            product_id: item.productID,
-            product_name: item.productName,
-            unit_price: item.unitPrice,
-            quantity: item.quantity,
-            subtotal: item.subtotal,
-        })),
+        inserted: true as const,
+        order: {
+            ...createdResult.rows[0],
+            items: input.items.map((item) => ({
+                product_id: item.productID,
+                product_name: item.productName,
+                unit_price: item.unitPrice,
+                quantity: item.quantity,
+                subtotal: item.subtotal,
+                options_summary: item.optionsSummary,
+                options_snapshot: item.optionsSnapshot,
+            })),
+        },
     };
 };
 
@@ -91,7 +142,7 @@ export const OrderRepository = () => {
              FROM orders o
              JOIN branches b ON b.id = o.branch_id
              JOIN LATERAL (
-                 SELECT STRING_AGG(oi.product_name || CASE WHEN oi.quantity > 1 THEN ' x' || oi.quantity ELSE '' END, ', ' ORDER BY oi.id) AS items
+                  SELECT STRING_AGG(oi.product_name || CASE WHEN oi.options_summary <> '' THEN ' (' || oi.options_summary || ')' ELSE '' END || CASE WHEN oi.quantity > 1 THEN ' x' || oi.quantity ELSE '' END, ', ' ORDER BY oi.id) AS items
                  FROM order_items oi WHERE oi.order_id = o.id
              ) oi ON true
              WHERE o.is_deleted = false
@@ -120,7 +171,7 @@ export const OrderRepository = () => {
         }
 
         const itemsResult = await pool.query(
-            `SELECT product_id, product_name, unit_price, quantity, subtotal
+            `SELECT product_id, product_name, unit_price, quantity, subtotal, options_summary, options_snapshot
              FROM order_items WHERE order_id = $1 ORDER BY id`,
             [id]
         );
@@ -200,7 +251,7 @@ export const OrderRepository = () => {
              FROM orders o
              JOIN branches b ON b.id = o.branch_id
              JOIN LATERAL (
-                 SELECT STRING_AGG(oi.product_name || CASE WHEN oi.quantity > 1 THEN ' x' || oi.quantity ELSE '' END, ', ' ORDER BY oi.id) AS items
+                  SELECT STRING_AGG(oi.product_name || CASE WHEN oi.options_summary <> '' THEN ' (' || oi.options_summary || ')' ELSE '' END || CASE WHEN oi.quantity > 1 THEN ' x' || oi.quantity ELSE '' END, ', ' ORDER BY oi.id) AS items
                  FROM order_items oi WHERE oi.order_id = o.id
              ) oi ON true
              WHERE o.is_deleted = false
@@ -234,7 +285,8 @@ export const OrderRepository = () => {
             const items = priceOrderItems(order.items, itemsQuery.rows as PricedProduct[]);
             const total = items.reduce((sum, item) => sum + item.subtotal, 0);
 
-            const created = await insertOrderAndItems(client, {
+            // No idempotency key here, so the claim insert always wins.
+            const { order: created } = await insertOrderAndItems(client, {
                 branchID: order.branchID,
                 customerName: order.customerName,
                 customerPhone: order.customerPhone ?? null,

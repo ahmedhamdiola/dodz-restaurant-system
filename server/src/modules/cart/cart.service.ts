@@ -1,11 +1,14 @@
 import { createHash } from "node:crypto";
 import { pool } from "../../config/database.js";
 import { BranchRepository } from "../branch/branch.repository.js";
-import { insertOrderAndItems, priceOrderItems, PricedProduct } from "../order/order.repository.js";
+import { insertOrderAndItems, priceOrderItems, PricedItemInput } from "../order/order.repository.js";
+import { ProductOptionsService, resolveSelection } from "../product/product.options.service.js";
+import { RequestedQuantity, SelectedOptionEntry } from "../product/product.options.types.js";
 import { CartRepository, emptyCartView } from "./cart.repository.js";
 import {
     CartError,
     CartIdentity,
+    CartLineOption,
     CartView,
     CheckoutInput,
     MAX_DISTINCT_ITEMS,
@@ -15,9 +18,63 @@ import {
 export const hashGuestToken = (token: string): string =>
     createHash("sha256").update(token).digest("hex");
 
+interface CartLineRow {
+    id: number;
+    product_id: number;
+    quantity: number;
+    unit_price: number;
+    options_snapshot: CartLineOption[] | null;
+}
+
+/** Human-readable checkout failure: names the product and, when known, the option. */
+const buildCheckoutFailureMessage = (failures: { productName: string; reason: string }[]): string => {
+    if (failures.length === 0) {
+        return "Some items are no longer available";
+    }
+    if (failures.length === 1) {
+        return `${failures[0].productName}: ${failures[0].reason}`;
+    }
+    return `${failures.length} items in your cart are no longer available. Please review your cart.`;
+};
+
+const readSnapshotValueIDs = (snapshot: CartLineOption[] | null): number[] => {
+    if (!Array.isArray(snapshot)) {
+        return [];
+    }
+    return snapshot
+        .map((entry) => Number(entry?.value_id))
+        .filter((valueID) => Number.isInteger(valueID) && valueID > 0);
+};
+
+/**
+ * Counts for counted groups, read back from the stored snapshot.
+ *
+ * Snapshots written before counted groups existed have no `quantity` field, so
+ * they read as 1 -- which keeps a line with no counts validating exactly as it
+ * did before.
+ */
+const readSnapshotQuantities = (snapshot: CartLineOption[] | null): RequestedQuantity[] => {
+    if (!Array.isArray(snapshot)) {
+        return [];
+    }
+    const quantities: RequestedQuantity[] = [];
+    for (const entry of snapshot) {
+        const valueId = Number(entry?.value_id);
+        if (!Number.isInteger(valueId) || valueId <= 0) {
+            continue;
+        }
+        const quantity = entry?.quantity === undefined || entry?.quantity === null ? 1 : Number(entry.quantity);
+        if (Number.isInteger(quantity) && quantity > 0) {
+            quantities.push({ valueId, quantity });
+        }
+    }
+    return quantities;
+};
+
 export const CartService = () => {
     const repo = CartRepository();
     const branchRepository = BranchRepository();
+    const optionsService = ProductOptionsService();
 
     const getCart = async (identity: CartIdentity | null): Promise<CartView> => {
         if (identity === null) {
@@ -27,14 +84,58 @@ export const CartService = () => {
         return cartId === null ? emptyCartView() : repo.getCartView(pool, cartId);
     };
 
-    const addItem = async (identity: CartIdentity, productID: number, quantity: number): Promise<CartView> => {
+    /**
+     * Add (or accumulate) one line.
+     *
+     * Everything the client sends is treated as a REQUEST, never as truth:
+     * the product is re-read, the option ids are re-validated against this
+     * product's own option tree, and unit_price is recomputed from
+     * products.price + SUM(price_delta) before anything is written.
+     */
+    const addItem = async (
+        identity: CartIdentity,
+        productID: number,
+        quantity: number,
+        optionValueIDs: number[] = [],
+        optionQuantities: RequestedQuantity[] = []
+    ): Promise<CartView> => {
         const client = await pool.connect();
         try {
             await client.query("BEGIN");
 
             const cartId = await repo.getOrCreateCartId(client, identity);
+            // Locked so the distinct-item cap below cannot be raced past: without
+            // it two concurrent adds both read 49 and both insert, leaving 51.
+            await client.query("SELECT id FROM carts WHERE id = $1 FOR UPDATE", [cartId]);
 
-            const present = await repo.getCartByProductQuery(client, cartId, productID);
+            const { products, trees } = await optionsService.loadSelectionContext(client, [productID]);
+            const product = products.get(productID);
+            if (product === undefined) {
+                throw new CartError("MISSING_PRODUCT", "Product not found");
+            }
+            if (product.is_modifier) {
+                throw new CartError(
+                    "UNAVAILABLE_PRODUCT",
+                    "This item is only available as a meal option",
+                    [productID]
+                );
+            }
+            if (!product.is_available) {
+                throw new CartError("UNAVAILABLE_PRODUCT", "Product is not currently available", [productID]);
+            }
+
+            const selection = resolveSelection(
+                product,
+                trees.get(productID) ?? [],
+                optionValueIDs,
+                "add",
+                optionQuantities
+            );
+            if (!selection.ok) {
+                throw new CartError(selection.kind, selection.message);
+            }
+
+            const present = await repo.getCartLineQuery(client, cartId, productID, selection.signature);
             if (present.rowCount === 0) {
                 const count = await repo.countCartItems(client, cartId);
                 if (count >= MAX_DISTINCT_ITEMS) {
@@ -42,19 +143,19 @@ export const CartService = () => {
                 }
             }
 
-            const productResult = await client.query<PricedProduct>(
-                `SELECT id, name, price, is_available FROM products WHERE id = $1 AND is_deleted = false`,
-                [productID]
+            await repo.upsertCartItem(
+                client,
+                cartId,
+                {
+                    productID,
+                    quantity,
+                    optionsSignature: selection.signature,
+                    optionsSnapshot: selection.snapshot,
+                    selectionSummary: selection.summary,
+                    unitPrice: selection.unitPrice,
+                },
+                MAX_QUANTITY
             );
-            const product = productResult.rows[0] ?? null;
-            if (product === null) {
-                throw new CartError("MISSING_PRODUCT", "Product not found");
-            }
-            if (!product.is_available) {
-                throw new CartError("UNAVAILABLE_PRODUCT", "Product is not currently available");
-            }
-
-            await repo.upsertCartItem(client, cartId, productID, quantity, MAX_QUANTITY);
             const view = await repo.getCartView(client, cartId);
 
             await client.query("COMMIT");
@@ -67,13 +168,14 @@ export const CartService = () => {
         }
     };
 
-    const setItemQuantity = async (identity: CartIdentity, productID: number, quantity: number): Promise<CartView> => {
+    /** Lines are addressed by cart item id: one product can be in the cart many times. */
+    const setItemQuantity = async (identity: CartIdentity, cartItemID: number, quantity: number): Promise<CartView> => {
         const client = await pool.connect();
         try {
             await client.query("BEGIN");
 
             const cartId = await repo.getOrCreateCartId(client, identity);
-            const updated = await repo.setCartItemQuantity(client, cartId, productID, quantity);
+            const updated = await repo.setCartItemQuantity(client, cartId, cartItemID, quantity);
             if (updated === 0) {
                 throw new CartError("CART_NOT_FOUND", "Item is not in your cart");
             }
@@ -89,7 +191,7 @@ export const CartService = () => {
         }
     };
 
-    const removeItem = async (identity: CartIdentity, productID: number): Promise<CartView> => {
+    const removeItem = async (identity: CartIdentity, cartItemID: number): Promise<CartView> => {
         const cartId = await repo.findCartId(pool, identity);
         if (cartId === null) {
             return emptyCartView();
@@ -97,7 +199,7 @@ export const CartService = () => {
         const client = await pool.connect();
         try {
             await client.query("BEGIN");
-            await repo.removeCartItem(client, cartId, productID);
+            await repo.removeCartItem(client, cartId, cartItemID);
             const view = await repo.getCartView(client, cartId);
             await client.query("COMMIT");
             return view;
@@ -129,6 +231,11 @@ export const CartService = () => {
         }
     };
 
+    /**
+     * Absorbs a guest cart into the account cart. Lines are merged on
+     * (product_id, options_signature) so two differently customized burgers both
+     * survive instead of collapsing into one line.
+     */
     const mergeGuestCart = async (userId: number, guestHash: string): Promise<CartView> => {
         const client = await pool.connect();
         try {
@@ -147,12 +254,25 @@ export const CartService = () => {
             await client.query("SELECT id FROM carts WHERE id = $1 FOR UPDATE", [userCartId]);
             await client.query("SELECT id FROM carts WHERE id = $1 FOR UPDATE", [guestCartId]);
 
-            const guestItems = await client.query(
-                `SELECT product_id, quantity FROM cart_items WHERE cart_id = $1 ORDER BY id`,
+            const guestItems = await client.query<CartLineRow & { options_signature: string; selection_summary: string; unit_price: number }>(
+                `SELECT id, product_id, quantity, options_signature, options_snapshot, selection_summary, unit_price
+                 FROM cart_items WHERE cart_id = $1 ORDER BY id`,
                 [guestCartId]
             );
-            for (const item of guestItems.rows as { product_id: number; quantity: number }[]) {
-                await repo.upsertCartItem(client, userCartId, item.product_id, item.quantity, MAX_QUANTITY);
+            for (const item of guestItems.rows) {
+                await repo.upsertCartItem(
+                    client,
+                    userCartId,
+                    {
+                        productID: item.product_id,
+                        quantity: item.quantity,
+                        optionsSignature: item.options_signature ?? "",
+                        optionsSnapshot: Array.isArray(item.options_snapshot) ? item.options_snapshot : [],
+                        selectionSummary: item.selection_summary ?? "",
+                        unitPrice: Number(item.unit_price),
+                    },
+                    MAX_QUANTITY
+                );
             }
 
             await repo.deleteCart(client, guestCartId);
@@ -180,13 +300,20 @@ export const CartService = () => {
             return null;
         }
         const itemsResult = await pool.query(
-            `SELECT product_id, product_name, unit_price, quantity, subtotal
+            `SELECT product_id, product_name, unit_price, quantity, subtotal, options_summary, options_snapshot
              FROM order_items WHERE order_id = $1 ORDER BY id`,
             [result.rows[0].id]
         );
         return { ...result.rows[0], items: itemsResult.rows };
     };
 
+    /**
+     * Places the order inside one transaction that RE-VALIDATES and RE-PRICES
+     * every line from current DB state. Stored cart prices are never trusted:
+     * the product may have been deleted, sold out or repriced, and a selected
+     * option may have been removed or marked unavailable since the customer
+     * added it. Any failure aborts the whole checkout (409) and names the line.
+     */
     const checkout = async (
         identity: CartIdentity | null,
         input: CheckoutInput
@@ -224,40 +351,98 @@ export const CartService = () => {
 
             await client.query("SELECT id FROM carts WHERE id = $1 FOR UPDATE", [cartId]);
 
-            const cartItemsResult = await client.query(
-                `SELECT product_id, quantity FROM cart_items WHERE cart_id = $1 ORDER BY id`,
+            const cartItemsResult = await client.query<CartLineRow>(
+                `SELECT id, product_id, quantity, unit_price, options_snapshot
+                 FROM cart_items WHERE cart_id = $1 ORDER BY id`,
                 [cartId]
             );
-            const cartItems = cartItemsResult.rows as { product_id: number; quantity: number }[];
+            const cartItems = cartItemsResult.rows;
             if (cartItems.length === 0) {
                 throw new CartError("EMPTY_CART", "Cart is empty");
             }
 
-            const productsResult = await client.query<PricedProduct>(
-                `SELECT id, name, price, is_available FROM products WHERE id = ANY($1::int[]) AND is_deleted = false`,
-                [cartItems.map((item) => item.product_id)]
-            );
-            const products = productsResult.rows;
-            const productById = new Map(products.map((product) => [product.id, product]));
+            const productIDs = [...new Set(cartItems.map((item) => item.product_id))];
+            const { products, trees } = await optionsService.loadSelectionContext(client, productIDs);
 
-            const unavailable = cartItems
-                .filter((item) => !productById.has(item.product_id) || !productById.get(item.product_id)!.is_available)
-                .map((item) => item.product_id);
-            if (unavailable.length > 0) {
+            const failures: { productName: string; reason: string; optionFailure: boolean }[] = [];
+            const unavailableProductIds: number[] = [];
+            const unavailableCartItemIds: number[] = [];
+            const pricedInputs: PricedItemInput[] = [];
+
+            for (const line of cartItems) {
+                const product = products.get(line.product_id);
+                if (product === undefined) {
+                    failures.push({ productName: `Item #${line.product_id}`, reason: "this item is no longer on the menu", optionFailure: false });
+                    unavailableProductIds.push(line.product_id);
+                    unavailableCartItemIds.push(line.id);
+                    continue;
+                }
+                if (product.is_modifier) {
+                    failures.push({ productName: product.name, reason: "this item can only be ordered as a meal option", optionFailure: false });
+                    unavailableProductIds.push(line.product_id);
+                    unavailableCartItemIds.push(line.id);
+                    continue;
+                }
+                if (!product.is_available) {
+                    failures.push({ productName: product.name, reason: "this item is currently unavailable", optionFailure: false });
+                    unavailableProductIds.push(line.product_id);
+                    unavailableCartItemIds.push(line.id);
+                    continue;
+                }
+
+                // The value ids and counts come from the stored snapshot, never from the client.
+                const valueIDs = readSnapshotValueIDs(line.options_snapshot);
+                const selection = resolveSelection(
+                    product,
+                    trees.get(line.product_id) ?? [],
+                    valueIDs,
+                    "checkout",
+                    readSnapshotQuantities(line.options_snapshot)
+                );
+                if (!selection.ok) {
+                    // Every failure here originates from our OWN stored snapshot,
+                    // never from client input, so it is always reported as an
+                    // option problem. That matters for a changed piece split: the
+                    // customer can fix it, whereas a product-level failure would
+                    // tell them the whole item is gone and strip it from the cart.
+                    failures.push({ productName: product.name, reason: selection.message, optionFailure: true });
+                    unavailableProductIds.push(line.product_id);
+                    unavailableCartItemIds.push(line.id);
+                    continue;
+                }
+
+                // Deliberately re-priced from current DB state even when that RAISES the line:
+                // the cart total is only ever a quote, and the order is written from
+                // the price that is actually orderable right now.
+                pricedInputs.push({
+                    productID: selection.productId,
+                    quantity: line.quantity,
+                    unitPrice: selection.unitPrice,
+                    optionsSummary: selection.summary,
+                    optionsSnapshot: selection.snapshot as SelectedOptionEntry[],
+                });
+            }
+
+            if (failures.length > 0) {
+                const optionFailure = failures.every((failure) => failure.optionFailure);
                 throw new CartError(
-                    "UNAVAILABLE_PRODUCT",
-                    "Some items are no longer available",
-                    unavailable
+                    optionFailure ? "OPTION_UNAVAILABLE" : "UNAVAILABLE_PRODUCT",
+                    buildCheckoutFailureMessage(failures),
+                    [...new Set(unavailableProductIds)],
+                    [...new Set(unavailableCartItemIds)]
                 );
             }
 
             const items = priceOrderItems(
-                cartItems.map((item) => ({ productID: item.product_id, quantity: item.quantity })),
-                products
+                pricedInputs,
+                pricedInputs.map((input) => {
+                    const product = products.get(input.productID)!;
+                    return { id: product.id, name: product.name, price: Number(product.price), is_available: product.is_available };
+                })
             );
             const total = items.reduce((sum, item) => sum + item.subtotal, 0);
 
-            const order = await insertOrderAndItems(client, {
+            const { inserted, order } = await insertOrderAndItems(client, {
                 branchID: input.branchID,
                 customerName: input.customerName,
                 customerPhone: input.customerPhone ?? null,
@@ -265,6 +450,18 @@ export const CartService = () => {
                 items,
                 idempotencyKey: input.idempotencyKey,
             });
+
+            if (!inserted) {
+                // A concurrent request with this same key won the claim. Its order
+                // is the answer, and this transaction's work must not touch the
+                // cart — the winner's own checkout already emptied it.
+                await client.query("ROLLBACK");
+                const existing = await findOrderByIdempotencyKey(input.idempotencyKey!);
+                if (existing !== null) {
+                    return { order: existing };
+                }
+                throw new CartError("EMPTY_CART", "Cart is empty");
+            }
 
             await repo.clearCartItems(client, cartId);
 

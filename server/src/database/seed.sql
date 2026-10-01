@@ -1,20 +1,23 @@
 -- Seed data generated from client/src/features/menu/data.ts
 
-INSERT INTO categories (id, name, cover_image, icon_image) VALUES
-(20150884, 'Bundles', 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20260111_a639038074343767288.jpeg?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20260111_a639038074343767288.jpeg?width=400'),
-(19653587, 'Single Meals', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638938145051185287?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638938145051185287?width=400'),
-(19653585, 'Family Meals', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638938148358404917?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638938148358404917?width=400'),
-(19653589, 'Kids Meals', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638946579749596278?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638946579749596278?width=400'),
-(19653594, 'Sandwiches', 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938028900195085.jpeg?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938028900195085.jpeg?width=400'),
-(19653595, 'Burger', 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/f1a59e0a-3b1e-45e6-abc3-613941c895c0.jpg?width=400', 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/f1a59e0a-3b1e-45e6-abc3-613941c895c0.jpg?width=400'),
-(19896634, 'Chicken Wings', 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/2579257726/8a2b0a4a-8585-419e-9222-14c1a8d4cbd1.jpg?width=400', 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/2579257726/8a2b0a4a-8585-419e-9222-14c1a8d4cbd1.jpg?width=400'),
-(19653592, 'Appetizers', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638944933890527259?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638944933890527259?width=400'),
-(19653588, 'Sauces', 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/b02e95a4-352e-4f94-85f3-f00a0021c538.jpg?width=400', 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/b02e95a4-352e-4f94-85f3-f00a0021c538.jpg?width=400'),
-(19653591, 'Add Ons', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638946582330610512?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638946582330610512?width=400'),
-(19653593, 'Drinks', 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938043011836257.jpeg?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938043011836257.jpeg?width=400')
+INSERT INTO categories (id, name, cover_image, icon_image, slug) VALUES
+(20150884, 'Bundles', 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20260111_a639038074343767288.jpeg?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20260111_a639038074343767288.jpeg?width=400', 'bundles'),
+(19653587, 'Single Meals', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638938145051185287?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638938145051185287?width=400', 'single-meals'),
+(19653585, 'Family Meals', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638938148358404917?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638938148358404917?width=400', 'family-meals'),
+(19653589, 'Kids Meals', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638946579749596278?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638946579749596278?width=400', 'kids-meals'),
+(19653594, 'Sandwiches', 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938028900195085.jpeg?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938028900195085.jpeg?width=400', 'sandwiches'),
+(19653595, 'Burger', 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/f1a59e0a-3b1e-45e6-abc3-613941c895c0.jpg?width=400', 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/f1a59e0a-3b1e-45e6-abc3-613941c895c0.jpg?width=400', 'burger'),
+(19896634, 'Chicken Wings', 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/2579257726/8a2b0a4a-8585-419e-9222-14c1a8d4cbd1.jpg?width=400', 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/2579257726/8a2b0a4a-8585-419e-9222-14c1a8d4cbd1.jpg?width=400', 'chicken-wings'),
+(19653592, 'Appetizers', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638944933890527259?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638944933890527259?width=400', 'appetizers'),
+(19653588, 'Sauces', 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/b02e95a4-352e-4f94-85f3-f00a0021c538.jpg?width=400', 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/b02e95a4-352e-4f94-85f3-f00a0021c538.jpg?width=400', 'sauces'),
+(19653591, 'Add Ons', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638946582330610512?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638946582330610512?width=400', 'add-ons'),
+(19653593, 'Drinks', 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938043011836257.jpeg?width=400', 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938043011836257.jpeg?width=400', 'drinks')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO products (category_id, name, description, price, image, is_customizable) VALUES
+INSERT INTO products (category_id, name, description, price, image, is_customizable)
+-- Guarded so re-running the seed never duplicates catalogue rows.
+SELECT v.category_id, v.name, v.description, v.price, v.image, v.is_customizable
+FROM (VALUES
 (20150884, 'Solo Crave', 'Your choice of sandwich, a piece of chicken, fries, coleslaw, and a drink.', 317.6, 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20260111_a639038074343767288.jpeg?width=400', false),
 (20150884, 'Double Dip', '2 sandwiches of your choice, 2 Nashville tender pieces, cheese fries, cup sauce, 2 drinks', 652.8, 'https://talabat.dhmedia.io/image/talabat/MenuItems/Double639038075270608746.jpg?width=400', false),
 (20150884, 'Festival Box', '4 chicken pieces, 4 tenders, 4 wings, 2 sandwiches, 3 sauces, and family fries', 966.7, 'https://talabat.dhmedia.io/image/talabat/MenuItems/Fes639038075839187358.jpg?width=400', false),
@@ -103,7 +106,562 @@ INSERT INTO products (category_id, name, description, price, image, is_customiza
 (19653593, 'Water', 'Bottled drinking water', 15, 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938043157873854.jpeg?width=400', false),
 (19653593, 'Fi Cola', 'Soft drink.', 35, 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938043011836257.jpeg?width=400', false),
 (19653593, 'Apple Juice', 'Fresh apple juice.', 25, 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938042848143761.jpeg?width=400', false),
-(19653593, '1 Liter Maxi Drink', 'Large 1 liter soft drink', 50, 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638938074328282749?width=400', false);
+(19653593, '1 Liter Maxi Drink', 'Large 1 liter soft drink', 50, 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638938074328282749?width=400', false)
+) AS v(category_id, name, description, price, image, is_customizable)
+WHERE NOT EXISTS (
+    SELECT 1 FROM products p
+     WHERE p.category_id = v.category_id
+       AND p.name = v.name
+       AND p.price = v.price
+       AND p.is_modifier = false
+       AND p.is_deleted = false
+);
+
+-- Build Your Own Burger. Not in the imported menu export, so it is seeded here to
+-- give the burger category a full customization example.
+INSERT INTO products (category_id, name, description, price, image, is_deleted, is_available, is_customizable)
+SELECT 19653595,
+       'Build Your Own Burger',
+       'Your burger, your rules: pick your main, bun, cheese, up to five toppings, your sauce and extras.',
+       95,
+       'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/f1a59e0a-3b1e-45e6-abc3-613941c895c0.jpg?width=400',
+       false,
+       true,
+       false
+WHERE NOT EXISTS (SELECT 1 FROM products WHERE name = 'Build Your Own Burger' AND is_deleted = false);
+
+
+-- 2. Hidden modifier products. Each customizer value points at one of these via
+--    option_values.modifier_product_id so an admin can see and restock the real
+--    ingredient. is_modifier keeps them out of the storefront and product grid, and
+--    their own price is never charged: the option value's price_delta is the only
+--    price authority.
+--
+--    products.category_id is NOT NULL, so every modifier needs one. They all live
+--    under "Add Ons" purely to satisfy the FK — is_modifier is what actually keeps
+--    them out of the storefront and the admin product grid.
+INSERT INTO products (category_id, name, description, price, image, is_available, is_modifier)
+SELECT 19653591, v.name, v.description, v.price, v.image, true, true
+FROM (VALUES
+    ('Hot Honey Cup', 'Hot honey sauce cup', 22.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/b02e95a4-352e-4f94-85f3-f00a0021c538.jpg?width=400'),
+    ('Smoked Turkey', 'Smoked turkey slices', 25.00, 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20260102_a639031320168568896.jpeg?width=400'),
+    ('Pickled Cucumbers', 'Crunchy pickled cucumber slices', 8.00, 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20260102_a639031321615002112.jpeg?width=400'),
+    ('Crispy Fillet', 'Crispy chicken fillet piece', 50.00, 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638946582330610512?width=400'),
+    ('Barbecue Sauce Cup', 'Barbecue sauce cup', 18.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/6d95cb47-3ce4-4938-8dd5-a5d8e563c4fc.jpg?width=400'),
+    ('Whole Wheat Bun', 'Toasted whole wheat bun', 12.00, 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638943336047206091?width=400'),
+    ('Potato Bun', 'Soft potato bun', 12.00, 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638943336047206091?width=400'),
+    ('Extra Cheddar', 'Melted cheddar cheese slice', 15.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771283/product/33567da1-e64a-475d-881b-011e640563f6.jpg?width=400'),
+    ('Sriracha Mayo Cup', 'Sriracha mayo cup', 22.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/8c2bbc06-4a2e-4bf3-825a-2e3e2b5cf67a.jpg?width=400'),
+    ('Fried Onion Rings', 'Crispy fried onion rings', 25.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/817ebfd7-740c-4ebf-8ee0-bb2459e64824.jpg?width=400'),
+    ('Buffalo Sauce Cup', 'Buffalo sauce cup', 20.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/ff88b4ed-61de-46a7-a881-5b20d7e00b32.jpg?width=400'),
+    ('Grilled Mushrooms', 'Grilled button mushrooms', 20.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/f1a59e0a-3b1e-45e6-abc3-613941c895c0.jpg?width=400'),
+    ('Beef Patty', 'Smashed 100% beef patty', 60.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771283/product/1ecbe826-dfaf-4584-8272-77fbae3bf02e.jpg?width=400'),
+    ('Smoky Sauce Cup', 'Smoky sauce cup', 20.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/68594202-87f3-434f-86d9-c6c682ee0ac6.jpg?width=400'),
+    ('Jalapenos', 'Sliced jalapenos', 10.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771286/product/1daaa2ea-80e9-4aa0-b15e-4d9eb9fc840c.jpg?width=400'),
+    ('Nashville Tender', 'Nashville hot tender strip', 65.00, 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638946582821151041?width=400'),
+    ('Crisp Lettuce', 'Fresh crisp lettuce', 8.00, 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20260102_a639031321615002112.jpeg?width=400'),
+    ('Ranch Cup', 'Ranch dressing cup', 20.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/f8d88158-e51b-4c81-bf69-03c966f64b4a.jpg?width=400'),
+    ('Extra American Cheese', 'Melted American cheese slice', 15.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/817ebfd7-740c-4ebf-8ee0-bb2459e64824.jpg?width=400'),
+    ('Extra Crispy Tender', 'Extra crispy chicken tender', 85.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771283/product/7028a4a9-c2e3-4cd3-95d2-6cdf3cc6238b.jpg?width=400'),
+    ('Tiger Sauce Cup', 'Tiger sauce cup', 20.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771283/product/ceda0938-9425-4722-bfff-a7013538408f.jpg?width=400'),
+    ('Extra Nashville Tender', 'Extra Nashville tender', 95.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771283/product/3f8152e5-0e57-431e-8244-f4c7a5f093ff.jpg?width=400'),
+    ('Doods Sauce Cup', 'Doods sauce cup', 20.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/6b356ced-ea87-44d1-8de0-301c1481ee92.jpg?width=400'),
+    ('Extra Mozzarella', 'Melted mozzarella slice', 20.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/71bce1a5-323b-49e0-833b-5d0f52860eec.jpg?width=400'),
+    ('Comeback Sauce Cup', 'Comeback sauce cup', 20.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/db641c1d-1022-4529-8bed-66b72033adf0.jpg?width=400'),
+    ('Toasted Brioche Bun', 'Toasted soft brioche bun', 12.00, 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638943336047206091?width=400'),
+    ('Coleslaw', 'Fresh DODZ coleslaw', 20.00, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/0a9d44c7-701a-444d-911e-8dabaebc5789.jpg?width=400')
+) AS v(name, description, price, image)
+WHERE NOT EXISTS (
+    SELECT 1 FROM products p WHERE p.name = v.name AND p.is_modifier = true
+);
+
+-- 3. Option trees. price_delta is the price authority; "modifier" links the value
+--    to the hidden ingredient product above. Radio groups are pinned to max 1.
+--
+--    Three shapes are supported by the loader below:
+--      * radio / checkbox - ordinary picks, selection validated in resolveSelection.
+--      * quantity        - a counted split. Two groups are linked to each other and
+--                           share linked_total; the server rejects the request unless
+--                           the two counts add up to that total. "linked_to_index"
+--                           is loader-only: neither half has an id yet, so links are
+--                           wired in a second pass once both rows exist.
+DO $seed$
+DECLARE
+    v_def JSONB;
+    v_group JSONB;
+    v_value JSONB;
+    v_product_id INTEGER;
+    v_option_id INTEGER;
+    v_option_ids INTEGER[] := '{}';
+    v_link RECORD;
+BEGIN
+    FOR v_def IN
+        SELECT * FROM jsonb_array_elements($json$
+        [
+          {
+            "product": "Mighty D Sandwich",
+            "groups": [
+              { "name": "Bun", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 1, "values": [
+                { "name": "Toasted Brioche Bun", "description": "Soft and buttery", "price_delta": 12, "is_default": true, "sort_order": 1, "modifier": "Toasted Brioche Bun" },
+                { "name": "Whole Wheat Bun", "price_delta": 12, "sort_order": 2, "modifier": "Whole Wheat Bun" },
+                { "name": "Potato Bun", "price_delta": 12, "sort_order": 3, "modifier": "Potato Bun" }
+              ]},
+              { "name": "Cheese", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 2, "sort_order": 2, "values": [
+                { "name": "American Cheese", "description": "Melted American", "price_delta": 15, "is_default": true, "sort_order": 1, "modifier": "Extra American Cheese" },
+                { "name": "Cheddar", "price_delta": 15, "sort_order": 2, "modifier": "Extra Cheddar" },
+                { "name": "Mozzarella", "price_delta": 20, "sort_order": 3, "modifier": "Extra Mozzarella" }
+              ]},
+              { "name": "Toppings", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 5, "sort_order": 3, "values": [
+                { "name": "Crisp Lettuce", "price_delta": 8, "is_default": true, "sort_order": 1, "modifier": "Crisp Lettuce" },
+                { "name": "Pickled Cucumbers", "price_delta": 8, "is_default": true, "sort_order": 2, "modifier": "Pickled Cucumbers" },
+                { "name": "Jalapenos", "price_delta": 10, "sort_order": 3, "modifier": "Jalapenos" },
+                { "name": "Grilled Mushrooms", "price_delta": 20, "sort_order": 4, "modifier": "Grilled Mushrooms" },
+                { "name": "Smoked Turkey", "price_delta": 25, "sort_order": 5, "modifier": "Smoked Turkey" },
+                { "name": "Coleslaw", "price_delta": 20, "sort_order": 6, "modifier": "Coleslaw" }
+              ]},
+              { "name": "Sauce", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 4, "values": [
+                { "name": "Comeback Sauce", "description": "Our signature comeback sauce", "price_delta": 20, "is_default": true, "sort_order": 1, "modifier": "Comeback Sauce Cup" },
+                { "name": "Buffalo Sauce", "price_delta": 20, "sort_order": 2, "modifier": "Buffalo Sauce Cup" },
+                { "name": "Smoky Sauce", "price_delta": 20, "sort_order": 3, "modifier": "Smoky Sauce Cup" },
+                { "name": "Tiger Sauce", "price_delta": 20, "sort_order": 4, "modifier": "Tiger Sauce Cup" },
+                { "name": "Doods Sauce", "price_delta": 20, "sort_order": 5, "modifier": "Doods Sauce Cup" },
+                { "name": "Ranch", "price_delta": 20, "sort_order": 6, "modifier": "Ranch Cup" },
+                { "name": "Hot Honey", "price_delta": 22, "sort_order": 7, "modifier": "Hot Honey Cup" },
+                { "name": "Sriracha Mayo", "price_delta": 22, "sort_order": 8, "modifier": "Sriracha Mayo Cup" },
+                { "name": "Barbecue Sauce", "price_delta": 18, "sort_order": 9, "modifier": "Barbecue Sauce Cup" }
+              ]},
+              { "name": "Extras", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 3, "sort_order": 5, "values": [
+                { "name": "Extra Crispy Tender", "price_delta": 85, "sort_order": 1, "modifier": "Extra Crispy Tender" },
+                { "name": "Extra Nashville Tender", "price_delta": 95, "sort_order": 2, "modifier": "Extra Nashville Tender" },
+                { "name": "Fried Onion Rings", "price_delta": 25, "sort_order": 3, "modifier": "Fried Onion Rings" }
+              ]}
+            ]
+          },
+          {
+            "product": "Smoky D Sandwich",
+            "groups": [
+              { "name": "Bun", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 1, "values": [
+                { "name": "Toasted Brioche Bun", "price_delta": 12, "is_default": true, "sort_order": 1, "modifier": "Toasted Brioche Bun" },
+                { "name": "Whole Wheat Bun", "price_delta": 12, "sort_order": 2, "modifier": "Whole Wheat Bun" },
+                { "name": "Potato Bun", "price_delta": 12, "sort_order": 3, "modifier": "Potato Bun" }
+              ]},
+              { "name": "Cheese", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 2, "sort_order": 2, "values": [
+                { "name": "American Cheese", "price_delta": 15, "is_default": true, "sort_order": 1, "modifier": "Extra American Cheese" },
+                { "name": "Cheddar", "price_delta": 15, "sort_order": 2, "modifier": "Extra Cheddar" },
+                { "name": "Mozzarella", "price_delta": 20, "sort_order": 3, "modifier": "Extra Mozzarella" },
+                { "name": "Smoked Turkey", "price_delta": 25, "sort_order": 4, "modifier": "Smoked Turkey" }
+              ]},
+              { "name": "Toppings", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 5, "sort_order": 3, "values": [
+                { "name": "Crisp Lettuce", "price_delta": 8, "is_default": true, "sort_order": 1, "modifier": "Crisp Lettuce" },
+                { "name": "Pickled Cucumbers", "price_delta": 8, "is_default": true, "sort_order": 2, "modifier": "Pickled Cucumbers" },
+                { "name": "Grilled Mushrooms", "price_delta": 20, "sort_order": 3, "modifier": "Grilled Mushrooms" },
+                { "name": "Jalapenos", "price_delta": 10, "sort_order": 4, "modifier": "Jalapenos" }
+              ]},
+              { "name": "Sauce", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 4, "values": [
+                { "name": "Smoky Sauce", "description": "Smoky, house favourite", "price_delta": 20, "is_default": true, "sort_order": 1, "modifier": "Smoky Sauce Cup" },
+                { "name": "Comeback Sauce", "price_delta": 20, "sort_order": 2, "modifier": "Comeback Sauce Cup" },
+                { "name": "Ranch", "price_delta": 20, "sort_order": 3, "modifier": "Ranch Cup" },
+                { "name": "Buffalo Sauce", "price_delta": 20, "sort_order": 4, "modifier": "Buffalo Sauce Cup" },
+                { "name": "Tiger Sauce", "price_delta": 20, "sort_order": 5, "modifier": "Tiger Sauce Cup" },
+                { "name": "Doods Sauce", "price_delta": 20, "sort_order": 6, "modifier": "Doods Sauce Cup" },
+                { "name": "Barbecue Sauce", "price_delta": 18, "sort_order": 7, "modifier": "Barbecue Sauce Cup" },
+                { "name": "Hot Honey", "price_delta": 22, "sort_order": 8, "modifier": "Hot Honey Cup" },
+                { "name": "Sriracha Mayo", "price_delta": 22, "sort_order": 9, "modifier": "Sriracha Mayo Cup" }
+              ]},
+              { "name": "Extras", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 3, "sort_order": 5, "values": [
+                { "name": "Extra Crispy Tender", "price_delta": 85, "sort_order": 1, "modifier": "Extra Crispy Tender" },
+                { "name": "Extra Nashville Tender", "price_delta": 95, "sort_order": 2, "modifier": "Extra Nashville Tender" },
+                { "name": "Fried Onion Rings", "price_delta": 25, "sort_order": 3, "modifier": "Fried Onion Rings" }
+              ]}
+            ]
+          },
+          {
+            "product": "Build Your Own Burger",
+            "groups": [
+              { "name": "Main", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 1, "values": [
+                { "name": "Beef Patty", "description": "Smashed 100% beef", "price_delta": 60, "sort_order": 1, "modifier": "Beef Patty" },
+                { "name": "Crispy Chicken Fillet", "price_delta": 50, "sort_order": 2, "modifier": "Crispy Fillet" },
+                { "name": "Nashville Tender", "price_delta": 65, "sort_order": 3, "modifier": "Nashville Tender" }
+              ]},
+              { "name": "Bun", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 2, "values": [
+                { "name": "Toasted Brioche Bun", "price_delta": 12, "is_default": true, "sort_order": 1, "modifier": "Toasted Brioche Bun" },
+                { "name": "Whole Wheat Bun", "price_delta": 12, "sort_order": 2, "modifier": "Whole Wheat Bun" },
+                { "name": "Potato Bun", "price_delta": 12, "sort_order": 3, "modifier": "Potato Bun" }
+              ]},
+              { "name": "Cheese", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 2, "sort_order": 3, "values": [
+                { "name": "American Cheese", "description": "Melted American", "price_delta": 15, "sort_order": 1, "modifier": "Extra American Cheese" },
+                { "name": "Cheddar", "price_delta": 15, "sort_order": 2, "modifier": "Extra Cheddar" },
+                { "name": "Mozzarella", "price_delta": 20, "sort_order": 3, "modifier": "Extra Mozzarella" }
+              ]},
+              { "name": "Toppings", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 5, "sort_order": 4, "values": [
+                { "name": "Crisp Lettuce", "price_delta": 8, "is_default": true, "sort_order": 1, "modifier": "Crisp Lettuce" },
+                { "name": "Pickled Cucumbers", "price_delta": 8, "is_default": true, "sort_order": 2, "modifier": "Pickled Cucumbers" },
+                { "name": "Grilled Mushrooms", "price_delta": 20, "sort_order": 3, "modifier": "Grilled Mushrooms" },
+                { "name": "Jalapenos", "price_delta": 10, "sort_order": 4, "modifier": "Jalapenos" },
+                { "name": "Smoked Turkey", "price_delta": 25, "sort_order": 5, "modifier": "Smoked Turkey" },
+                { "name": "Fried Onion Rings", "price_delta": 25, "sort_order": 6, "modifier": "Fried Onion Rings" }
+              ]},
+              { "name": "Sauce", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 5, "values": [
+                { "name": "Comeback Sauce", "description": "Our signature comeback sauce", "price_delta": 20, "is_default": true, "sort_order": 1, "modifier": "Comeback Sauce Cup" },
+                { "name": "Smoky Sauce", "price_delta": 20, "sort_order": 2, "modifier": "Smoky Sauce Cup" },
+                { "name": "Ranch", "price_delta": 20, "sort_order": 3, "modifier": "Ranch Cup" },
+                { "name": "Buffalo Sauce", "price_delta": 20, "sort_order": 4, "modifier": "Buffalo Sauce Cup" },
+                { "name": "Tiger Sauce", "price_delta": 20, "sort_order": 5, "modifier": "Tiger Sauce Cup" },
+                { "name": "Doods Sauce", "price_delta": 20, "sort_order": 6, "modifier": "Doods Sauce Cup" },
+                { "name": "Barbecue Sauce", "price_delta": 18, "sort_order": 7, "modifier": "Barbecue Sauce Cup" },
+                { "name": "Hot Honey", "price_delta": 22, "sort_order": 8, "modifier": "Hot Honey Cup" },
+                { "name": "Sriracha Mayo", "price_delta": 22, "sort_order": 9, "modifier": "Sriracha Mayo Cup" }
+              ]},
+              { "name": "Extras", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 4, "sort_order": 6, "values": [
+                { "name": "Extra Crispy Tender", "price_delta": 85, "sort_order": 1, "modifier": "Extra Crispy Tender" },
+                { "name": "Extra Nashville Tender", "price_delta": 95, "sort_order": 2, "modifier": "Extra Nashville Tender" },
+                { "name": "Extra Cheese", "description": "One more cheese slice", "price_delta": 15, "sort_order": 3, "modifier": "Extra American Cheese" },
+                { "name": "Coleslaw", "price_delta": 20, "sort_order": 4, "modifier": "Coleslaw" }
+              ]}
+            ]
+          }
+        ]
+        $json$::jsonb)
+    LOOP
+        SELECT id INTO v_product_id
+        FROM products
+        WHERE name = v_def->>'product' AND is_deleted = false AND is_modifier = false
+        ORDER BY id
+        LIMIT 1;
+
+        IF v_product_id IS NULL THEN
+            CONTINUE;
+        END IF;
+
+        -- Idempotency: never touch a tree an admin has already customised.
+        IF EXISTS (SELECT 1 FROM product_options WHERE product_id = v_product_id) THEN
+            UPDATE products SET is_customizable = true WHERE id = v_product_id AND is_customizable = false;
+            CONTINUE;
+        END IF;
+
+        UPDATE products SET is_customizable = true, updated_at = CURRENT_TIMESTAMP WHERE id = v_product_id;
+
+        v_option_ids := '{}';
+
+        FOR v_group IN SELECT * FROM jsonb_array_elements(v_def->'groups') LOOP
+            INSERT INTO product_options (product_id, name, type, is_required, min_selections, max_selections, sort_order, is_available, linked_total, unit_label)
+            VALUES (
+                v_product_id,
+                v_group->>'name',
+                v_group->>'type',
+                COALESCE((v_group->>'is_required')::boolean, false),
+                COALESCE((v_group->>'min_selections')::int, 0),
+                (v_group->>'max_selections')::int,
+                COALESCE((v_group->>'sort_order')::int, 0),
+                true,
+                (v_group->>'linked_total')::int,
+                v_group->>'unit_label'
+            )
+            RETURNING id INTO v_option_id;
+
+            v_option_ids := array_append(v_option_ids, v_option_id);
+
+            FOR v_value IN SELECT * FROM jsonb_array_elements(v_group->'values') LOOP
+                INSERT INTO option_values (option_id, name, description, price_delta, is_default, is_available, sort_order, modifier_product_id)
+                VALUES (
+                    v_option_id,
+                    v_value->>'name',
+                    v_value->>'description',
+                    COALESCE((v_value->>'price_delta')::numeric, 0),
+                    COALESCE((v_value->>'is_default')::boolean, false),
+                    true,
+                    COALESCE((v_value->>'sort_order')::int, 0),
+                    (SELECT p.id FROM products p WHERE p.is_modifier = true AND p.name = v_value->>'modifier')
+                );
+            END LOOP;
+        END LOOP;
+
+        -- Second pass: a counted pair points at each other, and neither half has an
+        -- id to point at until both rows exist, so the links are wired afterwards.
+        FOR v_link IN
+            SELECT value AS g, ordinality AS pos
+            FROM jsonb_array_elements(v_def->'groups') WITH ORDINALITY
+        LOOP
+            IF (v_link.g->>'type') = 'quantity' AND (v_link.g->>'linked_to_index')::int IS NOT NULL THEN
+                UPDATE product_options
+                SET linked_group_id = v_option_ids[(v_link.g->>'linked_to_index')::int + 1]
+                WHERE id = v_option_ids[v_link.pos];
+            END IF;
+        END LOOP;
+    END LOOP;
+END $seed$;
+
+-- 4. Fried-chicken piece mixes. Every one of these meals is sold as a fixed piece
+--    count, so the two counted groups are a linked pair: Original + Spicy must equal
+--    the total in linked_total, and resolveSelection rejects the request otherwise.
+--    price_delta is 0 on both halves because splitting the same total across flavours
+--    is not an upgrade, so the product price already charged stays authoritative.
+DO $seed$
+DECLARE
+    v_def JSONB;
+    v_group JSONB;
+    v_value JSONB;
+    v_product_id INTEGER;
+    v_option_id INTEGER;
+    v_option_ids INTEGER[] := '{}';
+    v_link RECORD;
+BEGIN
+    FOR v_def IN
+        SELECT * FROM jsonb_array_elements($json$
+        [
+          {
+            "product": "Doodz Snack",
+            "groups": [
+              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 2, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
+                { "name": "Original", "price_delta": 0, "sort_order": 1 }
+              ]},
+              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 2, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
+                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
+              ]}
+            ]
+          },
+          {
+            "product": "Doodz Diner",
+            "groups": [
+              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 3, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
+                { "name": "Original", "price_delta": 0, "sort_order": 1 }
+              ]},
+              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 3, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
+                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
+              ]}
+            ]
+          },
+          {
+            "product": "Super Doodz",
+            "groups": [
+              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 4, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
+                { "name": "Original", "price_delta": 0, "sort_order": 1 }
+              ]},
+              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 4, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
+                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
+              ]}
+            ]
+          },
+          {
+            "product": "Family Meal",
+            "groups": [
+              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 8, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
+                { "name": "Original", "price_delta": 0, "sort_order": 1 }
+              ]},
+              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 8, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
+                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
+              ]}
+            ]
+          },
+          {
+            "product": "Star Meal",
+            "groups": [
+              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 12, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
+                { "name": "Original", "price_delta": 0, "sort_order": 1 }
+              ]},
+              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 12, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
+                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
+              ]}
+            ]
+          },
+          {
+            "product": "Mega Star Family Meal",
+            "groups": [
+              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 15, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
+                { "name": "Original", "price_delta": 0, "sort_order": 1 }
+              ]},
+              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 15, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
+                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
+              ]}
+            ]
+          },
+          {
+            "product": "Big Family Meal",
+            "groups": [
+              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 18, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
+                { "name": "Original", "price_delta": 0, "sort_order": 1 }
+              ]},
+              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 18, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
+                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
+              ]}
+            ]
+          },
+          {
+            "product": "Kids Fried Chicken Piece",
+            "groups": [
+              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 1, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
+                { "name": "Original", "price_delta": 0, "sort_order": 1 }
+              ]},
+              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 1, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
+                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
+              ]}
+            ]
+          }
+        ]
+        $json$::jsonb)
+    LOOP
+        SELECT id INTO v_product_id
+        FROM products
+        WHERE name = v_def->>'product' AND is_deleted = false AND is_modifier = false
+        ORDER BY id
+        LIMIT 1;
+
+        IF v_product_id IS NULL THEN
+            CONTINUE;
+        END IF;
+
+        IF EXISTS (SELECT 1 FROM product_options WHERE product_id = v_product_id) THEN
+            UPDATE products SET is_customizable = true WHERE id = v_product_id AND is_customizable = false;
+            CONTINUE;
+        END IF;
+
+        UPDATE products SET is_customizable = true, updated_at = CURRENT_TIMESTAMP WHERE id = v_product_id;
+
+        v_option_ids := '{}';
+
+        FOR v_group IN SELECT * FROM jsonb_array_elements(v_def->'groups') LOOP
+            INSERT INTO product_options (product_id, name, type, is_required, min_selections, max_selections, sort_order, is_available, linked_total, unit_label)
+            VALUES (
+                v_product_id,
+                v_group->>'name',
+                v_group->>'type',
+                COALESCE((v_group->>'is_required')::boolean, false),
+                COALESCE((v_group->>'min_selections')::int, 0),
+                (v_group->>'max_selections')::int,
+                COALESCE((v_group->>'sort_order')::int, 0),
+                true,
+                (v_group->>'linked_total')::int,
+                v_group->>'unit_label'
+            )
+            RETURNING id INTO v_option_id;
+
+            v_option_ids := array_append(v_option_ids, v_option_id);
+
+            FOR v_value IN SELECT * FROM jsonb_array_elements(v_group->'values') LOOP
+                INSERT INTO option_values (option_id, name, description, price_delta, is_default, is_available, sort_order)
+                VALUES (
+                    v_option_id,
+                    v_value->>'name',
+                    v_value->>'description',
+                    COALESCE((v_value->>'price_delta')::numeric, 0),
+                    false,
+                    true,
+                    COALESCE((v_value->>'sort_order')::int, 0)
+                );
+            END LOOP;
+        END LOOP;
+
+        -- Wire the two halves together once both rows exist.
+        FOR v_link IN
+            SELECT value AS g, ordinality AS pos
+            FROM jsonb_array_elements(v_def->'groups') WITH ORDINALITY
+        LOOP
+            UPDATE product_options
+            SET linked_group_id = v_option_ids[(v_link.g->>'linked_to_index')::int + 1]
+            WHERE id = v_option_ids[v_link.pos];
+        END LOOP;
+    END LOOP;
+END $seed$;
+
+-- 5. Shared condiment trees for the remaining sandwiches and burgers. One tree is
+--    defined once and applied to every in-scope product, so the offered sauces,
+--    cheeses and toppings stay consistent across the whole range.
+--
+--    These values are all price_delta 0: they describe how an existing sandwich is
+--    finished rather than adding a priced extra, and the three flagship products
+--    above keep their own priced trees.
+DO $seed$
+DECLARE
+    v_groups JSONB := $json$
+    [
+      { "name": "Sauce", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 1, "values": [
+        { "name": "Comeback Sauce", "description": "Our signature comeback sauce", "price_delta": 0, "is_default": true, "sort_order": 1, "modifier": "Comeback Sauce Cup" },
+        { "name": "Smoky Sauce", "price_delta": 0, "sort_order": 2, "modifier": "Smoky Sauce Cup" },
+        { "name": "Buffalo Sauce", "price_delta": 0, "sort_order": 3, "modifier": "Buffalo Sauce Cup" },
+        { "name": "Tiger Sauce", "price_delta": 0, "sort_order": 4, "modifier": "Tiger Sauce Cup" },
+        { "name": "Doods Sauce", "price_delta": 0, "sort_order": 5, "modifier": "Doods Sauce Cup" },
+        { "name": "Ranch", "price_delta": 0, "sort_order": 6, "modifier": "Ranch Cup" },
+        { "name": "Hot Honey", "price_delta": 0, "sort_order": 7, "modifier": "Hot Honey Cup" },
+        { "name": "Sriracha Mayo", "price_delta": 0, "sort_order": 8, "modifier": "Sriracha Mayo Cup" },
+        { "name": "Barbecue Sauce", "price_delta": 0, "sort_order": 9, "modifier": "Barbecue Sauce Cup" }
+      ]},
+      { "name": "Cheese", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 2, "sort_order": 2, "values": [
+        { "name": "American Cheese", "description": "Melted American", "price_delta": 0, "sort_order": 1, "modifier": "Extra American Cheese" },
+        { "name": "Cheddar", "price_delta": 0, "sort_order": 2, "modifier": "Extra Cheddar" },
+        { "name": "Mozzarella", "price_delta": 0, "sort_order": 3, "modifier": "Extra Mozzarella" }
+      ]},
+      { "name": "Toppings", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 5, "sort_order": 3, "values": [
+        { "name": "Crisp Lettuce", "price_delta": 0, "is_default": true, "sort_order": 1, "modifier": "Crisp Lettuce" },
+        { "name": "Pickled Cucumbers", "price_delta": 0, "is_default": true, "sort_order": 2, "modifier": "Pickled Cucumbers" },
+        { "name": "Coleslaw", "price_delta": 0, "sort_order": 3, "modifier": "Coleslaw" },
+        { "name": "Jalapenos", "price_delta": 0, "sort_order": 4, "modifier": "Jalapenos" },
+        { "name": "Grilled Mushrooms", "price_delta": 0, "sort_order": 5, "modifier": "Grilled Mushrooms" },
+        { "name": "Smoked Turkey", "price_delta": 0, "sort_order": 6, "modifier": "Smoked Turkey" }
+      ]}
+    ]
+    $json$::jsonb;
+    v_product RECORD;
+    v_group JSONB;
+    v_value JSONB;
+    v_option_id INTEGER;
+BEGIN
+    -- Every non-deleted sandwich and burger that does not already carry a tree.
+    -- min(id) per name so a duplicated catalogue row is never given a second tree.
+    FOR v_product IN
+        SELECT min(p.id) AS id
+        FROM products p
+        JOIN categories c ON c.id = p.category_id
+        WHERE c.name IN ('Sandwiches', 'Burger')
+          AND p.is_deleted = false
+          AND p.is_modifier = false
+          AND NOT EXISTS (SELECT 1 FROM product_options po WHERE po.product_id = p.id)
+        GROUP BY p.name
+        ORDER BY min(p.id)
+    LOOP
+        UPDATE products
+        SET is_customizable = true, updated_at = CURRENT_TIMESTAMP
+        WHERE id = v_product.id;
+
+        FOR v_group IN SELECT * FROM jsonb_array_elements(v_groups) LOOP
+            INSERT INTO product_options (product_id, name, type, is_required, min_selections, max_selections, sort_order, is_available)
+            VALUES (
+                v_product.id,
+                v_group->>'name',
+                v_group->>'type',
+                COALESCE((v_group->>'is_required')::boolean, false),
+                COALESCE((v_group->>'min_selections')::int, 0),
+                (v_group->>'max_selections')::int,
+                COALESCE((v_group->>'sort_order')::int, 0),
+                true
+            )
+            RETURNING id INTO v_option_id;
+
+            FOR v_value IN SELECT * FROM jsonb_array_elements(v_group->'values') LOOP
+                INSERT INTO option_values (option_id, name, description, price_delta, is_default, is_available, sort_order, modifier_product_id)
+                VALUES (
+                    v_option_id,
+                    v_value->>'name',
+                    v_value->>'description',
+                    COALESCE((v_value->>'price_delta')::numeric, 0),
+                    COALESCE((v_value->>'is_default')::boolean, false),
+                    true,
+                    COALESCE((v_value->>'sort_order')::int, 0),
+                    (SELECT p.id FROM products p WHERE p.is_modifier = true AND p.name = v_value->>'modifier')
+                );
+            END LOOP;
+        END LOOP;
+    END LOOP;
+END $seed$;
+
+-- 6. Reconcile the flag. is_customizable is a denormalised mirror of "has an option
+--    tree", so it is derived here instead of being tracked by hand. This repairs any
+--    drift left behind by earlier admin edits or interrupted runs.
+UPDATE products p
+SET is_customizable = (EXISTS (SELECT 1 FROM product_options po WHERE po.product_id = p.id)),
+    updated_at = CURRENT_TIMESTAMP
+WHERE p.is_modifier = false
+  AND p.is_deleted = false
+  AND p.is_customizable <> (EXISTS (SELECT 1 FROM product_options po WHERE po.product_id = p.id));
 
 -- Branches (mirrors client/src/features/store-locations/data.ts)
 INSERT INTO branches (id, name, area, address, phone, opening_time, closing_time, lat, lng) VALUES

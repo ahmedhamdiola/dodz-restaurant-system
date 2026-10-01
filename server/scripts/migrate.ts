@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pool } from "../src/config/database.js";
@@ -14,8 +14,13 @@ const apply = async (file: string) => {
 // Applies every migration file in order. Migrations are keyed by a date-stamped
 // filename; running `tsx scripts/migrate.ts` re-applies them (all statements are
 // IF NOT EXISTS / ADD COLUMN IF NOT EXISTS, so they are safe to re-run).
+//
+// The list is read off disk rather than hardcoded: a new `2026xxxx_*.sql` dropped
+// in the directory is picked up on the next run instead of being silently skipped.
 const applyAll = async () => {
-    const files = ["20260923_cart.sql"];
+    const files = readdirSync(root)
+        .filter((file) => file.endsWith(".sql"))
+        .sort();
     for (const file of files) {
         await apply(file);
     }

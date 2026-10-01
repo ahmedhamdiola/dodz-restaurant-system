@@ -10,6 +10,19 @@ const GenerateStatus = (res: Response, statusCode: number, success: boolean, mes
     });
 };
 
+/**
+ * Error responses carry an optional `data` payload so a client can react
+ * programmatically (e.g. which cart lines failed re-validation) while the
+ * `message` stays the human-readable string shown in the UI.
+ */
+export const ErrorStatus = (res: Response, statusCode: number, message: string, data?: unknown) => {
+    return res.status(statusCode).json({
+        success: false,
+        message,
+        data
+    });
+};
+
 export const CheckId = (id: number) => {
     return !isNaN(id) && id > 0;
 };
@@ -31,21 +44,21 @@ export const DeletedStatus = (res: Response, message: string) => {
 
 // ERROR STATUS
 
-export const InternalServerErrorStatus = (res: Response, message: string) => {
-    return GenerateStatus(res, 500, false, message);
+export const InternalServerErrorStatus = (res: Response, message: string, data?: unknown) => {
+    return ErrorStatus(res, 500, message, data);
 };
-export const NotFoundStatus = (res: Response, message: string) => {
-    return GenerateStatus(res, 404, false, message);
+export const NotFoundStatus = (res: Response, message: string, data?: unknown) => {
+    return ErrorStatus(res, 404, message, data);
 };
-export const BadRequestStatus = (res: Response, message: string) => {
-    return GenerateStatus(res, 400, false, message);
+export const BadRequestStatus = (res: Response, message: string, data?: unknown) => {
+    return ErrorStatus(res, 400, message, data);
 };
-export const UnauthorizedStatus = (res: Response, message: string) => {
-    return GenerateStatus(res, 401, false, message);
+export const UnauthorizedStatus = (res: Response, message: string, data?: unknown) => {
+    return ErrorStatus(res, 401, message, data);
 };
-export const ForbiddenStatus = (res: Response, message: string) => {
-    return GenerateStatus(res, 403, false, message);
+export const ForbiddenStatus = (res: Response, message: string, data?: unknown) => {
+    return ErrorStatus(res, 403, message, data);
 };
-export const ConflictStatus = (res: Response, message: string) => {
-    return GenerateStatus(res, 409, false, message);
+export const ConflictStatus = (res: Response, message: string, data?: unknown) => {
+    return ErrorStatus(res, 409, message, data);
 };

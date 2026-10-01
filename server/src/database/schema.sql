@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS categories (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
+    slug VARCHAR(100) NOT NULL UNIQUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
@@ -22,33 +23,70 @@ CREATE TABLE products (
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     is_customizable BOOLEAN NOT NULL DEFAULT FALSE,
     sold_amount INTEGER NOT NULL DEFAULT 0 CHECK (sold_amount >= 0),
-    is_available BOOLEAN NOT NULL DEFAULT TRUE
+    is_available BOOLEAN NOT NULL DEFAULT TRUE, -- in stock at the branch
+    is_modifier BOOLEAN NOT NULL DEFAULT FALSE  -- an ingredient (cheese, sauce): never listed, never bought alone
 );
 
+-- One selectable group of a customizable product ("Bun", "Sauce", "Extras").
+-- type = 'radio' means "pick exactly one" and is pinned to max_selections = 1.
+-- type = 'quantity' is a counted split (Original/Spicy piece mix): the group is not
+-- bounded by max_selections, and it is linked to its partner group through
+-- linked_group_id. The two counts must add up to linked_total, which the service
+-- layer enforces across rows (Postgres cannot defer a CHECK constraint).
 CREATE TABLE IF NOT EXISTS product_options (
     id SERIAL PRIMARY KEY,
     product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
 
     name VARCHAR(150) NOT NULL,
-    type VARCHAR(20) NOT NULL CHECK (type IN ('radio', 'checkbox')),
+    type VARCHAR(20) NOT NULL CHECK (type IN ('radio', 'checkbox', 'quantity')),
     is_required BOOLEAN NOT NULL DEFAULT FALSE,
-    min_selections INTEGER NOT NULL DEFAULT 0,
-    max_selections INTEGER,
+    min_selections INTEGER NOT NULL DEFAULT 0 CHECK (min_selections >= 0),
+    max_selections INTEGER CHECK (max_selections IS NULL OR max_selections >= min_selections),
+    CHECK (type <> 'radio' OR max_selections = 1),
 
-    sort_order INTEGER NOT NULL DEFAULT 0
+    linked_group_id INTEGER REFERENCES product_options(id) ON DELETE CASCADE,
+    linked_total INTEGER CHECK (linked_total IS NULL OR linked_total >= 0),
+    unit_label TEXT,
+    CHECK (linked_group_id IS NULL OR linked_group_id <> id),
+
+    -- A counted group must declare its total, and a pickable group must not carry
+    -- split metadata. linked_group_id is allowed to be NULL on a counted group so
+    -- both halves of a new pair can be inserted before they are linked up.
+    CHECK (
+        (type = 'quantity' AND linked_total IS NOT NULL)
+        OR (type <> 'quantity' AND linked_group_id IS NULL AND linked_total IS NULL)
+    ),
+    -- A counted group is driven by linked_total, never by min/max selections.
+    CHECK (type <> 'quantity' OR (min_selections = 0 AND max_selections IS NULL)),
+
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    is_available BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- One choice inside a group. price_delta is the only price authority;
+-- modifier_product_id is informational (what the kitchen physically adds).
 CREATE TABLE IF NOT EXISTS option_values (
     id SERIAL PRIMARY KEY,
     option_id INTEGER NOT NULL REFERENCES product_options(id) ON DELETE CASCADE,
 
     name VARCHAR(150) NOT NULL,
+    description TEXT,
     price_delta NUMERIC(10, 2) NOT NULL DEFAULT 0 CHECK (price_delta >= 0),
 
     is_default BOOLEAN NOT NULL DEFAULT FALSE,
     is_available BOOLEAN NOT NULL DEFAULT TRUE,
-    sort_order INTEGER NOT NULL DEFAULT 0
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    modifier_product_id INTEGER REFERENCES products(id) ON DELETE SET NULL,
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX IF NOT EXISTS idx_product_options_product_id ON product_options (product_id);
+CREATE INDEX IF NOT EXISTS idx_option_values_option_id ON option_values (option_id);
+CREATE INDEX IF NOT EXISTS idx_option_values_modifier_product_id ON option_values (modifier_product_id);
 
 
 CREATE TABLE IF NOT EXISTS branches(
@@ -134,7 +172,9 @@ CREATE TABLE IF NOT EXISTS order_items (
     product_name VARCHAR(150) NOT NULL, -- snapshot so renames don't rewrite history
     unit_price NUMERIC(10, 2) NOT NULL CHECK (unit_price >= 0),
     quantity INTEGER NOT NULL CHECK (quantity > 0),
-    subtotal NUMERIC(10, 2) NOT NULL CHECK (subtotal >= 0)
+    subtotal NUMERIC(10, 2) NOT NULL CHECK (subtotal >= 0),
+    options_summary TEXT NOT NULL DEFAULT '',      -- "Large bun · Extra Cheddar, Comeback Sauce"
+    options_snapshot JSONB NOT NULL DEFAULT '[]'::jsonb -- exact value ids, so history survives renames
 );
 
 CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items (order_id);

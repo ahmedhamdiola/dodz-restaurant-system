@@ -18,14 +18,20 @@ after(finishSuite);
 describe("cart", () => {
     let availableProductId: number;
     let unavailableProductId: number;
+    let modifierProductId: number;
     let productPrice: number;
     let productCount: number;
 
     before(async () => {
+        // Exclude modifier products (never orderable) AND anything with an option
+        // tree (a required group would make a bare add-to-cart invalid - that is
+        // covered by the options suite instead).
         const result = await pool.query(
             `SELECT p.id, p.price FROM products p
              JOIN categories c ON c.id = p.category_id
-             WHERE p.is_deleted = false AND p.is_available = true AND c.is_deleted = false
+             WHERE p.is_deleted = false AND p.is_available = true AND p.is_modifier = false
+               AND c.is_deleted = false
+               AND NOT EXISTS (SELECT 1 FROM product_options po WHERE po.product_id = p.id)
              ORDER BY p.id LIMIT 5`
         );
         assert.ok(result.rows.length > 0, "seed data must include available products");
@@ -35,14 +41,24 @@ describe("cart", () => {
         const count = await pool.query(
             `SELECT COUNT(*)::int AS count FROM products p
              JOIN categories c ON c.id = p.category_id
-             WHERE p.is_deleted = false AND p.is_available = true AND c.is_deleted = false`
+             WHERE p.is_deleted = false AND p.is_available = true AND p.is_modifier = false
+               AND c.is_deleted = false
+               AND NOT EXISTS (SELECT 1 FROM product_options po WHERE po.product_id = p.id)`
         );
         productCount = count.rows[0].count;
 
         const unavailable = await pool.query(
-            `SELECT id FROM products WHERE is_available = false AND is_deleted = false LIMIT 1`
+            `SELECT id FROM products
+             WHERE is_available = false AND is_deleted = false AND is_modifier = false
+               AND NOT EXISTS (SELECT 1 FROM product_options po WHERE po.product_id = products.id)
+             LIMIT 1`
         );
         unavailableProductId = unavailable.rows[0]?.id ?? -1;
+
+        const modifier = await pool.query(
+            `SELECT id FROM products WHERE is_modifier = true AND is_deleted = false LIMIT 1`
+        );
+        modifierProductId = modifier.rows[0]?.id ?? -1;
     });
 
     const guestHeaders = (token: string) => ({ guestToken: token });
@@ -121,13 +137,19 @@ describe("cart", () => {
 
         it("sets exact quantities via PUT and removes lines idempotently", async () => {
             const guest = newGuest();
-            await request("/cart/items", {
+            const add = await request("/cart/items", {
                 method: "POST",
                 ...guestHeaders(guest),
                 body: { productID: availableProductId, quantity: 2 },
             });
+            assert.equal(add.status, 201);
+            // Lines are addressed by cart_items.id, not by product id.
+            const cartItemId: number = add.body.data.items[0].id;
+            assert.equal(typeof cartItemId, "number");
+            assert.notEqual(cartItemId, availableProductId);
+            assert.equal(add.body.data.items[0].options_signature, "");
 
-            const put = await request(`/cart/items/${availableProductId}`, {
+            const put = await request(`/cart/items/${cartItemId}`, {
                 method: "PUT",
                 ...guestHeaders(guest),
                 body: { quantity: 5 },
@@ -135,35 +157,48 @@ describe("cart", () => {
             assert.equal(put.status, 200);
             assert.equal(put.body.data.items[0].quantity, 5);
 
-            const badPut = await request(`/cart/items/${availableProductId}`, {
+            const badPut = await request(`/cart/items/${cartItemId}`, {
                 method: "PUT",
                 ...guestHeaders(guest),
                 body: { quantity: 0 },
             });
             assert.equal(badPut.status, 400);
 
-            const del = await request(`/cart/items/${availableProductId}`, {
+            const del = await request(`/cart/items/${cartItemId}`, {
                 method: "DELETE",
                 ...guestHeaders(guest),
             });
             assert.equal(del.status, 200);
             assert.equal(del.body.data.items.length, 0);
 
-            const delAgain = await request(`/cart/items/${availableProductId}`, {
+            const delAgain = await request(`/cart/items/${cartItemId}`, {
                 method: "DELETE",
                 ...guestHeaders(guest),
             });
-            assert.equal(delAgain.status, 200);
+            assert.equal(delAgain.status, 200, "removing a line twice is a no-op");
         });
 
-        it("rejects updates for products not in the cart", async () => {
+        it("rejects updates for lines not in the cart", async () => {
             const guest = newGuest();
             const { status } = await request(`/cart/items/${availableProductId}`, {
                 method: "PUT",
                 ...guestHeaders(guest),
                 body: { quantity: 3 },
             });
-            assert.equal(status, 404);
+            assert.equal(status, 404, "a product id is not a cart item id");
+        });
+
+        it("never orders a hidden modifier product", async () => {
+            if (modifierProductId === -1) return;
+            const guest = newGuest();
+            const { status, body } = await request("/cart/items", {
+                method: "POST",
+                ...guestHeaders(guest),
+                body: { productID: modifierProductId, quantity: 1 },
+            });
+            assert.equal(status, 409);
+            assert.equal(body.data.type, "UNAVAILABLE_PRODUCT");
+            assert.deepEqual(body.data.unavailableProductIds, [modifierProductId]);
         });
 
         it("enforces the distinct-item cap", async () => {
@@ -172,7 +207,10 @@ describe("cart", () => {
             }
             const guest = newGuest();
             const top = await pool.query(
-                `SELECT id FROM products WHERE is_deleted = false AND is_available = true ORDER BY id LIMIT 50`
+                `SELECT id FROM products
+                 WHERE is_deleted = false AND is_available = true AND is_modifier = false
+                   AND NOT EXISTS (SELECT 1 FROM product_options po WHERE po.product_id = products.id)
+                 ORDER BY id LIMIT 50`
             );
             for (const p of top.rows.slice(0, 49)) {
                 await request("/cart/items", {
@@ -194,7 +232,10 @@ describe("cart", () => {
             assert.equal(full.status, 201, "re-adding an existing product is allowed past the cap");
 
             const extra = await pool.query(
-                `SELECT id FROM products WHERE is_deleted = false AND is_available = true AND id <> ALL($1::int[])
+                `SELECT id FROM products
+                 WHERE is_deleted = false AND is_available = true AND is_modifier = false
+                   AND NOT EXISTS (SELECT 1 FROM product_options po WHERE po.product_id = products.id)
+                   AND id <> ALL($1::int[])
                  ORDER BY id LIMIT 1`,
                 [top.rows.map((p: { id: number }) => p.id)]
             );
@@ -360,6 +401,35 @@ describe("cart", () => {
             });
             assert.equal(status, 409);
             assert.deepEqual(body.data.unavailableProductIds, [unavailableProductId]);
+        });
+
+        it("rejects a guessable or overlong idempotency key", async () => {
+            const guest = newGuest();
+            await request("/cart/items", {
+                method: "POST",
+                ...guestHeaders(guest),
+                body: { productID: availableProductId, quantity: 1 },
+            });
+            const base = { branchID: 1, customerName: "Suite Tester", customerPhone: uniquePhone() };
+
+            // The replay lookup is keyed by this string alone, so a short or
+            // predictable key would let anyone read back someone else's order.
+            const short = await guestCheckout(guest, { ...base, idempotencyKey: "order-1" });
+            assert.equal(short.status, 400);
+            assert.match(String(short.body.message), /idempotency/i);
+
+            // orders.idempotency_key is VARCHAR(64): a key that passed validation but
+            // did not fit the column would fail inside Postgres as a 500.
+            const tooLong = await guestCheckout(guest, { ...base, idempotencyKey: "a".repeat(65) });
+            assert.equal(tooLong.status, 400, JSON.stringify(tooLong.body));
+
+            const nonString = await guestCheckout(guest, { ...base, idempotencyKey: 12345 });
+            assert.equal(nonString.status, 400);
+
+            // A 64-character key is exactly the column width and must be accepted.
+            const atLimit = await guestCheckout(guest, { ...base, idempotencyKey: "b".repeat(64) });
+            assert.equal(atLimit.status, 201, JSON.stringify(atLimit.body));
+            if (atLimit.body.data.id) trackOrder(atLimit.body.data.id);
         });
 
         it("rejects invalid branches and missing names", async () => {

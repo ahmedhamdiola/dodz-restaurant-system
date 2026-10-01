@@ -11,6 +11,7 @@ export interface ProductInterface {
     soldAmount: number, // number of peices sold
     isAvailable: boolean, // means it's available in the BRANCH
     isCustomizable: boolean, // means it can be customized by choosing options
+    isModifier: boolean, // means it's an ingredient (cheese, sauce): never listed, never bought alone
 }
 
 export interface ProductInterfaceWithoutID {

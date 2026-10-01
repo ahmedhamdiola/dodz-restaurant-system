@@ -4,27 +4,41 @@ import { ProductInterfaceWithoutID } from "./product.types.js";
 const PRODUCT_SELECT = `
     SELECT p.id, p.category_id, c.name AS category_name, c.slug AS category_slug,
            p.name, p.description, p.price, p.image, p.is_available, p.is_customizable,
-           p.sold_amount, p.created_at, p.updated_at
+           p.is_modifier, p.sold_amount, p.created_at, p.updated_at
     FROM products p
     INNER JOIN categories c ON c.id = p.category_id
     WHERE p.is_deleted = false AND c.is_deleted = false
 `;
 
+// Storefront visibility rules:
+//   is_available = false -> sold out at the branch
+//   is_modifier  = true  -> an ingredient (cheese, sauce), not a dish. Never
+//                           listed and never bought on its own.
+// Admin callers pass includeUnavailable = true to see both.
+const STOREFRONT_FILTER = " AND p.is_available = true AND p.is_modifier = false";
+
 export const ProductRepository = () => {
-    const getProductsByCategoryID = async (id: number) => {
-        const result = await pool.query(`${PRODUCT_SELECT} AND p.category_id = $1 ORDER BY p.created_at DESC`, [id]);
+    const getProductsByCategoryID = async (id: number, includeUnavailable = false) => {
+        const result = await pool.query(
+            `${PRODUCT_SELECT} AND p.category_id = $1 ${includeUnavailable ? "" : STOREFRONT_FILTER} ORDER BY p.created_at DESC`,
+            [id]
+        );
         return result.rows;
     }
 
     const getAllProducts = async (includeUnavailable = false) => {
         const result = await pool.query(
-            `${PRODUCT_SELECT}${includeUnavailable ? "" : " AND p.is_available = true"} ORDER BY c.name, p.name`
+            `${PRODUCT_SELECT}${includeUnavailable ? "" : STOREFRONT_FILTER} ORDER BY c.name, p.name`
         );
         return result.rows;
     }
 
-    const getProductByID = async (id: number) => {
-        const result = await pool.query(`${PRODUCT_SELECT} AND p.id = $1`, [id]);
+    /** storefrontOnly hides sold-out and modifier products from the public detail endpoint. */
+    const getProductByID = async (id: number, storefrontOnly = false) => {
+        const result = await pool.query(
+            `${PRODUCT_SELECT}${storefrontOnly ? STOREFRONT_FILTER : ""} AND p.id = $1`,
+            [id]
+        );
         return result.rows[0] ?? null;
     }
 
@@ -34,7 +48,7 @@ export const ProductRepository = () => {
     }
 
     const getTopDealsProducts = async () => {
-        const result = await pool.query(`${PRODUCT_SELECT} AND p.is_available = true ORDER BY p.sold_amount DESC LIMIT 3`);
+        const result = await pool.query(`${PRODUCT_SELECT}${STOREFRONT_FILTER} ORDER BY p.sold_amount DESC LIMIT 3`);
         return result.rows;
     }
 
