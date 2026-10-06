@@ -10,7 +10,9 @@ import {
     useMergeCartMutation,
     useRemoveItemMutation,
     useUpdateQuantityMutation,
+    useValidateCouponMutation,
 } from "../redux/cartApi";
+import type { CouponQuote } from "../services/couponApi";
 import type { AddItemPayload, CartView, CheckoutPayload, OrderView } from "../types";
 
 export const getCartScope = (user: AuthUser | null): string =>
@@ -107,6 +109,15 @@ export const useCheckout = () => {
         (payload: CheckoutPayload, options?: MutationCallbacks<OrderView>) =>
             attach(trigger({ ...payload, scope }).unwrap(), options),
         [trigger, scope]
+    );
+    return { mutate, mutateAsync: mutate, isPending: isPending(result), isError: result.isError, error: result.error, reset: result.reset };
+};
+export const useValidateCoupon = () => {
+    const [trigger, result] = useValidateCouponMutation();
+    const mutate = useCallback(
+        (code: string, subtotal: number, deliveryFee: number, options?: MutationCallbacks<CouponQuote>) =>
+            attach(trigger({ code, subtotal, deliveryFee }).unwrap(), options),
+        [trigger]
     );
     return { mutate, mutateAsync: mutate, isPending: isPending(result), isError: result.isError, error: result.error, reset: result.reset };
 };

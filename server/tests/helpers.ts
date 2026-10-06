@@ -80,11 +80,14 @@ export const request = async (
 const createdUserIds: number[] = [];
 const createdOrderIds: number[] = [];
 const createdGuestHashes: string[] = [];
+const createdCouponIds: number[] = [];
 
 export const trackUser = (id: number) => createdUserIds.push(id);
 export const trackOrder = (id: number) => createdOrderIds.push(id);
 /** Tracks a raw guest token so its cart is hard-deleted at the end of a run. */
 export const trackGuestToken = (token: string) => createdGuestHashes.push(hashToken(token));
+/** Tracks a coupon row so the suite never leaves offers behind in the dev database. */
+export const trackCoupon = (id: number) => createdCouponIds.push(id);
 
 /** Inserts a password-authenticated admin directly (the CLI equivalent of create:admin). */
 export const seedAdmin = async (): Promise<{ id: number; email: string; password: string }> => {
@@ -134,6 +137,15 @@ export const finishSuite = async () => {
         }
         if (createdUserIds.length > 0) {
             await pool.query("DELETE FROM users WHERE id = ANY($1::int[])", [createdUserIds]);
+        }
+        // Redemptions go with their order (ON DELETE CASCADE), so only the coupon
+        // rows themselves are left to clear.
+        if (createdCouponIds.length > 0) {
+            // Cleared explicitly rather than relying on the orders DELETE above: a
+            // redemption whose order survived an aborted earlier run would
+            // otherwise hold a RESTRICT on the coupon and fail the whole teardown.
+            await pool.query("DELETE FROM order_coupons WHERE coupon_id = ANY($1::int[])", [createdCouponIds]);
+            await pool.query("DELETE FROM coupons WHERE id = ANY($1::int[])", [createdCouponIds]);
         }
     } finally {
         await pool.end();

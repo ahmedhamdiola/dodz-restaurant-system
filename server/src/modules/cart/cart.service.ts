@@ -3,6 +3,9 @@ import { pool } from "../../config/database.js";
 import { BranchRepository } from "../branch/branch.repository.js";
 import { insertOrderAndItems, priceOrderItems, PricedItemInput } from "../order/order.repository.js";
 import { resolveDeliveryFee } from "../order/order.totals.js";
+import { CouponRepository } from "../coupon/coupon.repository.js";
+import { CouponService } from "../coupon/coupon.service.js";
+import { CouponError } from "../coupon/coupon.types.js";
 import { ProductOptionsService, resolveSelection } from "../product/product.options.service.js";
 import { RequestedQuantity, SelectedOptionEntry } from "../product/product.options.types.js";
 import { CartRepository, emptyCartView } from "./cart.repository.js";
@@ -76,6 +79,8 @@ export const CartService = () => {
     const repo = CartRepository();
     const branchRepository = BranchRepository();
     const optionsService = ProductOptionsService();
+    const couponRepo = CouponRepository();
+    const couponService = CouponService(couponRepo);
 
     const getCart = async (identity: CartIdentity | null): Promise<CartView> => {
         if (identity === null) {
@@ -468,13 +473,35 @@ export const CartService = () => {
                 `SELECT delivery_fee FROM branches WHERE id = $1 AND is_deleted = false`,
                 [input.branchID]
             );
+            const deliveryFee = resolveDeliveryFee(input.orderType, feeResult.rows[0]?.delivery_fee);
+
+            // Applied last, after pricing, so the percentage is taken off the real
+            // subtotal and a free-delivery coupon can see the real fee. A coupon
+            // that has since expired or been spent aborts the whole checkout
+            // rather than silently pricing the order without it.
+            let discount = 0;
+            let appliedCoupon: { id: number; code: string; discount: number } | null = null;
+            if (input.couponCode?.trim()) {
+                const applied = await couponService.applyCoupon(
+                    {
+                        couponCode: input.couponCode,
+                        subtotal: items.reduce((sum, item) => sum + item.subtotal, 0),
+                        deliveryFee,
+                    },
+                    client
+                );
+                discount = applied.discount;
+                appliedCoupon = { id: applied.couponId, code: applied.couponCode, discount: applied.discount };
+            }
 
             const { inserted, order } = await insertOrderAndItems(client, {
                 branchID: input.branchID,
                 customerName: input.customerName,
                 customerPhone: input.customerPhone ?? null,
                 orderType: input.orderType,
-                deliveryFee: resolveDeliveryFee(input.orderType, feeResult.rows[0]?.delivery_fee),
+                deliveryFee,
+                discount,
+                couponCode: appliedCoupon?.code ?? null,
                 deliveryAddress: input.orderType === "Delivery" ? input.deliveryAddress!.trim() : null,
                 deliveryLat: input.orderType === "Delivery" ? input.deliveryLat! : null,
                 deliveryLng: input.orderType === "Delivery" ? input.deliveryLng! : null,
@@ -494,12 +521,25 @@ export const CartService = () => {
                 throw new CartError("EMPTY_CART", "Cart is empty");
             }
 
+            if (appliedCoupon !== null) {
+                // Recorded after the order claim succeeds, so a losing idempotent
+                // retry never counts as a redemption. order_id is UNIQUE, which is
+                // what actually enforces one coupon per order.
+                await couponRepo.insertOrderCoupon(client, order!.id, appliedCoupon.id, appliedCoupon.discount);
+            }
+
             await repo.clearCartItems(client, cartId);
 
             await client.query("COMMIT");
             return { order };
         } catch (error) {
             await client.query("ROLLBACK");
+            // Surfaced through the cart's own error channel so the storefront gets
+            // one consistent shape, and so a spent coupon reads as a conflict to
+            // fix rather than a generic 500.
+            if (error instanceof CouponError) {
+                throw new CartError("INVALID_COUPON", error.message);
+            }
             throw error;
         } finally {
             client.release();

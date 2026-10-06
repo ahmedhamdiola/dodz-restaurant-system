@@ -11,6 +11,7 @@ import AdminLayout from "./layouts/AdminLayout"
 import RequireAuth from "../features/auth/components/RequireAuth"
 import RequireLogin from "../features/auth/components/RequireLogin"
 import ProfilePage from "./routes/ProfilePage"
+import FavoritesPage from "./routes/FavoritesPage"
 import DashboardPage from "./routes/admin/DashboardPage"
 import StudioPage from "./routes/admin/StudioPage"
 import ProductsPage from "./routes/admin/ProductsPage"
@@ -27,6 +28,7 @@ const Router = () => {
                 <Route path="/menu" element={<MenuPage />} />
                 <Route path="/menu/:categorySlug" element={<MenuPage />} />
                 <Route path="/store-locations" element={<StoreLocationsPage />} />
+                <Route path="/favorites" element={<FavoritesPage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/terms-and-conditions" element={<TermsPage />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />

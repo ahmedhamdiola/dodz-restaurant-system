@@ -5,13 +5,6 @@ export interface ProfileUser {
     createdAt: string;
 }
 
-export interface FavoriteProduct {
-    id: number;
-    name: string;
-    price: number;
-    image: string;
-}
-
 export interface PastOrder {
     id: number | string;
     date: string;

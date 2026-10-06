@@ -1,8 +1,12 @@
+import type { Pool, PoolClient } from "pg";
 import { pool } from "../../config/database.js";
 import { Coupon } from "./coupon.types.js";
 
+/** Either the pool (standalone reads) or the caller's transaction client. */
+type Queryable = Pool | PoolClient;
+
 export const CouponRepository = () => {
-    const getCouponByCode = async (code: string, client?: any): Promise<Coupon | null> => {
+    const getCouponByCode = async (code: string, client?: Queryable): Promise<Coupon | null> => {
         const db = client ?? pool;
         const result = await db.query(
             `SELECT id, code, name, type, value, min_order_amount, max_uses, is_active, expires_at
@@ -26,7 +30,7 @@ export const CouponRepository = () => {
         };
     };
 
-    const getCouponUsageCount = async (couponId: number, client?: any): Promise<number> => {
+    const getCouponUsageCount = async (couponId: number, client?: Queryable): Promise<number> => {
         const db = client ?? pool;
         const result = await db.query(
             `SELECT COUNT(*)::int AS c FROM order_coupons WHERE coupon_id = $1`,
@@ -36,7 +40,7 @@ export const CouponRepository = () => {
     };
 
     const insertOrderCoupon = async (
-        client: any,
+        client: PoolClient,
         orderId: number,
         couponId: number,
         discountAmount: number

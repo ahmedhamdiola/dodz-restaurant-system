@@ -1,45 +1,61 @@
-import { Request, Response } from "express";
-import { AuthRequest } from "../auth/auth.middleware.js";
-import { BadRequestStatus, ConflictStatus, NotFoundStatus, SuccessStatus, UnauthorizedStatus } from "../../utils/response.js";
+import type { Request, Response } from "express";
 import { CouponRepository } from "./coupon.repository.js";
 import { CouponService } from "./coupon.service.js";
 import { CouponError } from "./coupon.types.js";
+import {
+    BadRequestStatus,
+    ConflictStatus,
+    NotFoundStatus,
+    SuccessStatus,
+} from "../../utils/response.js";
 
 const repo = CouponRepository();
 const service = CouponService(repo);
 
 export const CouponController = () => {
+    /** Admin listing. requireRole already rejected non-admins upstream. */
     const getCoupons = async (_req: Request, res: Response) => {
-        const user = (req: AuthRequest) => (res.locals as any).user;
-        // admin only via middleware usually; but just in case
-        const u = (res.locals as any).user;
-        if (!u || u.role !== "Admin") {
-            return UnauthorizedStatus(res, "Only admins can manage coupons");
-        }
-        const list = await repo.getAllCoupons();
-        return SuccessStatus(res, list);
+        return SuccessStatus(res, await repo.getAllCoupons());
     };
 
+    /**
+     * Checks a code against a quote without consuming it, so the storefront can
+     * say "this will save you X" before checkout. It is a quote only: the amount
+     * shown here is not authoritative, because subtotal and delivery fee are both
+     * still client-supplied. Checkout re-evaluates the same code server-side.
+     */
     const validateCoupon = async (req: Request, res: Response) => {
-        const { code, subtotal = 0, deliveryFee = 0 } = req.body ?? {};
-        if (!code || typeof code !== "string") {
+        const code = req.body?.code;
+        if (typeof code !== "string" || !code.trim()) {
             return BadRequestStatus(res, "Coupon code is required");
         }
+
+        const subtotal = Number(req.body?.subtotal);
+        const deliveryFee = Number(req.body?.deliveryFee);
+        if (!Number.isFinite(subtotal) || !Number.isFinite(deliveryFee)) {
+            return BadRequestStatus(res, "subtotal and deliveryFee must be numbers");
+        }
+
         try {
-            const result = await service.applyCoupon({
-                couponCode: code,
-                subtotal: Number(subtotal),
-                deliveryFee: Number(deliveryFee),
-            });
-            return SuccessStatus(res, result);
-        } catch (err) {
-            if (err instanceof CouponError) {
-                if (err.code === "INVALID_COUPON") return NotFoundStatus(res, err.message);
-                if (err.code === "COUPON_EXPIRED" || err.code === "MINIMUM_NOT_MET" || err.code === "COUPON_MAX_USES_REACHED" || err.code === "COUPON_INACTIVE") {
-                    return ConflictStatus(res, err.message);
+            return SuccessStatus(
+                res,
+                await service.applyCoupon({
+                    couponCode: code,
+                    subtotal,
+                    deliveryFee,
+                })
+            );
+        } catch (error) {
+            if (error instanceof CouponError) {
+                // A code that does not exist is a 404; one that exists but cannot
+                // be spent right now is a 409, so the storefront can tell the
+                // customer what to fix instead of implying a typo.
+                if (error.code === "INVALID_COUPON") {
+                    return NotFoundStatus(res, error.message);
                 }
+                return ConflictStatus(res, error.message);
             }
-            throw err;
+            throw error;
         }
     };
 

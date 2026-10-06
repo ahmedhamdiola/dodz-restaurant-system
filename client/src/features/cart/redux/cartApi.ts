@@ -1,6 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { AppDispatch } from "../../../app/store";
 import { cartService } from "../services/cartApi";
+import { couponService, type CouponQuote } from "../services/couponApi";
 import type { AddItemPayload, CartView, CheckoutPayload, OrderView } from "../types";
 import { MAX_QUANTITY } from "../types";
 
@@ -76,6 +77,12 @@ export interface MergeCartArgs {
 }
 
 export type CheckoutArgs = CheckoutPayload & { scope: string };
+
+export interface ValidateCouponArgs {
+    code: string;
+    subtotal: number;
+    deliveryFee: number;
+}
 
 export const cartApi = createApi({
     reducerPath: "cartApi",
@@ -192,8 +199,17 @@ export const cartApi = createApi({
             },
         }),
 
+        // A quote only. Never cached against the cart: the amount depends on a
+        // subtotal the customer can change, and checkout re-prices it anyway.
+        validateCoupon: builder.mutation<CouponQuote, ValidateCouponArgs>({
+            queryFn: ({ code, subtotal, deliveryFee }) =>
+                couponService
+                    .validate(code, subtotal, deliveryFee)
+                    .then((data) => ({ data })),
+        }),
+
         checkout: builder.mutation<OrderView, CheckoutArgs>({
-            queryFn: ({ branchID, customerName, customerPhone, orderType, deliveryAddress, deliveryLat, deliveryLng, idempotencyKey }) =>
+            queryFn: ({ branchID, customerName, customerPhone, orderType, deliveryAddress, deliveryLat, deliveryLng, couponCode, idempotencyKey }) =>
                 cartService
                     .checkout({
                         branchID,
@@ -203,6 +219,7 @@ export const cartApi = createApi({
                         deliveryAddress,
                         deliveryLat,
                         deliveryLng,
+                        couponCode,
                         idempotencyKey,
                     })
                     .then((data) => ({ data })),
@@ -226,4 +243,5 @@ export const {
     useClearCartMutation,
     useMergeCartMutation,
     useCheckoutMutation,
+    useValidateCouponMutation,
 } = cartApi;

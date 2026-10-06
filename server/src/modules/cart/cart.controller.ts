@@ -13,7 +13,7 @@ import { normalizePhone } from "../../utils/phone.js";
 import { MAX_LINKED_TOTAL, RequestedQuantity } from "../product/product.options.types.js";
 import { CartService, hashGuestToken } from "./cart.service.js";
 import { OrderType } from "../order/order.totals.js";
-import { IDEMPOTENCY_KEY_REGEX } from "./cart.types.js";
+import { COUPON_CODE_MAX_LENGTH, IDEMPOTENCY_KEY_REGEX } from "./cart.types.js";
 import {
     CartError,
     CartIdentity,
@@ -128,6 +128,8 @@ const mapCartError = (res: Response, error: CartError) => {
             return ConflictStatus(res, error.message, payload);
         case "CART_NOT_FOUND":
             return NotFoundStatus(res, error.message, payload);
+        case "INVALID_COUPON":
+            return ConflictStatus(res, error.message, payload);
         default:
             return BadRequestStatus(res, error.message, payload);
     }
@@ -323,6 +325,16 @@ export const CartController = () => {
             deliveryLng = lng;
         }
 
+        let couponCode: string | undefined;
+        if (req.body?.couponCode !== undefined && req.body.couponCode !== null && req.body.couponCode !== "") {
+            // Only a shape check here. Whether the code can actually be spent is
+            // decided in the checkout transaction, against the re-priced cart.
+            if (typeof req.body.couponCode !== "string" || req.body.couponCode.trim().length > COUPON_CODE_MAX_LENGTH) {
+                return BadRequestStatus(res, "Invalid coupon code");
+            }
+            couponCode = req.body.couponCode.trim();
+        }
+
         const identity = requireIdentity(res, resolved);
         if (identity === null) return;
 
@@ -335,6 +347,7 @@ export const CartController = () => {
                 deliveryAddress,
                 deliveryLat,
                 deliveryLng,
+                couponCode,
                 idempotencyKey,
             });
             return CreateStatus(res, result.order);

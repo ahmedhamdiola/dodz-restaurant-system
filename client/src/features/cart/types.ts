@@ -68,6 +68,8 @@ export interface CheckoutPayload {
     deliveryAddress?: string;
     deliveryLat?: number;
     deliveryLng?: number;
+    /** Quoted, then re-applied server-side against the re-priced cart. */
+    couponCode?: string;
     idempotencyKey?: string;
 }
 

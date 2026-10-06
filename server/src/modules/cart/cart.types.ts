@@ -47,6 +47,9 @@ export const GUEST_TOKEN_REGEX = /^[A-Za-z0-9_-]{16,128}$/;
 // large while fitting the column with room to spare.
 export const IDEMPOTENCY_KEY_REGEX = /^[A-Za-z0-9_-]{16,64}$/;
 
+/** Matches coupons.code VARCHAR(32): long enough for a word, short enough not to be a payload. */
+export const COUPON_CODE_MAX_LENGTH = 32;
+
 export type CartIdentity =
     | { kind: "user"; userId: number }
     | { kind: "guest"; guestHash: string };
@@ -66,6 +69,12 @@ export interface CheckoutInput {
     deliveryAddress?: string;
     deliveryLat?: number;
     deliveryLng?: number;
+    /**
+     * Optional coupon. Re-evaluated inside the checkout transaction against the
+     * re-priced subtotal and the branch's real delivery fee, so a quote obtained
+     * earlier cannot be honoured if the cart changed in between.
+     */
+    couponCode?: string;
     idempotencyKey?: string;
 }
 
@@ -78,6 +87,10 @@ export type CartErrorType =
     | "CART_NOT_FOUND"
     | "INVALID_GUEST_TOKEN"
     | "BRANCH_NOT_FOUND"
+    // The code exists but cannot be spent right now (expired, below minimum,
+    // already used up). Re-checked inside the checkout transaction, so this can
+    // also fire for a quote the customer was shown earlier.
+    | "INVALID_COUPON"
     // "Customize Your Meal": 400 when the selection itself is wrong, 409 when a
     // selected option exists but is no longer orderable.
     | "INVALID_OPTIONS"

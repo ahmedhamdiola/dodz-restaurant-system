@@ -1,3 +1,4 @@
+import type { Pool, PoolClient } from "pg";
 import { computeTotals, roundMoney } from "../order/order.totals.js";
 import { CouponApplyInput, CouponApplyResult, CouponError } from "./coupon.types.js";
 import { CouponRepository } from "./coupon.repository.js";
@@ -5,7 +6,7 @@ import { CouponRepository } from "./coupon.repository.js";
 export const CouponService = (repo: ReturnType<typeof CouponRepository>) => {
     const applyCoupon = async (
         input: CouponApplyInput,
-        client?: any
+        client?: Pool | PoolClient
     ): Promise<CouponApplyResult> => {
         const code = input.couponCode?.trim();
         if (!code) throw new CouponError("INVALID_COUPON", "Invalid coupon code");

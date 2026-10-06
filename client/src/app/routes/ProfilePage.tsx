@@ -10,14 +10,14 @@ import LogoutButton from "../../features/profile/components/LogoutButton";
 import PastOrdersSection from "../../features/profile/components/PastOrdersSection";
 import UserInfoCard from "../../features/profile/components/UserInfoCard";
 import { useCustomerOrders } from "../../features/profile/hooks/useCustomerOrders";
-import { useProfileFavorites } from "../../features/profile/hooks/useProfileFavorites";
+import { useFavoriteProducts } from "../../features/products/favorites/hooks/useFavoriteProducts";
 import type { ProfileUser } from "../../features/profile/types";
 
 const ProfilePage = () => {
     const { user, isAuthenticated, isBootstrapping } = useAuth();
     const handleLogout = useLogout();
     const ordersQuery = useCustomerOrders(Boolean(user));
-    const { favoriteProducts, removeFavorite } = useProfileFavorites();
+    const { favoriteProducts, removeFavorite } = useFavoriteProducts();
 
     if (isBootstrapping) {
         return (

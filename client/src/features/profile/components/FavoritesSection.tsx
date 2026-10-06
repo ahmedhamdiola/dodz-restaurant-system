@@ -1,24 +1,45 @@
+import { Link } from "react-router-dom";
 import { HeartIcon } from "@heroicons/react/24/outline";
 import { HeartIcon as HeartIconSolid } from "@heroicons/react/24/solid";
 import { formatPrice } from "../../../lib/format";
-import type { FavoriteProduct } from "../types";
+import { AddToCartButton } from "../../cart/components/AddToCartButton";
+import type { FavoriteProduct } from "../../products/favorites/types";
 import SectionHeading from "./SectionHeading";
 
 interface FavoritesSectionProps {
     products: FavoriteProduct[];
     onRemoveFavorite: (id: number) => void;
+    /** Empty copy is tuned to each surface: the page invites, the profile nudges. */
+    isLoading?: boolean;
 }
 
-const FavoritesSection = ({ products, onRemoveFavorite }: FavoritesSectionProps) => {
+/**
+ * The favourites grid, shared by /favorites and the profile page.
+ *
+ * Each card is actionable on both axes — link through to the product's category
+ * and add it to the cart — because a list you can only *remove* things from is
+ * a reading list, not a shortcut to ordering.
+ */
+const FavoritesSection = ({ products, onRemoveFavorite, isLoading = false }: FavoritesSectionProps) => {
     if (products.length === 0) {
         return (
             <section className="flex flex-col gap-4">
                 <SectionHeading title="Favorites" countLabel="0 items" />
-                <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-card px-6 py-12 text-center">
+                <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-border bg-card px-6 py-12 text-center">
                     <HeartIcon className="h-10 w-10 text-muted-foreground" />
                     <p className="max-w-xs text-sm text-muted-foreground">
-                        No favorites yet. Tap the heart on any menu item.
+                        {isLoading
+                            ? "Loading your favorites…"
+                            : "No favorites yet. Tap the heart on any menu item and it will show up here."}
                     </p>
+                    {!isLoading && (
+                        <Link
+                            to="/menu"
+                            className="rounded-full bg-brand px-5 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                        >
+                            Browse the menu
+                        </Link>
+                    )}
                 </div>
             </section>
         );
@@ -34,17 +55,21 @@ const FavoritesSection = ({ products, onRemoveFavorite }: FavoritesSectionProps)
                 {products.map((product) => (
                     <article
                         key={product.id}
-                        className="group relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
+                        className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
                     >
-                        <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
+                        <Link
+                            to={`/menu/${product.categorySlug}`}
+                            className="aspect-[4/3] w-full overflow-hidden bg-muted"
+                            aria-label={`View ${product.name}`}
+                        >
                             <img
                                 src={product.image}
                                 alt={product.name}
                                 loading="lazy"
                                 decoding="async"
-                                className="h-full w-full object-cover"
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                             />
-                        </div>
+                        </Link>
                         <button
                             type="button"
                             onClick={() => onRemoveFavorite(product.id)}
@@ -54,13 +79,16 @@ const FavoritesSection = ({ products, onRemoveFavorite }: FavoritesSectionProps)
                         >
                             <HeartIconSolid className="h-4 w-4" />
                         </button>
-                        <div className="p-3">
-                            <h3 className="truncate text-sm font-semibold text-secondary">
-                                {product.name}
-                            </h3>
-                            <p className="mt-1 text-sm font-bold text-brand">
-                                {formatPrice(product.price)}
-                            </p>
+                        <div className="flex flex-1 flex-col p-3">
+                            <Link to={`/menu/${product.categorySlug}`} className="outline-none">
+                                <h3 className="truncate text-sm font-semibold text-secondary transition-colors hover:text-brand focus-visible:text-brand">
+                                    {product.name}
+                                </h3>
+                            </Link>
+                            <div className="mt-auto flex items-center justify-between gap-2 pt-2">
+                                <p className="text-sm font-bold text-brand">{formatPrice(product.price)}</p>
+                                <AddToCartButton product={product} />
+                            </div>
                         </div>
                     </article>
                 ))}
