@@ -8,7 +8,8 @@ import BranchRoutes from "../modules/branch/branch.routes.js";
 import OrderRoutes from "../modules/order/order.routes.js";
 import AuthRoutes from "../modules/auth/auth.routes.js";
 import CartRoutes from "../modules/cart/cart.routes.js";
-import FavoritesRoutes from "../modules/favorites/favorites.routes.js";
+import favoritesRouter from "../modules/favorites/favorites.routes.js";
+import { couponRouter } from "../modules/coupon/coupon.routes.js";
 
 const router = Router();
 
@@ -21,6 +22,7 @@ router.use("/branches", BranchRoutes);
 router.use("/orders", OrderRoutes);
 router.use("/auth", AuthRoutes);
 router.use("/cart", CartRoutes);
-router.use("/favorites", FavoritesRoutes);
+router.use("/favorites", favoritesRouter);
+router.use("/coupons", couponRouter);
 
 export default router;
