@@ -9,7 +9,7 @@
     "start": "node dist/server.js",
     "create:admin": "tsx scripts/createAdmin.ts",
     "migrate": "tsx scripts/migrate.ts",
-    "test": "NODE_ENV=test node --import tsx --test --test-concurrency=1 tests/auth.test.ts tests/orders.test.ts tests/users.test.ts tests/cart.test.ts tests/options.test.ts",
+    "test": "NODE_ENV=test node --import tsx --test --test-concurrency=1 tests/auth.test.ts tests/orders.test.ts tests/users.test.ts tests/cart.test.ts tests/options.test.ts tests/favorites.test.ts",
     "test:typecheck": "tsc --noEmit -p tsconfig.tests.json"
   },
   "dependencies": {

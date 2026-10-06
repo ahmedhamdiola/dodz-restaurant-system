@@ -1,6 +1,7 @@
 import { PoolClient } from "pg";
 import { pool } from "../../config/database.js";
-import { OrderFilters, OrderInput, OrderStatus } from "./order.types.js";
+import { OrderFilters, OrderInput, OrderStatus, OrderType } from "./order.types.js";
+import { computeTotals, resolveDeliveryFee } from "./order.totals.js";
 import { SelectedOptionEntry } from "../product/product.options.types.js";
 
 /** One selected option value, snapshotted onto the order line. */
@@ -62,7 +63,16 @@ export interface InsertOrderInput {
     branchID: number;
     customerName: string;
     customerPhone: string | null;
-    total: number;
+    orderType: OrderType;
+    /** What the serving branch charges for delivery. Ignored for pickup. */
+    deliveryFee: number;
+    /** Off-order amount from a coupon. 0 when none applies. */
+    discount?: number;
+    /** Snapshotted so a receipt can name the offer it was priced under. */
+    couponCode?: string | null;
+    deliveryAddress?: string | null;
+    deliveryLat?: number | null;
+    deliveryLng?: number | null;
     items: PricedItem[];
     idempotencyKey?: string;
 }
@@ -70,19 +80,43 @@ export interface InsertOrderInput {
 /**
  * Inserts an order + its line items inside an already-open transaction (caller owns the client).
  *
+ * Also the single place order money is computed. Both callers used to sum the lines
+ * themselves and pass in a bare `total`, which is exactly how a subtotal, a discount
+ * and a delivery fee drift apart. They now pass their inputs and the arithmetic
+ * happens here, next to the INSERT that persists it.
+ *
  * With an idempotency key, the insert is a CLAIM: `ON CONFLICT DO NOTHING` means a
  * concurrent request with the same key already won, and `inserted: false` tells the
  * caller to return that order instead of raising a 23505. Two checkouts can pass
- * the "have we seen this key before?" read at the same time, so the unique index is
- * the only thing that actually makes the key idempotent.
+ * the "have we seen this key before?" read at the same time, so the unique index
+ * is the only thing that actually makes the key idempotent.
  */
 export const insertOrderAndItems = async (client: PoolClient, input: InsertOrderInput) => {
+    const subtotal = input.items.reduce((sum, item) => sum + item.subtotal, 0);
+    const totals = computeTotals(subtotal, input.discount ?? 0, input.deliveryFee);
+
     const orderResult = await client.query<{ id: number }>(
-        `INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, idempotency_key)
-         VALUES ($1, $2, $3, 'Preparing', $4, $5)
+        `INSERT INTO orders (branch_id, customer_name, customer_phone, status, order_type,
+                             subtotal, discount_amount, delivery_fee, coupon_code, total,
+                             delivery_address, delivery_lat, delivery_lng, idempotency_key)
+         VALUES ($1, $2, $3, 'Preparing', $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
          ON CONFLICT (idempotency_key) WHERE idempotency_key IS NOT NULL DO NOTHING
          RETURNING id`,
-        [input.branchID, input.customerName, input.customerPhone, input.total, input.idempotencyKey ?? null]
+        [
+            input.branchID,
+            input.customerName,
+            input.customerPhone,
+            input.orderType,
+            totals.subtotal,
+            totals.discount,
+            totals.deliveryFee,
+            input.couponCode ?? null,
+            totals.total,
+            input.deliveryAddress ?? null,
+            input.deliveryLat ?? null,
+            input.deliveryLng ?? null,
+            input.idempotencyKey ?? null,
+        ]
     );
 
     if (orderResult.rowCount === 0) {
@@ -110,7 +144,9 @@ export const insertOrderAndItems = async (client: PoolClient, input: InsertOrder
 
     const createdResult = await client.query(
         `SELECT o.id, o.branch_id, b.name AS branch_name, o.customer_name, o.customer_phone,
-                o.status, o.total, to_char(o.created_at, 'Mon DD, HH12:MI AM') AS created_at
+                o.status, o.order_type, o.subtotal, o.discount_amount, o.delivery_fee,
+                o.coupon_code, o.total, o.delivery_address,
+                to_char(o.created_at, 'Mon DD, HH12:MI AM') AS created_at
          FROM orders o JOIN branches b ON b.id = o.branch_id
          WHERE o.id = $1`,
         [orderID]
@@ -137,7 +173,8 @@ export const OrderRepository = () => {
     const getAllOrders = async (filters: OrderFilters) => {
         const result = await pool.query(
             `SELECT o.id, o.branch_id, b.name AS branch_name, o.customer_name, o.customer_phone,
-                    o.status, o.total, oi.items,
+                    o.status, o.order_type, o.subtotal, o.discount_amount, o.delivery_fee,
+                    o.total, oi.items,
                     to_char(o.created_at, 'Mon DD, HH12:MI AM') AS created_at
              FROM orders o
              JOIN branches b ON b.id = o.branch_id
@@ -158,7 +195,8 @@ export const OrderRepository = () => {
     const getOrderByID = async (id: number) => {
         const orderResult = await pool.query(
             `SELECT o.id, o.branch_id, b.name AS branch_name, o.customer_name, o.customer_phone,
-                    o.status, o.total,
+                    o.status, o.order_type, o.subtotal, o.discount_amount, o.delivery_fee,
+                    o.coupon_code, o.total, o.delivery_address,
                     to_char(o.created_at, 'Mon DD, HH12:MI AM') AS created_at
              FROM orders o
              JOIN branches b ON b.id = o.branch_id
@@ -246,7 +284,8 @@ export const OrderRepository = () => {
 
         const recentOrdersResult = await pool.query(
             `SELECT o.id, o.branch_id, b.name AS branch_name, o.customer_name,
-                    o.status, o.total, oi.items,
+                    o.status, o.order_type, o.subtotal, o.discount_amount, o.delivery_fee,
+                    o.total, oi.items,
                     to_char(o.created_at, 'Mon DD, HH12:MI AM') AS created_at
              FROM orders o
              JOIN branches b ON b.id = o.branch_id
@@ -283,14 +322,27 @@ export const OrderRepository = () => {
                 [order.items.map((item) => item.productID)]
             );
             const items = priceOrderItems(order.items, itemsQuery.rows as PricedProduct[]);
-            const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+
+            // The fee is read inside the transaction from the branch that will
+            // actually fulfil the order, never taken from the request body.
+            const branchResult = await client.query(
+                `SELECT delivery_fee FROM branches WHERE id = $1 AND is_deleted = false`,
+                [order.branchID]
+            );
+
+            const orderType: OrderType = order.orderType ?? "Pickup";
+            const deliveryFee = resolveDeliveryFee(orderType, branchResult.rows[0]?.delivery_fee);
 
             // No idempotency key here, so the claim insert always wins.
             const { order: created } = await insertOrderAndItems(client, {
                 branchID: order.branchID,
                 customerName: order.customerName,
                 customerPhone: order.customerPhone ?? null,
-                total,
+                orderType,
+                deliveryFee,
+                deliveryAddress: orderType === "Delivery" ? order.deliveryAddress ?? null : null,
+                deliveryLat: orderType === "Delivery" ? order.deliveryLat ?? null : null,
+                deliveryLng: orderType === "Delivery" ? order.deliveryLng ?? null : null,
                 items,
             });
 

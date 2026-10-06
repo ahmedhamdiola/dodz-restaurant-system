@@ -9,13 +9,15 @@ import {
     UnauthorizedStatus,
 } from "../../utils/response.js";
 import { normalizePhone } from "../../utils/phone.js";
+
 import { MAX_LINKED_TOTAL, RequestedQuantity } from "../product/product.options.types.js";
 import { CartService, hashGuestToken } from "./cart.service.js";
+import { OrderType } from "../order/order.totals.js";
+import { IDEMPOTENCY_KEY_REGEX } from "./cart.types.js";
 import {
     CartError,
     CartIdentity,
     GUEST_TOKEN_REGEX,
-    IDEMPOTENCY_KEY_REGEX,
     MAX_OPTION_VALUE_IDS,
     MAX_QUANTITY,
 } from "./cart.types.js";
@@ -297,6 +299,30 @@ export const CartController = () => {
             idempotencyKey = req.body.idempotencyKey.trim();
         }
 
+        const orderTypeRaw = req.body?.orderType;
+        if (orderTypeRaw !== "Delivery" && orderTypeRaw !== "Pickup") {
+            return BadRequestStatus(res, "Order type must be Delivery or Pickup");
+        }
+        const orderType: OrderType = orderTypeRaw;
+
+        let deliveryAddress: string | undefined;
+        let deliveryLat: number | undefined;
+        let deliveryLng: number | undefined;
+        if (orderType === "Delivery") {
+            const addr = typeof req.body?.deliveryAddress === "string" ? req.body.deliveryAddress.trim() : "";
+            if (!addr) {
+                return BadRequestStatus(res, "A delivery address is required");
+            }
+            deliveryAddress = addr;
+            const lat = Number(req.body?.deliveryLat);
+            const lng = Number(req.body?.deliveryLng);
+            if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+                return BadRequestStatus(res, "Valid delivery coordinates are required");
+            }
+            deliveryLat = lat;
+            deliveryLng = lng;
+        }
+
         const identity = requireIdentity(res, resolved);
         if (identity === null) return;
 
@@ -305,6 +331,10 @@ export const CartController = () => {
                 branchID,
                 customerName,
                 customerPhone,
+                orderType,
+                deliveryAddress,
+                deliveryLat,
+                deliveryLng,
                 idempotencyKey,
             });
             return CreateStatus(res, result.order);

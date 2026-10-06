@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { pool } from "../../config/database.js";
 import { BranchRepository } from "../branch/branch.repository.js";
 import { insertOrderAndItems, priceOrderItems, PricedItemInput } from "../order/order.repository.js";
+import { resolveDeliveryFee } from "../order/order.totals.js";
 import { ProductOptionsService, resolveSelection } from "../product/product.options.service.js";
 import { RequestedQuantity, SelectedOptionEntry } from "../product/product.options.types.js";
 import { CartRepository, emptyCartView } from "./cart.repository.js";
@@ -291,7 +292,9 @@ export const CartService = () => {
     const findOrderByIdempotencyKey = async (key: string) => {
         const result = await pool.query(
             `SELECT o.id, o.branch_id, b.name AS branch_name, o.customer_name, o.customer_phone,
-                    o.status, o.total, to_char(o.created_at, 'Mon DD, HH12:MI AM') AS created_at
+                    o.status, o.order_type, o.subtotal, o.discount_amount, o.delivery_fee,
+                    o.coupon_code, o.total, o.delivery_address,
+                    to_char(o.created_at, 'Mon DD, HH12:MI AM') AS created_at
              FROM orders o JOIN branches b ON b.id = o.branch_id
              WHERE o.idempotency_key = $1`,
             [key]
@@ -331,14 +334,31 @@ export const CartService = () => {
             }
         }
 
-        const branch = await branchRepository.getBranchByID(input.branchID);
-        if (branch === null) {
-            throw new CartError("BRANCH_NOT_FOUND", "Invalid branch");
-        }
+            const branch = await branchRepository.getBranchByID(input.branchID);
+            if (branch === null) {
+                throw new CartError("BRANCH_NOT_FOUND", "Invalid branch");
+            }
 
-        if (identity === null) {
-            throw new CartError("EMPTY_CART", "Cart identity is required");
-        }
+            // A delivery order with nowhere to go is not deliverable, so it is
+            // rejected before any line is priced. The pickup branch ignores
+            // address fields entirely rather than storing a dead one.
+            if (input.orderType === "Delivery") {
+                if (!input.deliveryAddress?.trim()) {
+                    throw new CartError("INVALID_INPUT", "A delivery address is required");
+                }
+                if (
+                    typeof input.deliveryLat !== "number" ||
+                    !Number.isFinite(input.deliveryLat) ||
+                    typeof input.deliveryLng !== "number" ||
+                    !Number.isFinite(input.deliveryLng)
+                ) {
+                    throw new CartError("INVALID_INPUT", "Valid delivery coordinates are required");
+                }
+            }
+
+            if (identity === null) {
+                throw new CartError("EMPTY_CART", "Cart identity is required");
+            }
 
         const client = await pool.connect();
         try {
@@ -440,13 +460,24 @@ export const CartService = () => {
                     return { id: product.id, name: product.name, price: Number(product.price), is_available: product.is_available };
                 })
             );
-            const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+
+            // Read inside the transaction, from the branch that will fulfil the
+            // order. The request body carries no fee: it is the customer's own
+            // machine, and a client-supplied delivery charge would be free money.
+            const feeResult = await client.query(
+                `SELECT delivery_fee FROM branches WHERE id = $1 AND is_deleted = false`,
+                [input.branchID]
+            );
 
             const { inserted, order } = await insertOrderAndItems(client, {
                 branchID: input.branchID,
                 customerName: input.customerName,
                 customerPhone: input.customerPhone ?? null,
-                total,
+                orderType: input.orderType,
+                deliveryFee: resolveDeliveryFee(input.orderType, feeResult.rows[0]?.delivery_fee),
+                deliveryAddress: input.orderType === "Delivery" ? input.deliveryAddress!.trim() : null,
+                deliveryLat: input.orderType === "Delivery" ? input.deliveryLat! : null,
+                deliveryLng: input.orderType === "Delivery" ? input.deliveryLng! : null,
                 items,
                 idempotencyKey: input.idempotencyKey,
             });

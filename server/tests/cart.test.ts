@@ -352,6 +352,7 @@ describe("cart", () => {
                 branchID: 1,
                 customerName: "Suite Tester",
                 customerPhone: phone,
+                orderType: "Pickup",
                 idempotencyKey: key,
             });
             assert.equal(checkout.status, 201);
@@ -368,6 +369,7 @@ describe("cart", () => {
                 branchID: 1,
                 customerName: "Suite Tester",
                 customerPhone: phone,
+                orderType: "Pickup",
                 idempotencyKey: key,
             });
             assert.equal(replay.status, 201);
@@ -380,6 +382,7 @@ describe("cart", () => {
                 branchID: 1,
                 customerName: "Suite Tester",
                 customerPhone: uniquePhone(),
+                orderType: "Pickup",
                 idempotencyKey: uniqueGuestToken(),
             });
             assert.equal(status, 400);
@@ -410,7 +413,7 @@ describe("cart", () => {
                 ...guestHeaders(guest),
                 body: { productID: availableProductId, quantity: 1 },
             });
-            const base = { branchID: 1, customerName: "Suite Tester", customerPhone: uniquePhone() };
+            const base = { branchID: 1, customerName: "Suite Tester", customerPhone: uniquePhone(), orderType: "Pickup" };
 
             // The replay lookup is keyed by this string alone, so a short or
             // predictable key would let anyone read back someone else's order.
@@ -450,6 +453,7 @@ describe("cart", () => {
             const noName = await guestCheckout(guest, {
                 branchID: 1,
                 customerPhone: uniquePhone(),
+                orderType: "Pickup",
             });
             assert.equal(noName.status, 400);
 
@@ -457,6 +461,7 @@ describe("cart", () => {
                 branchID: 1,
                 customerName: "Suite Tester",
                 customerPhone: "not-a-phone",
+                orderType: "Pickup",
             });
             assert.equal(badPhone.status, 400);
         });
@@ -474,6 +479,7 @@ describe("cart", () => {
                 token: customer.token,
                 body: {
                     branchID: 1,
+                    orderType: "Pickup",
                     idempotencyKey: uniqueGuestToken(),
                 },
             });

@@ -1,4 +1,5 @@
 import { SelectedOptionEntry } from "../product/product.options.types.js";
+import { OrderType } from "../order/order.types.js";
 
 /** One selected option value, as echoed back to the storefront. */
 export type CartLineOption = SelectedOptionEntry;
@@ -54,6 +55,17 @@ export interface CheckoutInput {
     branchID: number;
     customerName: string;
     customerPhone?: string;
+    /**
+     * How the customer collects the order. Required rather than defaulted: the
+     * client always knows this, and guessing wrong means either charging a
+     * delivery fee to someone collecting at the counter or sending a rider
+     * nowhere.
+     */
+    orderType: OrderType;
+    /** Required for Delivery, ignored for Pickup. */
+    deliveryAddress?: string;
+    deliveryLat?: number;
+    deliveryLng?: number;
     idempotencyKey?: string;
 }
 

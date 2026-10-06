@@ -102,6 +102,8 @@ CREATE TABLE IF NOT EXISTS branches(
     lat NUMERIC(10, 6) NOT NULL,
     lng NUMERIC(10, 6) NOT NULL,
 
+    delivery_fee NUMERIC(10, 2) NOT NULL DEFAULT 0 CHECK (delivery_fee >= 0), -- charged on delivery orders only; pickup is free
+
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -154,11 +156,34 @@ CREATE TABLE IF NOT EXISTS orders (
     status VARCHAR(20) NOT NULL DEFAULT 'Preparing'
         CHECK (status IN ('Completed', 'Preparing', 'On the way', 'Cancelled')),
 
+    order_type VARCHAR(10) NOT NULL DEFAULT 'Pickup' CHECK (order_type IN ('Delivery', 'Pickup')),
+
+    -- The full breakdown, so a receipt reconciles line by line. `total` stays
+    -- authoritative for reporting and the admin dashboard.
+    subtotal NUMERIC(10, 2) NOT NULL DEFAULT 0 CHECK (subtotal >= 0),
+    discount_amount NUMERIC(10, 2) NOT NULL DEFAULT 0 CHECK (discount_amount >= 0),
+    delivery_fee NUMERIC(10, 2) NOT NULL DEFAULT 0 CHECK (delivery_fee >= 0),
+    coupon_code VARCHAR(32),
     total NUMERIC(10, 2) NOT NULL CHECK (total >= 0),
+
+    -- Where the rider goes. Null on pickup; snapshot coordinates because the
+    -- customer's map pin cannot be re-derived from an address string later.
+    delivery_address TEXT,
+    delivery_lat NUMERIC(10, 6),
+    delivery_lng NUMERIC(10, 6),
 
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+
+    -- Pickup carries no destination, delivery must carry a complete one.
+    CHECK (
+        (order_type = 'Pickup' AND delivery_address IS NULL AND delivery_lat IS NULL AND delivery_lng IS NULL)
+        OR (order_type = 'Delivery' AND delivery_address IS NOT NULL AND delivery_lat IS NOT NULL AND delivery_lng IS NOT NULL)
+    ),
+
+    -- The money invariant, asserted here rather than trusted to every writer.
+    CHECK (total = subtotal - discount_amount + delivery_fee)
 );
 
 CREATE INDEX IF NOT EXISTS idx_orders_branch_id ON orders (branch_id);
@@ -179,5 +204,24 @@ CREATE TABLE IF NOT EXISTS order_items (
 
 CREATE INDEX IF NOT EXISTS idx_order_items_order_id ON order_items (order_id);
 
--- TODO(future migration): users_favorites table (user_id, product_id) for customer favorite products
+-- A customer's saved menu items. Guests hold theirs in localStorage and merge
+-- them into the account on login (see POST /favorites/merge), so the table only
+-- ever holds committed accounts.
+--
+-- Both keys cascade: deleting a user or a product clears the row, and the
+-- composite primary key is what makes "favourite" idempotent — re-adding is an
+-- ON CONFLICT DO NOTHING rather than a duplicate row.
+CREATE TABLE IF NOT EXISTS user_favorites (
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    product_id INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (user_id, product_id)
+);
+
+-- Reads are always "this user's favourites, newest last", and the leading
+-- user_id already serves them through the primary key.
+CREATE INDEX IF NOT EXISTS idx_user_favorites_user_created ON user_favorites (user_id, created_at);
+
 -- TODO(future migration): users_addresses table (user_id, address, lat, lng, ...) for delivery addresses

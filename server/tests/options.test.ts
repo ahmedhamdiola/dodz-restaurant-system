@@ -133,6 +133,7 @@ const checkout = (tok: string) =>
             branchID: 1,
             customerName: OPTIONS_SUITE_CUSTOMER,
             customerPhone: uniquePhone(),
+            orderType: "Pickup",
             idempotencyKey: uniqueGuestToken(),
         },
     });

@@ -14,7 +14,12 @@ export const uniqueEmail = (prefix: string) => `${prefix}.${stamp}.${++counter}@
 
 /** Unique Egyptian mobile number ("011" + 8 digits) that will never collide with seeded data (010...). */
 export const uniquePhone = (): string => {
-    const digits = `${stamp}${++counter}`.replace(/\D/g, "").padEnd(8, "0").slice(-8);
+    // Entropy has to survive two lossy steps: a digit-only filter and an 8-digit
+    // truncation. Deriving from the millisecond clock does not — `stamp` is
+    // base36, so it contributes only the digits that happen to appear in it and
+    // a fast serial suite starts colliding past ~35 signups. A UUID always has
+    // far more digits than the 8 that survive.
+    const digits = `${randomUUID()}${randomUUID()}`.replace(/\D/g, "").padEnd(8, "0").slice(0, 8);
     return `011${digits}`;
 };
 

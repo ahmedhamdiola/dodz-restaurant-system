@@ -193,9 +193,18 @@ export const cartApi = createApi({
         }),
 
         checkout: builder.mutation<OrderView, CheckoutArgs>({
-            queryFn: ({ branchID, customerName, customerPhone, idempotencyKey }) =>
+            queryFn: ({ branchID, customerName, customerPhone, orderType, deliveryAddress, deliveryLat, deliveryLng, idempotencyKey }) =>
                 cartService
-                    .checkout({ branchID, customerName, customerPhone, idempotencyKey })
+                    .checkout({
+                        branchID,
+                        customerName,
+                        customerPhone,
+                        orderType,
+                        deliveryAddress,
+                        deliveryLat,
+                        deliveryLng,
+                        idempotencyKey,
+                    })
                     .then((data) => ({ data })),
             onQueryStarted: async ({ scope }, { dispatch, queryFulfilled }) => {
                 try {

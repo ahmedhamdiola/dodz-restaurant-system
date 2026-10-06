@@ -47,15 +47,27 @@ export interface OrderView {
     customer_name: string;
     customer_phone: string | null;
     status: string;
+    order_type: string;
+    subtotal: number;
+    discount_amount: number;
+    delivery_fee: number;
+    coupon_code?: string | null;
     total: number;
+    delivery_address?: string | null;
     created_at: string;
     items: CartLineItem[];
 }
+
+export type OrderType = "Delivery" | "Pickup";
 
 export interface CheckoutPayload {
     branchID: number;
     customerName?: string;
     customerPhone?: string;
+    orderType: OrderType;
+    deliveryAddress?: string;
+    deliveryLat?: number;
+    deliveryLng?: number;
     idempotencyKey?: string;
 }
 

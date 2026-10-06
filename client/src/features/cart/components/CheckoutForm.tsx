@@ -84,6 +84,10 @@ export const CheckoutForm = ({ onSuccess, onCancel }: CheckoutFormProps) => {
                 branchID: selection.branchId,
                 customerName: trimmedName,
                 customerPhone: normalizedPhone ?? undefined,
+                orderType: selection.mode.toUpperCase() === "DELIVERY" ? "Delivery" : "Pickup",
+                deliveryAddress: selection.mode === "delivery" ? selection.address ?? undefined : undefined,
+                deliveryLat: selection.mode === "delivery" && typeof selection.lat === "number" ? selection.lat : undefined,
+                deliveryLng: selection.mode === "delivery" && typeof selection.lng === "number" ? selection.lng : undefined,
                 idempotencyKey: idempotencyKeyRef.current,
             },
             {
