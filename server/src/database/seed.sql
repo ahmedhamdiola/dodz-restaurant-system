@@ -18,7 +18,8 @@ INSERT INTO products (category_id, name, description, price, image, is_customiza
 -- Guarded so re-running the seed never duplicates catalogue rows.
 SELECT v.category_id, v.name, v.description, v.price, v.image, v.is_customizable
 FROM (VALUES
-(20150884, 'Solo Crave', 'Your choice of sandwich, a piece of chicken, fries, coleslaw, and a drink.', 317.6, 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20260111_a639038074343767288.jpeg?width=400', false),
+(
+20150884, 'Solo Crave', 'Your choice of sandwich, a piece of chicken, fries, coleslaw, and a drink.', 317.6, 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20260111_a639038074343767288.jpeg?width=400', false),
 (20150884, 'Double Dip', '2 sandwiches of your choice, 2 Nashville tender pieces, cheese fries, cup sauce, 2 drinks', 652.8, 'https://talabat.dhmedia.io/image/talabat/MenuItems/Double639038075270608746.jpg?width=400', false),
 (20150884, 'Festival Box', '4 chicken pieces, 4 tenders, 4 wings, 2 sandwiches, 3 sauces, and family fries', 966.7, 'https://talabat.dhmedia.io/image/talabat/MenuItems/Fes639038075839187358.jpg?width=400', false),
 (20150884, 'Nashy', '2 Nashville Sandwiches, cheese fries, hot honey wings', 694.8, 'https://talabat.dhmedia.io/image/talabat/MenuItems/Nashi639038076505419137.jpg?width=400', false),
@@ -53,14 +54,10 @@ FROM (VALUES
 (19653595, 'Mushroom Honey Sandwich', 'Smash burger covered with American cheese, mushrooms, honey BBQ sauce, comeback sauce, onions, lettuce, and pickles.', 160, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/f1a59e0a-3b1e-45e6-abc3-613941c895c0.jpg?width=400', false),
 (19653595, 'Truffle D Sandwich', 'Smash burger with beef bacon, emmental cheese, truffle mayonnaise, onion, and pickled cucumber.', 175, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/e5f9e2fc-782d-4597-a279-739d17dbe24c.jpg?width=400', false),
 (19653595, 'Smoky D Sandwich', 'Smash burger topped with American cheese, smoky sauce, onion, lettuce, and pickled cucumber.', 165, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771283/product/1ecbe826-dfaf-4584-8272-77fbae3bf02e.jpg?width=400', false),
-(19896634, 'Sriracha Chicken Wings', '6 pieces of chicken wings with sriracha mayonnaise sauce.', 115, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/2579239395/976f843b-6b17-4ff1-b03a-5ae3a9c1d7f5.jpg?width=400', false),
-(19896634, '4 Buffalo Ranch Chicken Wings', 'Crispy wings topped with buffalo and ranch sauce', 85, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/2579257726/8a2b0a4a-8585-419e-9222-14c1a8d4cbd1.jpg?width=400', false),
-(19896634, '6 Buffalo Ranch Chicken Wings', 'Crispy wing pieces coated in buffalo and ranch sauce', 115, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/2579257727/6d615a49-30d4-41e3-8aa0-f8a70d96ea41.jpg?width=400', false),
-(19896634, '6 Smoked Chicken Wings', 'Crispy wing pieces covered in smoky sauce', 115, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771286/product/267b69d1-1286-473f-822d-eb5ca95474a0.jpg?width=400', false),
-(19896634, '4 Pcs Hot Honey Chicken Wings', 'Crispy chicken wing pieces coated in hot honey sauce', 85, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771286/product/9778ba83-c529-46d2-bf6f-a49bef6e6065.jpg?width=400', false),
-(19896634, '6 Spicy Honey Chicken Wings', 'Crispy chicken wing pieces coated in hot honey sauce.', 115, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/2579263367/7b217b22-1ebd-46ac-9ee8-1e1094a83a99.jpg?width=400', false),
-(19896634, '4 Sriracha Mayo Chicken Wings', 'Crispy chicken wing pieces coated with sriracha mayonnaise sauce.', 85, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771286/product/5a289971-f07e-462a-b98d-1f033a301ec7.jpg?width=400', false),
-(19896634, '4 Smoked Chicken Wings', 'Crispy chicken wings pieces covered with smoky sauce', 85, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771286/product/0df8c4ce-2dd8-4a35-99c7-60196792b24e.jpg?width=400', false),
+(19896634, 'Buffalo Ranch Chicken Wings', 'Crispy wings topped with buffalo and ranch sauce', 85, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/2579257726/8a2b0a4a-8585-419e-9222-14c1a8d4cbd1.jpg?width=400', false),
+(19896634, 'Hot Honey Chicken Wings', 'Crispy chicken wing pieces coated in hot honey sauce', 85, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771286/product/9778ba83-c529-46d2-bf6f-a49bef6e6065.jpg?width=400', false),
+(19896634, 'Smoked Chicken Wings', 'Crispy chicken wings pieces covered with smoky sauce', 85, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771286/product/0df8c4ce-2dd8-4a35-99c7-60196792b24e.jpg?width=400', false),
+(19896634, 'Sriracha Mayo Chicken Wings', 'Crispy chicken wing pieces coated with sriracha mayonnaise sauce.', 85, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771286/product/5a289971-f07e-462a-b98d-1f033a301ec7.jpg?width=400', false),
 (19653592, 'Chicken Risotto Medium', 'Risotto with strips and sauce (Tiger or BBQ), hot or regular', 70, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771286/product/b94ad029-4eeb-458c-a3a3-91f9480a586d.jpg?width=400', false),
 (19653592, 'Max Platter', 'Fried mozzarella cheese with two pieces of spicy cheddar cheese, fried onion rings, and curly fries.', 215, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/817ebfd7-740c-4ebf-8ee0-bb2459e64824.jpg?width=400', false),
 (19653592, 'Curly Fries', 'Plate of curly fries.', 105, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/e71dd46c-5bc7-4a0f-8385-84b54affb6d0.jpg?width=400', false),
@@ -70,37 +67,23 @@ FROM (VALUES
 (19653592, 'Chicken Rizo', 'Spiced rice with chicken pieces in barbecue or Tiger sauce.', 115, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/2200312747/3673cbaa-c037-40d6-8cd2-2eb92861ae8b.jpg?width=400', false),
 (19653592, 'Mac and Cheese', 'Creamy pasta covered with cheddar sauce.', 75, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/2200312749/ad2a1f26-9661-4efe-a02f-583ba525cb58.jpg?width=400', false),
 (19653592, 'Chicken Mac & Cheese', 'Creamy pasta topped with cheddar sauce, ranch, and crispy chicken strips.', 130, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/2200312750/71ce5d86-5563-43ab-bfbc-c360c1197a9b.jpg?width=400', false),
-(19653588, 'Hot Honey', 'Small hot honey sauce cup', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/b02e95a4-352e-4f94-85f3-f00a0021c538.jpg?width=400', false),
-(19653588, 'Hot Honey', 'Medium hot honey sauce cup', 70, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/13b8ad81-08bd-442d-823f-b3b02bce67fc.jpg?width=400', false),
-(19653588, 'Ranch', 'Small ranch sauce cup', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/f8d88158-e51b-4c81-bf69-03c966f64b4a.jpg?width=400', false),
-(19653588, 'Ranch', 'Medium ranch sauce cup', 65, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/40028c11-af88-46ab-8e48-3a4f53033d00.jpg?width=400', false),
-(19653588, 'Sriracha Mayo', 'Small sriracha mayo sauce cup', 45, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/8c2bbc06-4a2e-4bf3-825a-2e3e2b5cf67a.jpg?width=400', false),
-(19653588, 'Doods', 'Small cup of Doods sauce', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/6b356ced-ea87-44d1-8de0-301c1481ee92.jpg?width=400', false),
-(19653588, 'Sriracha Mayo', 'Medium sriracha mayo sauce cup', 65, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/adfb211b-d1c8-497a-b220-a5c22b0f96cc.jpg?width=400', false),
-(19653588, 'Dods', 'Medium Dods sauce cup', 70, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/0494628a-4ff7-4043-820a-38e845c3694e.jpg?width=400', false),
-(19653588, 'Come Back', 'Medium come back sauce cup', 70, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/db641c1d-1022-4529-8bed-66b72033adf0.jpg?width=400', false),
-(19653588, 'Comeback', 'Small comeback cup with sauce', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/58c9f90d-fffe-4c7d-abe5-471f70ac46c5.jpg?width=400', false),
-(19653588, 'Barbecue', 'Small barbecue sauce cup', 35, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/78bddf3e-14be-4a09-b0d2-59b9f23c8919.jpg?width=400', false),
-(19653588, 'Barbecue', 'Medium barbecue sauce cup', 55, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/6d95cb47-3ce4-4938-8dd5-a5d8e563c4fc.jpg?width=400', false),
-(19653588, 'Smoky', 'Small smoky sauce cup', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/68594202-87f3-434f-86d9-c6c682ee0ac6.jpg?width=400', false),
-(19653588, 'Smoky', 'Medium smoky sauce cup', 65, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/8e69dd4a-ccf7-46d4-98ee-919448a1fe89.jpg?width=400', false),
-(19653588, 'Buffalo', 'Small buffalo sauce cup', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/ff88b4ed-61de-46a7-a881-5b20d7e00b32.jpg?width=400', false),
-(19653588, 'Buffalo', 'Medium buffalo sauce cup', 65, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/c9671477-9d70-41d5-9a94-cd1822f7454e.jpg?width=400', false),
-(19653588, 'Cheddar', 'Small cup of cheddar sauce.', 45, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771283/product/157f44b2-37ff-4f16-ad89-867519b9e5af.jpg?width=400', false),
-(19653588, 'Cheddar', 'Medium cheddar sauce cup', 70, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771283/product/33567da1-e64a-475d-881b-011e640563f6.jpg?width=400', false),
-(19653588, 'Tiger', 'Small Tiger sauce cup', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771283/product/ceda0938-9425-4722-bfff-a7013538408f.jpg?width=400', false),
-(19653588, 'Tiger', 'Medium Tiger sauce cup', 65, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771283/product/6f12d939-1761-4d92-a357-e371fc93c5d9.jpg?width=400', false),
+(19653588, 'Hot Honey', 'Hot honey sauce cup', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/b02e95a4-352e-4f94-85f3-f00a0021c538.jpg?width=400', false),
+(19653588, 'Ranch', 'Ranch sauce cup', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/f8d88158-e51b-4c81-bf69-03c966f64b4a.jpg?width=400', false),
+(19653588, 'Sriracha Mayo', 'Sriracha mayo sauce cup', 45, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/8c2bbc06-4a2e-4bf3-825a-2e3e2b5cf67a.jpg?width=400', false),
+(19653588, 'Doods', 'Doods sauce cup', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/6b356ced-ea87-44d1-8de0-301c1481ee92.jpg?width=400', false),
+(19653588, 'Comeback', 'Comeback sauce cup', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/58c9f90d-fffe-4c7d-abe5-471f70ac46c5.jpg?width=400', false),
+(19653588, 'Barbecue', 'Barbecue sauce cup', 35, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/78bddf3e-14be-4a09-b0d2-59b9f23c8919.jpg?width=400', false),
+(19653588, 'Smoky', 'Smoky sauce cup', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/68594202-87f3-434f-86d9-c6c682ee0ac6.jpg?width=400', false),
+(19653588, 'Buffalo', 'Buffalo sauce cup', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/ff88b4ed-61de-46a7-a881-5b20d7e00b32.jpg?width=400', false),
+(19653588, 'Cheddar', 'Cheddar sauce cup', 45, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771283/product/157f44b2-37ff-4f16-ad89-867519b9e5af.jpg?width=400', false),
+(19653588, 'Tiger', 'Tiger sauce cup', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771283/product/ceda0938-9425-4722-bfff-a7013538408f.jpg?width=400', false),
 (19653591, 'Brioche', 'Soft and buttery brioche bun.', 17, 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638943336047206091?width=400', false),
 (19653591, 'Add Chicken Piece', 'Crispy chicken piece', 100, 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638943336112133668?width=400', false),
 (19653591, 'Chicken Fillet', 'Crispy fillet piece', 100, 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638946582330610512?width=400', false),
 (19653591, 'Tender Chicken', 'Crispy tender chicken', 75, 'https://talabat.dhmedia.io/image/talabat/MenuItems/mmw_638946582821151041?width=400', false),
 (19653591, 'Large Plain Risotto', 'A generous portion of seasoned plain risotto', 50, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/2301413912/778b85ce-f630-448c-a684-985db6c45ad5.jpg?width=400', false),
-(19653591, 'Coleslaw', 'Medium coleslaw cup', 50, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/0a9d44c7-701a-444d-911e-8dabaebc5789.jpg?width=400', false),
-(19653591, 'Coleslaw', 'Small coleslaw cup', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/1d50f8f8-9cd8-4819-959a-9e94c515b845.jpg?width=400', false),
-(19653591, 'Coleslaw', 'Family-sized cup of coleslaw', 90, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/f5969d91-c527-4e21-a80f-98cac47256fa.jpg?width=400', false),
-(19653591, 'Fries', 'Small fries bucket', 45, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/2a7ac851-b95e-49f5-a588-0c379d62e941.jpg?width=400', false),
-(19653591, 'Fries', 'Medium fries', 65, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/847f3560-3a6e-432c-89ff-434f5b025a25.jpg?width=400', false),
-(19653591, 'Fries', 'Family fries pack', 100, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/e72cca96-7d2d-4677-9669-95fb5d5c5979.jpg?width=400', false),
+(19653591, 'Coleslaw', 'Fresh coleslaw', 40, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/1d50f8f8-9cd8-4819-959a-9e94c515b845.jpg?width=400', false),
+(19653591, 'Fries', 'Crispy golden fries', 45, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771285/product/2a7ac851-b95e-49f5-a588-0c379d62e941.jpg?width=400', false),
 (19653591, 'Mozzarella Bomb', 'Piece of mozzarella bomb', 75, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771237/product/71bce1a5-323b-49e0-833b-5d0f52860eec.jpg?width=400', false),
 (19653591, 'Cheddar Sticks', 'Box of three spicy cheddar sticks.', 75, 'https://talabat.dhmedia.io/image/global-menu-service/HF_EG/vendor/771283/product/f334924b-0f9b-4517-9280-cd6dc4c908e9.jpg?width=400', false),
 (19653593, 'Water', 'Bottled drinking water', 15, 'https://talabat.dhmedia.io/image/talabat/MenuItems/WhatsApp_Image_20250918_a638938043157873854.jpeg?width=400', false),
@@ -178,7 +161,14 @@ WHERE NOT EXISTS (
 -- 3. Option trees. price_delta is the price authority; "modifier" links the value
 --    to the hidden ingredient product above. Radio groups are pinned to max 1.
 --
---    Three shapes are supported by the loader below:
+--    Every tree below mirrors the live Talabat menu (branch 771285, Dodz
+--    Heliopolis): sandwich sizes, Make It Combo, bundle sandwich picks,
+--    Original/Spicy chicken-type picks, and the required Size radios that replace
+--    the old small/medium/family product rows. Meals keep counted piece-mix pairs
+--    (one pair per meat for mixed meals) instead of Talabat's single pick.
+--    Build Your Own Burger is the one exception: an admin product, not on Talabat.
+--
+--    Two shapes are supported by the loader below:
 --      * radio / checkbox - ordinary picks, selection validated in resolveSelection.
 --      * quantity        - a counted split. Two groups are linked to each other and
 --                           share linked_total; the server rejects the request unless
@@ -199,125 +189,2193 @@ BEGIN
         SELECT * FROM jsonb_array_elements($json$
         [
           {
+            "product": "Solo Crave",
+            "groups": [
+              {
+                "name": "Choose Your Sandwich",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Secret De Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  },
+                  {
+                    "name": "Fire D Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 2
+                  },
+                  {
+                    "name": "T Ranch Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 3
+                  },
+                  {
+                    "name": "Mighty D Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 4
+                  },
+                  {
+                    "name": "Big Boss Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 5
+                  },
+                  {
+                    "name": "Hot Honey Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 6
+                  },
+                  {
+                    "name": "Herby Butter Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 7
+                  },
+                  {
+                    "name": "Cheeky Slaw Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 8
+                  },
+                  {
+                    "name": "Mushroom Honey Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 9
+                  },
+                  {
+                    "name": "Smoky D Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 10
+                  },
+                  {
+                    "name": "Truffle D Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 11
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Double Dip",
+            "groups": [
+              {
+                "name": "Choose 2 Sandwiches",
+                "type": "checkbox",
+                "is_required": true,
+                "min_selections": 2,
+                "max_selections": 2,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Secret De Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  },
+                  {
+                    "name": "Fire D Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 2
+                  },
+                  {
+                    "name": "T Ranch Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 3
+                  },
+                  {
+                    "name": "Mighty D Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 4
+                  },
+                  {
+                    "name": "Big Boss Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 5
+                  },
+                  {
+                    "name": "Hot Honey Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 6
+                  },
+                  {
+                    "name": "Herby Butter Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 7
+                  },
+                  {
+                    "name": "Cheeky Slaw Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 8
+                  },
+                  {
+                    "name": "Mushroom Honey Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 9
+                  },
+                  {
+                    "name": "Smoky D Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 10
+                  },
+                  {
+                    "name": "Truffle D Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 11
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Festival Box",
+            "groups": [
+              {
+                "name": "Festival Sandwiches",
+                "type": "checkbox",
+                "is_required": true,
+                "min_selections": 2,
+                "max_selections": 2,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Secret De Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  },
+                  {
+                    "name": "Fire D Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 2
+                  },
+                  {
+                    "name": "T Ranch Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 3
+                  },
+                  {
+                    "name": "Mighty D Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 4
+                  },
+                  {
+                    "name": "Big Boss Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 5
+                  },
+                  {
+                    "name": "Hot Honey Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 6
+                  },
+                  {
+                    "name": "Herby Butter Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 7
+                  },
+                  {
+                    "name": "Cheeky Slaw Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 8
+                  },
+                  {
+                    "name": "Mushroom Honey Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 9
+                  },
+                  {
+                    "name": "Smoky D Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 10
+                  },
+                  {
+                    "name": "Truffle D Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 11
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Nashy",
+            "groups": [
+              {
+                "name": "Nashy Sandwiches",
+                "type": "checkbox",
+                "is_required": true,
+                "min_selections": 2,
+                "max_selections": 2,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Hot Honey Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  },
+                  {
+                    "name": "Herby Butter Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 2
+                  },
+                  {
+                    "name": "Cheeky Slaw Sandwich",
+                    "price_delta": 0,
+                    "sort_order": 3
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "T Ranch Sandwich",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Single",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Double",
+                    "price_delta": 75,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "product": "Mighty D Sandwich",
             "groups": [
-              { "name": "Bun", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 1, "values": [
-                { "name": "Toasted Brioche Bun", "description": "Soft and buttery", "price_delta": 12, "is_default": true, "sort_order": 1, "modifier": "Toasted Brioche Bun" },
-                { "name": "Whole Wheat Bun", "price_delta": 12, "sort_order": 2, "modifier": "Whole Wheat Bun" },
-                { "name": "Potato Bun", "price_delta": 12, "sort_order": 3, "modifier": "Potato Bun" }
-              ]},
-              { "name": "Cheese", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 2, "sort_order": 2, "values": [
-                { "name": "American Cheese", "description": "Melted American", "price_delta": 15, "is_default": true, "sort_order": 1, "modifier": "Extra American Cheese" },
-                { "name": "Cheddar", "price_delta": 15, "sort_order": 2, "modifier": "Extra Cheddar" },
-                { "name": "Mozzarella", "price_delta": 20, "sort_order": 3, "modifier": "Extra Mozzarella" }
-              ]},
-              { "name": "Toppings", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 5, "sort_order": 3, "values": [
-                { "name": "Crisp Lettuce", "price_delta": 8, "is_default": true, "sort_order": 1, "modifier": "Crisp Lettuce" },
-                { "name": "Pickled Cucumbers", "price_delta": 8, "is_default": true, "sort_order": 2, "modifier": "Pickled Cucumbers" },
-                { "name": "Jalapenos", "price_delta": 10, "sort_order": 3, "modifier": "Jalapenos" },
-                { "name": "Grilled Mushrooms", "price_delta": 20, "sort_order": 4, "modifier": "Grilled Mushrooms" },
-                { "name": "Smoked Turkey", "price_delta": 25, "sort_order": 5, "modifier": "Smoked Turkey" },
-                { "name": "Coleslaw", "price_delta": 20, "sort_order": 6, "modifier": "Coleslaw" }
-              ]},
-              { "name": "Sauce", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 4, "values": [
-                { "name": "Comeback Sauce", "description": "Our signature comeback sauce", "price_delta": 20, "is_default": true, "sort_order": 1, "modifier": "Comeback Sauce Cup" },
-                { "name": "Buffalo Sauce", "price_delta": 20, "sort_order": 2, "modifier": "Buffalo Sauce Cup" },
-                { "name": "Smoky Sauce", "price_delta": 20, "sort_order": 3, "modifier": "Smoky Sauce Cup" },
-                { "name": "Tiger Sauce", "price_delta": 20, "sort_order": 4, "modifier": "Tiger Sauce Cup" },
-                { "name": "Doods Sauce", "price_delta": 20, "sort_order": 5, "modifier": "Doods Sauce Cup" },
-                { "name": "Ranch", "price_delta": 20, "sort_order": 6, "modifier": "Ranch Cup" },
-                { "name": "Hot Honey", "price_delta": 22, "sort_order": 7, "modifier": "Hot Honey Cup" },
-                { "name": "Sriracha Mayo", "price_delta": 22, "sort_order": 8, "modifier": "Sriracha Mayo Cup" },
-                { "name": "Barbecue Sauce", "price_delta": 18, "sort_order": 9, "modifier": "Barbecue Sauce Cup" }
-              ]},
-              { "name": "Extras", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 3, "sort_order": 5, "values": [
-                { "name": "Extra Crispy Tender", "price_delta": 85, "sort_order": 1, "modifier": "Extra Crispy Tender" },
-                { "name": "Extra Nashville Tender", "price_delta": 95, "sort_order": 2, "modifier": "Extra Nashville Tender" },
-                { "name": "Fried Onion Rings", "price_delta": 25, "sort_order": 3, "modifier": "Fried Onion Rings" }
-              ]}
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Single",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Big Boss Sandwich",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Single",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Double",
+                    "price_delta": 70,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Hot Honey Sandwich",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Single",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Double",
+                    "price_delta": 70,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Herby Butter Sandwich",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Single",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Double",
+                    "price_delta": 65,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Cheeky Slaw Sandwich",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Single",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Double",
+                    "price_delta": 75,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Fire D Sandwich",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Single",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Double",
+                    "price_delta": 75,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Secret De Sandwich",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Single",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  }
+                ]
+              },
+              {
+                "name": "Make It Combo",
+                "type": "checkbox",
+                "is_required": false,
+                "min_selections": 0,
+                "max_selections": 2,
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Fries + V Cola",
+                    "description": "Regular fries and a V Cola",
+                    "price_delta": 75,
+                    "sort_order": 1
+                  },
+                  {
+                    "name": "Add Slice of Cheese",
+                    "price_delta": 22,
+                    "sort_order": 2,
+                    "modifier": "Extra American Cheese"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Super Crunchy",
+            "groups": [
+              {
+                "name": "Taste",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 2
+                  }
+                ]
+              },
+              {
+                "name": "Make It Combo",
+                "type": "checkbox",
+                "is_required": false,
+                "min_selections": 0,
+                "max_selections": 2,
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Fries + V Cola",
+                    "description": "Regular fries and a V Cola",
+                    "price_delta": 75,
+                    "sort_order": 1
+                  },
+                  {
+                    "name": "Add Slice of Cheese",
+                    "price_delta": 22,
+                    "sort_order": 2,
+                    "modifier": "Extra American Cheese"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Twister Doods",
+            "groups": [
+              {
+                "name": "Sauce",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Spicy Tiger Sauce",
+                    "price_delta": 0,
+                    "sort_order": 2
+                  },
+                  {
+                    "name": "Spicy Siracha Sauce",
+                    "price_delta": 0,
+                    "sort_order": 3
+                  }
+                ]
+              },
+              {
+                "name": "Make It Combo",
+                "type": "checkbox",
+                "is_required": false,
+                "min_selections": 0,
+                "max_selections": 2,
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Fries + V Cola",
+                    "description": "Regular fries and a V Cola",
+                    "price_delta": 75,
+                    "sort_order": 1
+                  },
+                  {
+                    "name": "Add Slice of Cheese",
+                    "price_delta": 22,
+                    "sort_order": 2,
+                    "modifier": "Extra American Cheese"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Mushroom Honey Sandwich",
+            "groups": [
+              {
+                "name": "Taste",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Regular",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 2
+                  }
+                ]
+              },
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Single",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Double",
+                    "price_delta": 45,
+                    "sort_order": 2
+                  },
+                  {
+                    "name": "Triple",
+                    "price_delta": 95,
+                    "sort_order": 3
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Truffle D Sandwich",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Single",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Double",
+                    "price_delta": 60,
+                    "sort_order": 2
+                  },
+                  {
+                    "name": "Triple",
+                    "price_delta": 105,
+                    "sort_order": 3
+                  }
+                ]
+              }
             ]
           },
           {
             "product": "Smoky D Sandwich",
             "groups": [
-              { "name": "Bun", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 1, "values": [
-                { "name": "Toasted Brioche Bun", "price_delta": 12, "is_default": true, "sort_order": 1, "modifier": "Toasted Brioche Bun" },
-                { "name": "Whole Wheat Bun", "price_delta": 12, "sort_order": 2, "modifier": "Whole Wheat Bun" },
-                { "name": "Potato Bun", "price_delta": 12, "sort_order": 3, "modifier": "Potato Bun" }
-              ]},
-              { "name": "Cheese", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 2, "sort_order": 2, "values": [
-                { "name": "American Cheese", "price_delta": 15, "is_default": true, "sort_order": 1, "modifier": "Extra American Cheese" },
-                { "name": "Cheddar", "price_delta": 15, "sort_order": 2, "modifier": "Extra Cheddar" },
-                { "name": "Mozzarella", "price_delta": 20, "sort_order": 3, "modifier": "Extra Mozzarella" },
-                { "name": "Smoked Turkey", "price_delta": 25, "sort_order": 4, "modifier": "Smoked Turkey" }
-              ]},
-              { "name": "Toppings", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 5, "sort_order": 3, "values": [
-                { "name": "Crisp Lettuce", "price_delta": 8, "is_default": true, "sort_order": 1, "modifier": "Crisp Lettuce" },
-                { "name": "Pickled Cucumbers", "price_delta": 8, "is_default": true, "sort_order": 2, "modifier": "Pickled Cucumbers" },
-                { "name": "Grilled Mushrooms", "price_delta": 20, "sort_order": 3, "modifier": "Grilled Mushrooms" },
-                { "name": "Jalapenos", "price_delta": 10, "sort_order": 4, "modifier": "Jalapenos" }
-              ]},
-              { "name": "Sauce", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 4, "values": [
-                { "name": "Smoky Sauce", "description": "Smoky, house favourite", "price_delta": 20, "is_default": true, "sort_order": 1, "modifier": "Smoky Sauce Cup" },
-                { "name": "Comeback Sauce", "price_delta": 20, "sort_order": 2, "modifier": "Comeback Sauce Cup" },
-                { "name": "Ranch", "price_delta": 20, "sort_order": 3, "modifier": "Ranch Cup" },
-                { "name": "Buffalo Sauce", "price_delta": 20, "sort_order": 4, "modifier": "Buffalo Sauce Cup" },
-                { "name": "Tiger Sauce", "price_delta": 20, "sort_order": 5, "modifier": "Tiger Sauce Cup" },
-                { "name": "Doods Sauce", "price_delta": 20, "sort_order": 6, "modifier": "Doods Sauce Cup" },
-                { "name": "Barbecue Sauce", "price_delta": 18, "sort_order": 7, "modifier": "Barbecue Sauce Cup" },
-                { "name": "Hot Honey", "price_delta": 22, "sort_order": 8, "modifier": "Hot Honey Cup" },
-                { "name": "Sriracha Mayo", "price_delta": 22, "sort_order": 9, "modifier": "Sriracha Mayo Cup" }
-              ]},
-              { "name": "Extras", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 3, "sort_order": 5, "values": [
-                { "name": "Extra Crispy Tender", "price_delta": 85, "sort_order": 1, "modifier": "Extra Crispy Tender" },
-                { "name": "Extra Nashville Tender", "price_delta": 95, "sort_order": 2, "modifier": "Extra Nashville Tender" },
-                { "name": "Fried Onion Rings", "price_delta": 25, "sort_order": 3, "modifier": "Fried Onion Rings" }
-              ]}
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Single",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Double",
+                    "price_delta": 45,
+                    "sort_order": 2
+                  },
+                  {
+                    "name": "Triple",
+                    "price_delta": 90,
+                    "sort_order": 3
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Add Chicken Piece",
+            "groups": [
+              {
+                "name": "Choose The Type",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  },
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Fries",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Small",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Medium",
+                    "price_delta": 20,
+                    "sort_order": 2
+                  },
+                  {
+                    "name": "Family",
+                    "price_delta": 55,
+                    "sort_order": 3
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Coleslaw",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Small",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Medium",
+                    "price_delta": 10,
+                    "sort_order": 2
+                  },
+                  {
+                    "name": "Family",
+                    "price_delta": 50,
+                    "sort_order": 3
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Hot Honey",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Small",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Large",
+                    "price_delta": 30,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Ranch",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Small",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Large",
+                    "price_delta": 25,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Sriracha Mayo",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Small",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Large",
+                    "price_delta": 20,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Doods",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Small",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Large",
+                    "price_delta": 30,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Comeback",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Small",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Large",
+                    "price_delta": 30,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Barbecue",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Small",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Large",
+                    "price_delta": 20,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Smoky",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Small",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Large",
+                    "price_delta": 25,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Buffalo",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Small",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Large",
+                    "price_delta": 25,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Cheddar",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Small",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Large",
+                    "price_delta": 25,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Tiger",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Small",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Large",
+                    "price_delta": 25,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Buffalo Ranch Chicken Wings",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "4 Pieces",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "6 Pieces",
+                    "price_delta": 30,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Hot Honey Chicken Wings",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "4 Pieces",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "6 Pieces",
+                    "price_delta": 30,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Smoked Chicken Wings",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "4 Pieces",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "6 Pieces",
+                    "price_delta": 30,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Sriracha Mayo Chicken Wings",
+            "groups": [
+              {
+                "name": "Size",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "4 Pieces",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "6 Pieces",
+                    "price_delta": 30,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Chicken Risotto Medium",
+            "groups": [
+              {
+                "name": "Chicken Type",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  },
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 2,
+                    "is_default": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Nashville Loaded Fries",
+            "groups": [
+              {
+                "name": "Taste",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Chicken Rizo",
+            "groups": [
+              {
+                "name": "Sauce",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "BBQ (Original)",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Tiger (Spicy)",
+                    "price_delta": 0,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Chicken Fillet",
+            "groups": [
+              {
+                "name": "Your Choice Of",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Regular",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Tender Chicken",
+            "groups": [
+              {
+                "name": "Your Choice Of",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Regular",
+                    "price_delta": 0,
+                    "sort_order": 1,
+                    "is_default": true
+                  },
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 2
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Doodz Snack",
+            "groups": [
+              {
+                "name": "Original Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 2,
+                "linked_to_index": 1,
+                "unit_label": "pieces",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 2,
+                "linked_to_index": 0,
+                "unit_label": "pieces",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Doodz Diner",
+            "groups": [
+              {
+                "name": "Original Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 3,
+                "linked_to_index": 1,
+                "unit_label": "pieces",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 3,
+                "linked_to_index": 0,
+                "unit_label": "pieces",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Family Meal",
+            "groups": [
+              {
+                "name": "Original Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 8,
+                "linked_to_index": 1,
+                "unit_label": "pieces",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 8,
+                "linked_to_index": 0,
+                "unit_label": "pieces",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Star Meal",
+            "groups": [
+              {
+                "name": "Original Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 12,
+                "linked_to_index": 1,
+                "unit_label": "pieces",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 12,
+                "linked_to_index": 0,
+                "unit_label": "pieces",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Mega Star Family Meal",
+            "groups": [
+              {
+                "name": "Original Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 15,
+                "linked_to_index": 1,
+                "unit_label": "pieces",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 15,
+                "linked_to_index": 0,
+                "unit_label": "pieces",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Big Family Meal",
+            "groups": [
+              {
+                "name": "Original Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 18,
+                "linked_to_index": 1,
+                "unit_label": "pieces",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 18,
+                "linked_to_index": 0,
+                "unit_label": "pieces",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Super Doodz",
+            "groups": [
+              {
+                "name": "Original Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 4,
+                "linked_to_index": 1,
+                "unit_label": "pieces",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 4,
+                "linked_to_index": 0,
+                "unit_label": "pieces",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Choice Of Meat",
+                "type": "checkbox",
+                "is_required": false,
+                "min_selections": 0,
+                "max_selections": 1,
+                "sort_order": 3,
+                "values": [
+                  {
+                    "name": "White Meat",
+                    "description": "White meat portion",
+                    "price_delta": 20,
+                    "sort_order": 1
+                  },
+                  {
+                    "name": "Dark Meat",
+                    "price_delta": 0,
+                    "sort_order": 2,
+                    "is_default": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Nashville Tenders",
+            "groups": [
+              {
+                "name": "Original Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 3,
+                "linked_to_index": 1,
+                "unit_label": "tenders",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 3,
+                "linked_to_index": 0,
+                "unit_label": "tenders",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Super Nashville Tender",
+            "groups": [
+              {
+                "name": "Original Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 5,
+                "linked_to_index": 1,
+                "unit_label": "tenders",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 5,
+                "linked_to_index": 0,
+                "unit_label": "tenders",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Tender Box",
+            "groups": [
+              {
+                "name": "Original Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 3,
+                "linked_to_index": 1,
+                "unit_label": "tenders",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 3,
+                "linked_to_index": 0,
+                "unit_label": "tenders",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Super Tender Box",
+            "groups": [
+              {
+                "name": "Original Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 5,
+                "linked_to_index": 1,
+                "unit_label": "tenders",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 5,
+                "linked_to_index": 0,
+                "unit_label": "tenders",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Tender Meal",
+            "groups": [
+              {
+                "name": "Original Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 10,
+                "linked_to_index": 1,
+                "unit_label": "tenders",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 10,
+                "linked_to_index": 0,
+                "unit_label": "tenders",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Mix Box",
+            "groups": [
+              {
+                "name": "Original Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 2,
+                "linked_to_index": 1,
+                "unit_label": "pieces",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 2,
+                "linked_to_index": 0,
+                "unit_label": "pieces",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Original Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 2,
+                "linked_to_index": 3,
+                "unit_label": "tenders",
+                "sort_order": 3,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 2,
+                "linked_to_index": 2,
+                "unit_label": "tenders",
+                "sort_order": 4,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Choice Of Meat",
+                "type": "checkbox",
+                "is_required": false,
+                "min_selections": 0,
+                "max_selections": 1,
+                "sort_order": 5,
+                "values": [
+                  {
+                    "name": "White Meat",
+                    "description": "White meat portion",
+                    "price_delta": 20,
+                    "sort_order": 1
+                  },
+                  {
+                    "name": "Dark Meat",
+                    "price_delta": 0,
+                    "sort_order": 2,
+                    "is_default": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "product": "Family Mix Meal",
+            "groups": [
+              {
+                "name": "Original Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 6,
+                "linked_to_index": 1,
+                "unit_label": "pieces",
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Pieces",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 6,
+                "linked_to_index": 0,
+                "unit_label": "pieces",
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Original Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 6,
+                "linked_to_index": 3,
+                "unit_label": "tenders",
+                "sort_order": 3,
+                "values": [
+                  {
+                    "name": "Original",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              },
+              {
+                "name": "Spicy Tenders",
+                "type": "quantity",
+                "is_required": true,
+                "min_selections": 0,
+                "max_selections": null,
+                "linked_total": 6,
+                "linked_to_index": 2,
+                "unit_label": "tenders",
+                "sort_order": 4,
+                "values": [
+                  {
+                    "name": "Spicy",
+                    "price_delta": 0,
+                    "sort_order": 1
+                  }
+                ]
+              }
             ]
           },
           {
             "product": "Build Your Own Burger",
             "groups": [
-              { "name": "Main", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 1, "values": [
-                { "name": "Beef Patty", "description": "Smashed 100% beef", "price_delta": 60, "sort_order": 1, "modifier": "Beef Patty" },
-                { "name": "Crispy Chicken Fillet", "price_delta": 50, "sort_order": 2, "modifier": "Crispy Fillet" },
-                { "name": "Nashville Tender", "price_delta": 65, "sort_order": 3, "modifier": "Nashville Tender" }
-              ]},
-              { "name": "Bun", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 2, "values": [
-                { "name": "Toasted Brioche Bun", "price_delta": 12, "is_default": true, "sort_order": 1, "modifier": "Toasted Brioche Bun" },
-                { "name": "Whole Wheat Bun", "price_delta": 12, "sort_order": 2, "modifier": "Whole Wheat Bun" },
-                { "name": "Potato Bun", "price_delta": 12, "sort_order": 3, "modifier": "Potato Bun" }
-              ]},
-              { "name": "Cheese", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 2, "sort_order": 3, "values": [
-                { "name": "American Cheese", "description": "Melted American", "price_delta": 15, "sort_order": 1, "modifier": "Extra American Cheese" },
-                { "name": "Cheddar", "price_delta": 15, "sort_order": 2, "modifier": "Extra Cheddar" },
-                { "name": "Mozzarella", "price_delta": 20, "sort_order": 3, "modifier": "Extra Mozzarella" }
-              ]},
-              { "name": "Toppings", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 5, "sort_order": 4, "values": [
-                { "name": "Crisp Lettuce", "price_delta": 8, "is_default": true, "sort_order": 1, "modifier": "Crisp Lettuce" },
-                { "name": "Pickled Cucumbers", "price_delta": 8, "is_default": true, "sort_order": 2, "modifier": "Pickled Cucumbers" },
-                { "name": "Grilled Mushrooms", "price_delta": 20, "sort_order": 3, "modifier": "Grilled Mushrooms" },
-                { "name": "Jalapenos", "price_delta": 10, "sort_order": 4, "modifier": "Jalapenos" },
-                { "name": "Smoked Turkey", "price_delta": 25, "sort_order": 5, "modifier": "Smoked Turkey" },
-                { "name": "Fried Onion Rings", "price_delta": 25, "sort_order": 6, "modifier": "Fried Onion Rings" }
-              ]},
-              { "name": "Sauce", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 5, "values": [
-                { "name": "Comeback Sauce", "description": "Our signature comeback sauce", "price_delta": 20, "is_default": true, "sort_order": 1, "modifier": "Comeback Sauce Cup" },
-                { "name": "Smoky Sauce", "price_delta": 20, "sort_order": 2, "modifier": "Smoky Sauce Cup" },
-                { "name": "Ranch", "price_delta": 20, "sort_order": 3, "modifier": "Ranch Cup" },
-                { "name": "Buffalo Sauce", "price_delta": 20, "sort_order": 4, "modifier": "Buffalo Sauce Cup" },
-                { "name": "Tiger Sauce", "price_delta": 20, "sort_order": 5, "modifier": "Tiger Sauce Cup" },
-                { "name": "Doods Sauce", "price_delta": 20, "sort_order": 6, "modifier": "Doods Sauce Cup" },
-                { "name": "Barbecue Sauce", "price_delta": 18, "sort_order": 7, "modifier": "Barbecue Sauce Cup" },
-                { "name": "Hot Honey", "price_delta": 22, "sort_order": 8, "modifier": "Hot Honey Cup" },
-                { "name": "Sriracha Mayo", "price_delta": 22, "sort_order": 9, "modifier": "Sriracha Mayo Cup" }
-              ]},
-              { "name": "Extras", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 4, "sort_order": 6, "values": [
-                { "name": "Extra Crispy Tender", "price_delta": 85, "sort_order": 1, "modifier": "Extra Crispy Tender" },
-                { "name": "Extra Nashville Tender", "price_delta": 95, "sort_order": 2, "modifier": "Extra Nashville Tender" },
-                { "name": "Extra Cheese", "description": "One more cheese slice", "price_delta": 15, "sort_order": 3, "modifier": "Extra American Cheese" },
-                { "name": "Coleslaw", "price_delta": 20, "sort_order": 4, "modifier": "Coleslaw" }
-              ]}
+              {
+                "name": "Main",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 1,
+                "values": [
+                  {
+                    "name": "Beef Patty",
+                    "description": "Smashed 100% beef",
+                    "price_delta": 60,
+                    "sort_order": 1,
+                    "modifier": "Beef Patty"
+                  },
+                  {
+                    "name": "Crispy Chicken Fillet",
+                    "price_delta": 50,
+                    "sort_order": 2,
+                    "modifier": "Crispy Fillet"
+                  },
+                  {
+                    "name": "Nashville Tender",
+                    "price_delta": 65,
+                    "sort_order": 3,
+                    "modifier": "Nashville Tender"
+                  }
+                ]
+              },
+              {
+                "name": "Bun",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 2,
+                "values": [
+                  {
+                    "name": "Toasted Brioche Bun",
+                    "description": "Toasted soft brioche",
+                    "price_delta": 12,
+                    "is_default": true,
+                    "sort_order": 1,
+                    "modifier": "Toasted Brioche Bun"
+                  },
+                  {
+                    "name": "Whole Wheat Bun",
+                    "price_delta": 12,
+                    "sort_order": 2,
+                    "modifier": "Whole Wheat Bun"
+                  },
+                  {
+                    "name": "Potato Bun",
+                    "price_delta": 12,
+                    "sort_order": 3,
+                    "modifier": "Potato Bun"
+                  }
+                ]
+              },
+              {
+                "name": "Cheese",
+                "type": "checkbox",
+                "is_required": false,
+                "min_selections": 0,
+                "max_selections": 2,
+                "sort_order": 3,
+                "values": [
+                  {
+                    "name": "American Cheese",
+                    "description": "Melted American",
+                    "price_delta": 15,
+                    "is_default": true,
+                    "sort_order": 1,
+                    "modifier": "Extra American Cheese"
+                  },
+                  {
+                    "name": "Cheddar",
+                    "price_delta": 15,
+                    "sort_order": 2,
+                    "modifier": "Extra Cheddar"
+                  },
+                  {
+                    "name": "Mozzarella",
+                    "price_delta": 20,
+                    "sort_order": 3,
+                    "modifier": "Extra Mozzarella"
+                  }
+                ]
+              },
+              {
+                "name": "Toppings",
+                "type": "checkbox",
+                "is_required": false,
+                "min_selections": 0,
+                "max_selections": 5,
+                "sort_order": 4,
+                "values": [
+                  {
+                    "name": "Crisp Lettuce",
+                    "description": "Fresh crisp lettuce",
+                    "price_delta": 8,
+                    "is_default": true,
+                    "sort_order": 1,
+                    "modifier": "Crisp Lettuce"
+                  },
+                  {
+                    "name": "Pickled Cucumbers",
+                    "price_delta": 8,
+                    "is_default": true,
+                    "sort_order": 2,
+                    "modifier": "Pickled Cucumbers"
+                  },
+                  {
+                    "name": "Grilled Mushrooms",
+                    "price_delta": 20,
+                    "sort_order": 3,
+                    "modifier": "Grilled Mushrooms"
+                  },
+                  {
+                    "name": "Jalapenos",
+                    "price_delta": 10,
+                    "sort_order": 4,
+                    "modifier": "Jalapenos"
+                  },
+                  {
+                    "name": "Smoked Turkey",
+                    "price_delta": 25,
+                    "sort_order": 5,
+                    "modifier": "Smoked Turkey"
+                  },
+                  {
+                    "name": "Fried Onion Rings",
+                    "price_delta": 25,
+                    "sort_order": 6,
+                    "modifier": "Fried Onion Rings"
+                  }
+                ]
+              },
+              {
+                "name": "Sauce",
+                "type": "radio",
+                "is_required": true,
+                "min_selections": 1,
+                "max_selections": 1,
+                "sort_order": 5,
+                "values": [
+                  {
+                    "name": "Comeback Sauce",
+                    "description": "Our signature comeback sauce",
+                    "price_delta": 20,
+                    "is_default": true,
+                    "sort_order": 1,
+                    "modifier": "Comeback Sauce Cup"
+                  },
+                  {
+                    "name": "Smoky Sauce",
+                    "price_delta": 20,
+                    "sort_order": 2,
+                    "modifier": "Smoky Sauce Cup"
+                  },
+                  {
+                    "name": "Ranch",
+                    "price_delta": 20,
+                    "sort_order": 3,
+                    "modifier": "Ranch Cup"
+                  },
+                  {
+                    "name": "Buffalo Sauce",
+                    "price_delta": 20,
+                    "sort_order": 4,
+                    "modifier": "Buffalo Sauce Cup"
+                  },
+                  {
+                    "name": "Tiger Sauce",
+                    "price_delta": 20,
+                    "sort_order": 5,
+                    "modifier": "Tiger Sauce Cup"
+                  },
+                  {
+                    "name": "Doods Sauce",
+                    "price_delta": 20,
+                    "sort_order": 6,
+                    "modifier": "Doods Sauce Cup"
+                  },
+                  {
+                    "name": "Barbecue Sauce",
+                    "price_delta": 18,
+                    "sort_order": 7,
+                    "modifier": "Barbecue Sauce Cup"
+                  },
+                  {
+                    "name": "Hot Honey",
+                    "price_delta": 22,
+                    "sort_order": 8,
+                    "modifier": "Hot Honey Cup"
+                  },
+                  {
+                    "name": "Sriracha Mayo",
+                    "price_delta": 22,
+                    "sort_order": 9,
+                    "modifier": "Sriracha Mayo Cup"
+                  }
+                ]
+              },
+              {
+                "name": "Extras",
+                "type": "checkbox",
+                "is_required": false,
+                "min_selections": 0,
+                "max_selections": 4,
+                "sort_order": 6,
+                "values": [
+                  {
+                    "name": "Extra Crispy Tender",
+                    "price_delta": 85,
+                    "sort_order": 1,
+                    "modifier": "Extra Crispy Tender"
+                  },
+                  {
+                    "name": "Extra Nashville Tender",
+                    "price_delta": 95,
+                    "sort_order": 2,
+                    "modifier": "Extra Nashville Tender"
+                  },
+                  {
+                    "name": "Extra Cheese",
+                    "description": "One more cheese slice",
+                    "price_delta": 15,
+                    "sort_order": 3,
+                    "modifier": "Extra American Cheese"
+                  },
+                  {
+                    "name": "Coleslaw",
+                    "price_delta": 20,
+                    "sort_order": 4,
+                    "modifier": "Coleslaw"
+                  }
+                ]
+              }
             ]
           }
         ]
@@ -391,269 +2449,7 @@ BEGIN
     END LOOP;
 END $seed$;
 
--- 4. Fried-chicken piece mixes. Every one of these meals is sold as a fixed piece
---    count, so the two counted groups are a linked pair: Original + Spicy must equal
---    the total in linked_total, and resolveSelection rejects the request otherwise.
---    price_delta is 0 on both halves because splitting the same total across flavours
---    is not an upgrade, so the product price already charged stays authoritative.
-DO $seed$
-DECLARE
-    v_def JSONB;
-    v_group JSONB;
-    v_value JSONB;
-    v_product_id INTEGER;
-    v_option_id INTEGER;
-    v_option_ids INTEGER[] := '{}';
-    v_link RECORD;
-BEGIN
-    FOR v_def IN
-        SELECT * FROM jsonb_array_elements($json$
-        [
-          {
-            "product": "Doodz Snack",
-            "groups": [
-              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 2, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
-                { "name": "Original", "price_delta": 0, "sort_order": 1 }
-              ]},
-              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 2, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
-                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
-              ]}
-            ]
-          },
-          {
-            "product": "Doodz Diner",
-            "groups": [
-              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 3, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
-                { "name": "Original", "price_delta": 0, "sort_order": 1 }
-              ]},
-              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 3, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
-                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
-              ]}
-            ]
-          },
-          {
-            "product": "Super Doodz",
-            "groups": [
-              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 4, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
-                { "name": "Original", "price_delta": 0, "sort_order": 1 }
-              ]},
-              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 4, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
-                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
-              ]}
-            ]
-          },
-          {
-            "product": "Family Meal",
-            "groups": [
-              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 8, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
-                { "name": "Original", "price_delta": 0, "sort_order": 1 }
-              ]},
-              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 8, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
-                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
-              ]}
-            ]
-          },
-          {
-            "product": "Star Meal",
-            "groups": [
-              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 12, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
-                { "name": "Original", "price_delta": 0, "sort_order": 1 }
-              ]},
-              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 12, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
-                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
-              ]}
-            ]
-          },
-          {
-            "product": "Mega Star Family Meal",
-            "groups": [
-              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 15, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
-                { "name": "Original", "price_delta": 0, "sort_order": 1 }
-              ]},
-              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 15, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
-                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
-              ]}
-            ]
-          },
-          {
-            "product": "Big Family Meal",
-            "groups": [
-              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 18, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
-                { "name": "Original", "price_delta": 0, "sort_order": 1 }
-              ]},
-              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 18, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
-                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
-              ]}
-            ]
-          },
-          {
-            "product": "Kids Fried Chicken Piece",
-            "groups": [
-              { "name": "Original Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 1, "linked_to_index": 1, "unit_label": "pieces", "sort_order": 1, "values": [
-                { "name": "Original", "price_delta": 0, "sort_order": 1 }
-              ]},
-              { "name": "Spicy Pieces", "type": "quantity", "is_required": true, "min_selections": 0, "max_selections": null, "linked_total": 1, "linked_to_index": 0, "unit_label": "pieces", "sort_order": 2, "values": [
-                { "name": "Spicy", "price_delta": 0, "sort_order": 1 }
-              ]}
-            ]
-          }
-        ]
-        $json$::jsonb)
-    LOOP
-        SELECT id INTO v_product_id
-        FROM products
-        WHERE name = v_def->>'product' AND is_deleted = false AND is_modifier = false
-        ORDER BY id
-        LIMIT 1;
-
-        IF v_product_id IS NULL THEN
-            CONTINUE;
-        END IF;
-
-        IF EXISTS (SELECT 1 FROM product_options WHERE product_id = v_product_id) THEN
-            UPDATE products SET is_customizable = true WHERE id = v_product_id AND is_customizable = false;
-            CONTINUE;
-        END IF;
-
-        UPDATE products SET is_customizable = true, updated_at = CURRENT_TIMESTAMP WHERE id = v_product_id;
-
-        v_option_ids := '{}';
-
-        FOR v_group IN SELECT * FROM jsonb_array_elements(v_def->'groups') LOOP
-            INSERT INTO product_options (product_id, name, type, is_required, min_selections, max_selections, sort_order, is_available, linked_total, unit_label)
-            VALUES (
-                v_product_id,
-                v_group->>'name',
-                v_group->>'type',
-                COALESCE((v_group->>'is_required')::boolean, false),
-                COALESCE((v_group->>'min_selections')::int, 0),
-                (v_group->>'max_selections')::int,
-                COALESCE((v_group->>'sort_order')::int, 0),
-                true,
-                (v_group->>'linked_total')::int,
-                v_group->>'unit_label'
-            )
-            RETURNING id INTO v_option_id;
-
-            v_option_ids := array_append(v_option_ids, v_option_id);
-
-            FOR v_value IN SELECT * FROM jsonb_array_elements(v_group->'values') LOOP
-                INSERT INTO option_values (option_id, name, description, price_delta, is_default, is_available, sort_order)
-                VALUES (
-                    v_option_id,
-                    v_value->>'name',
-                    v_value->>'description',
-                    COALESCE((v_value->>'price_delta')::numeric, 0),
-                    false,
-                    true,
-                    COALESCE((v_value->>'sort_order')::int, 0)
-                );
-            END LOOP;
-        END LOOP;
-
-        -- Wire the two halves together once both rows exist.
-        FOR v_link IN
-            SELECT value AS g, ordinality AS pos
-            FROM jsonb_array_elements(v_def->'groups') WITH ORDINALITY
-        LOOP
-            UPDATE product_options
-            SET linked_group_id = v_option_ids[(v_link.g->>'linked_to_index')::int + 1]
-            WHERE id = v_option_ids[v_link.pos];
-        END LOOP;
-    END LOOP;
-END $seed$;
-
--- 5. Shared condiment trees for the remaining sandwiches and burgers. One tree is
---    defined once and applied to every in-scope product, so the offered sauces,
---    cheeses and toppings stay consistent across the whole range.
---
---    These values are all price_delta 0: they describe how an existing sandwich is
---    finished rather than adding a priced extra, and the three flagship products
---    above keep their own priced trees.
-DO $seed$
-DECLARE
-    v_groups JSONB := $json$
-    [
-      { "name": "Sauce", "type": "radio", "is_required": true, "min_selections": 1, "max_selections": 1, "sort_order": 1, "values": [
-        { "name": "Comeback Sauce", "description": "Our signature comeback sauce", "price_delta": 0, "is_default": true, "sort_order": 1, "modifier": "Comeback Sauce Cup" },
-        { "name": "Smoky Sauce", "price_delta": 0, "sort_order": 2, "modifier": "Smoky Sauce Cup" },
-        { "name": "Buffalo Sauce", "price_delta": 0, "sort_order": 3, "modifier": "Buffalo Sauce Cup" },
-        { "name": "Tiger Sauce", "price_delta": 0, "sort_order": 4, "modifier": "Tiger Sauce Cup" },
-        { "name": "Doods Sauce", "price_delta": 0, "sort_order": 5, "modifier": "Doods Sauce Cup" },
-        { "name": "Ranch", "price_delta": 0, "sort_order": 6, "modifier": "Ranch Cup" },
-        { "name": "Hot Honey", "price_delta": 0, "sort_order": 7, "modifier": "Hot Honey Cup" },
-        { "name": "Sriracha Mayo", "price_delta": 0, "sort_order": 8, "modifier": "Sriracha Mayo Cup" },
-        { "name": "Barbecue Sauce", "price_delta": 0, "sort_order": 9, "modifier": "Barbecue Sauce Cup" }
-      ]},
-      { "name": "Cheese", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 2, "sort_order": 2, "values": [
-        { "name": "American Cheese", "description": "Melted American", "price_delta": 0, "sort_order": 1, "modifier": "Extra American Cheese" },
-        { "name": "Cheddar", "price_delta": 0, "sort_order": 2, "modifier": "Extra Cheddar" },
-        { "name": "Mozzarella", "price_delta": 0, "sort_order": 3, "modifier": "Extra Mozzarella" }
-      ]},
-      { "name": "Toppings", "type": "checkbox", "is_required": false, "min_selections": 0, "max_selections": 5, "sort_order": 3, "values": [
-        { "name": "Crisp Lettuce", "price_delta": 0, "is_default": true, "sort_order": 1, "modifier": "Crisp Lettuce" },
-        { "name": "Pickled Cucumbers", "price_delta": 0, "is_default": true, "sort_order": 2, "modifier": "Pickled Cucumbers" },
-        { "name": "Coleslaw", "price_delta": 0, "sort_order": 3, "modifier": "Coleslaw" },
-        { "name": "Jalapenos", "price_delta": 0, "sort_order": 4, "modifier": "Jalapenos" },
-        { "name": "Grilled Mushrooms", "price_delta": 0, "sort_order": 5, "modifier": "Grilled Mushrooms" },
-        { "name": "Smoked Turkey", "price_delta": 0, "sort_order": 6, "modifier": "Smoked Turkey" }
-      ]}
-    ]
-    $json$::jsonb;
-    v_product RECORD;
-    v_group JSONB;
-    v_value JSONB;
-    v_option_id INTEGER;
-BEGIN
-    -- Every non-deleted sandwich and burger that does not already carry a tree.
-    -- min(id) per name so a duplicated catalogue row is never given a second tree.
-    FOR v_product IN
-        SELECT min(p.id) AS id
-        FROM products p
-        JOIN categories c ON c.id = p.category_id
-        WHERE c.name IN ('Sandwiches', 'Burger')
-          AND p.is_deleted = false
-          AND p.is_modifier = false
-          AND NOT EXISTS (SELECT 1 FROM product_options po WHERE po.product_id = p.id)
-        GROUP BY p.name
-        ORDER BY min(p.id)
-    LOOP
-        UPDATE products
-        SET is_customizable = true, updated_at = CURRENT_TIMESTAMP
-        WHERE id = v_product.id;
-
-        FOR v_group IN SELECT * FROM jsonb_array_elements(v_groups) LOOP
-            INSERT INTO product_options (product_id, name, type, is_required, min_selections, max_selections, sort_order, is_available)
-            VALUES (
-                v_product.id,
-                v_group->>'name',
-                v_group->>'type',
-                COALESCE((v_group->>'is_required')::boolean, false),
-                COALESCE((v_group->>'min_selections')::int, 0),
-                (v_group->>'max_selections')::int,
-                COALESCE((v_group->>'sort_order')::int, 0),
-                true
-            )
-            RETURNING id INTO v_option_id;
-
-            FOR v_value IN SELECT * FROM jsonb_array_elements(v_group->'values') LOOP
-                INSERT INTO option_values (option_id, name, description, price_delta, is_default, is_available, sort_order, modifier_product_id)
-                VALUES (
-                    v_option_id,
-                    v_value->>'name',
-                    v_value->>'description',
-                    COALESCE((v_value->>'price_delta')::numeric, 0),
-                    COALESCE((v_value->>'is_default')::boolean, false),
-                    true,
-                    COALESCE((v_value->>'sort_order')::int, 0),
-                    (SELECT p.id FROM products p WHERE p.is_modifier = true AND p.name = v_value->>'modifier')
-                );
-            END LOOP;
-        END LOOP;
-    END LOOP;
-END $seed$;
-
--- 6. Reconcile the flag. is_customizable is a denormalised mirror of "has an option
+-- 4. Reconcile the flag. is_customizable is a denormalised mirror of "has an option
 --    tree", so it is derived here instead of being tracked by hand. This repairs any
 --    drift left behind by earlier admin edits or interrupted runs.
 UPDATE products p
@@ -690,7 +2486,7 @@ BEGIN
     INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
     VALUES (1, 'Farah Ali', '01012345672', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '4 hours') RETURNING id INTO v_oid;
     INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
-        (v_oid, (SELECT id FROM products WHERE name='4 Buffalo Ranch Chicken Wings' LIMIT 1), '4 Buffalo Ranch Chicken Wings', 85, 1, 85),
+        (v_oid, (SELECT id FROM products WHERE name='Buffalo Ranch Chicken Wings' LIMIT 1), 'Buffalo Ranch Chicken Wings', 85, 1, 85),
         (v_oid, (SELECT id FROM products WHERE name='Fi Cola' LIMIT 1), 'Fi Cola', 35, 1, 35);
 
     INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
@@ -775,7 +2571,7 @@ BEGIN
     INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
     VALUES (3, 'Seif Adel', '01055512349', 'On the way', 0, CURRENT_TIMESTAMP - INTERVAL '2 days' - INTERVAL '5 hours') RETURNING id INTO v_oid;
     INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
-        (v_oid, (SELECT id FROM products WHERE name='6 Smoked Chicken Wings' LIMIT 1), '6 Smoked Chicken Wings', 115, 1, 115),
+        (v_oid, (SELECT id FROM products WHERE name='Smoked Chicken Wings' LIMIT 1), 'Smoked Chicken Wings', 115, 1, 115),
         (v_oid, (SELECT id FROM products WHERE name='Fries' LIMIT 1), 'Fries', 65, 1, 65);
 
     -- Branch 4 - DODZ Almaza
@@ -804,7 +2600,7 @@ BEGIN
     INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
     VALUES (4, 'Nour Amin', '01044456783', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '3 days' - INTERVAL '4 hours') RETURNING id INTO v_oid;
     INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
-        (v_oid, (SELECT id FROM products WHERE name='Sriracha Chicken Wings' LIMIT 1), 'Sriracha Chicken Wings', 115, 1, 115),
+        (v_oid, (SELECT id FROM products WHERE name='Sriracha Mayo Chicken Wings' LIMIT 1), 'Sriracha Mayo Chicken Wings', 115, 1, 115),
         (v_oid, (SELECT id FROM products WHERE name='Ranch' LIMIT 1), 'Ranch', 40, 1, 40);
 
     -- Branch 5 - DODZ Hadayek El Kobba
@@ -827,7 +2623,7 @@ BEGIN
     INSERT INTO orders (branch_id, customer_name, customer_phone, status, total, created_at)
     VALUES (5, 'Youssef Adel', '01011122337', 'Completed', 0, CURRENT_TIMESTAMP - INTERVAL '6 days' - INTERVAL '2 hours') RETURNING id INTO v_oid;
     INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal) VALUES
-        (v_oid, (SELECT id FROM products WHERE name='Sriracha Chicken Wings' LIMIT 1), 'Sriracha Chicken Wings', 115, 1, 115),
+        (v_oid, (SELECT id FROM products WHERE name='Sriracha Mayo Chicken Wings' LIMIT 1), 'Sriracha Mayo Chicken Wings', 115, 1, 115),
         (v_oid, (SELECT id FROM products WHERE name='Ranch' LIMIT 1), 'Ranch', 40, 1, 40);
 
     -- Recompute order totals so they exactly match the sum of their items
