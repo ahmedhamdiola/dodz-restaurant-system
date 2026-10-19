@@ -88,7 +88,15 @@ export const ProductService = () => {
             return null;
         }
 
-        return repository.createProduct(product);
+        const created = await repository.createProduct(product);
+
+        // Every active branch starts with a neutral count for the new item so
+        // the branch dashboards show it immediately instead of reading as "out
+        // of stock" (COALESCE on a missing row) — branches overwrite it.
+        if (created) {
+            await repository.seedBranchStock(created.id);
+        }
+        return created;
     }
 
     const updateProduct = async (id: number, product: ProductInterfaceWithoutID) => {

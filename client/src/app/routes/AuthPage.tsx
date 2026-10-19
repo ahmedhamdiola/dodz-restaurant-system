@@ -72,8 +72,10 @@ const AuthPage = ({ mode = "login" }: AuthPageProps) => {
     const notice =
         (location.state as { notice?: string } | null)?.notice ?? undefined;
 
-    const homeForRole = (role: UserRole): string =>
-        role === "customer" ? "/" : "/admin";
+    const homeForRole = (role: UserRole): string => {
+        if (role === "customer") return "/";
+        return role === "branch_admin" ? "/branch" : "/admin";
+    };
 
     const finishAuth = (authedUser: { role: UserRole }, message: string) => {
         toast.success(message);

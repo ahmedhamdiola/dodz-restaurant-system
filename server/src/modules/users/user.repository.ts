@@ -2,7 +2,7 @@ import { pool } from "../../config/database.js";
 import { UserInterfaceWithoutID } from "./user.types.js";
 
 // SQL snippet reused so password_hash is never selected for public reads
-const PublicUserColumns = "id, name, email, phone, provider, provider_id, role, avatar, gender, birthdate, is_email_verified, is_phone_verified, is_active, last_login_at, is_deleted, created_at, updated_at";
+const PublicUserColumns = "id, name, email, phone, provider, provider_id, role, branch_id, avatar, gender, birthdate, is_email_verified, is_phone_verified, is_active, last_login_at, is_deleted, created_at, updated_at";
 
 export const UserRepository = () => {
     const getUserByID = async (id: number) => {
@@ -10,8 +10,10 @@ export const UserRepository = () => {
         return result.rows[0] ?? null;
     }
 
+    // Emails are compared case-insensitively: login lowercases the input, so a
+    // mixed-case row stored by an older path would never be found otherwise.
     const getUserByEmail = async (email: string) => {
-        const result = await pool.query(`SELECT ${PublicUserColumns} FROM users WHERE email = $1 AND is_deleted = false`, [email]);
+        const result = await pool.query(`SELECT ${PublicUserColumns} FROM users WHERE lower(email) = lower($1) AND is_deleted = false`, [email]);
         return result.rows[0] ?? null;
     }
 
@@ -22,7 +24,7 @@ export const UserRepository = () => {
 
     // Only used by future auth (login/oauth linking); this is the sole method exposing password_hash
     const getUserByEmailWithPassword = async (email: string) => {
-        const result = await pool.query(`SELECT * FROM users WHERE email = $1 AND is_deleted = false`, [email]);
+        const result = await pool.query(`SELECT * FROM users WHERE lower(email) = lower($1) AND is_deleted = false`, [email]);
         return result.rows[0] ?? null;
     }
 
@@ -37,10 +39,12 @@ export const UserRepository = () => {
         return result.rows;
     }
 
-    const createUser = async (user: UserInterfaceWithoutID) => {
+    // `passwordHash` is a separate argument (not part of the row shape) so the
+    // plaintext password never reaches this layer; null keeps the column unset.
+    const createUser = async (user: UserInterfaceWithoutID, passwordHash: string | null = null) => {
         const result = await pool.query(`
-            INSERT INTO users (name, email, phone, provider, provider_id, role, avatar, gender, birthdate, is_email_verified, is_phone_verified, is_active)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+            INSERT INTO users (name, email, phone, provider, provider_id, role, branch_id, avatar, gender, birthdate, is_email_verified, is_phone_verified, is_active, password_hash)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
             RETURNING ${PublicUserColumns}
         `, [
             user.name,
@@ -49,12 +53,14 @@ export const UserRepository = () => {
             user.provider,
             user.providerID,
             user.role,
+            user.branchId ?? null,
             user.avatar,
             user.gender,
             user.birthdate,
             user.isEmailVerified,
             user.isPhoneVerified,
             user.isActive,
+            passwordHash,
         ]);
         return result.rows[0] ?? null;
     }
@@ -66,9 +72,9 @@ export const UserRepository = () => {
         }
         const result = await pool.query(`
             UPDATE users
-            SET name = $1, email = $2, phone = $3, provider = $4, provider_id = $5, role = $6, avatar = $7, gender = $8, birthdate = $9,
-                is_email_verified = $10, is_phone_verified = $11, is_active = $12, updated_at = CURRENT_TIMESTAMP
-            WHERE id = $13 AND is_deleted = false
+            SET name = $1, email = $2, phone = $3, provider = $4, provider_id = $5, role = $6, branch_id = $7, avatar = $8, gender = $9, birthdate = $10,
+                is_email_verified = $11, is_phone_verified = $12, is_active = $13, updated_at = CURRENT_TIMESTAMP
+            WHERE id = $14 AND is_deleted = false
             RETURNING ${PublicUserColumns}
         `, [
             user.name ?? oldUser.name,
@@ -77,6 +83,9 @@ export const UserRepository = () => {
             user.provider ?? oldUser.provider,
             user.providerID ?? oldUser.provider_id,
             user.role ?? oldUser.role,
+            // `??` would swallow an explicit null (clearing a branch), so the
+            // branch column alone checks for undefined.
+            user.branchId !== undefined ? user.branchId : oldUser.branch_id,
             user.avatar ?? oldUser.avatar,
             user.gender ?? oldUser.gender,
             user.birthdate ?? oldUser.birthdate,

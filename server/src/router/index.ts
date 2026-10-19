@@ -10,6 +10,8 @@ import AuthRoutes from "../modules/auth/auth.routes.js";
 import CartRoutes from "../modules/cart/cart.routes.js";
 import favoritesRouter from "../modules/favorites/favorites.routes.js";
 import { couponRouter } from "../modules/coupon/coupon.routes.js";
+import stockRouter from "../modules/stock/stock.routes.js";
+import alertRouter from "../modules/alert/alert.routes.js";
 
 const router = Router();
 
@@ -24,5 +26,7 @@ router.use("/auth", AuthRoutes);
 router.use("/cart", CartRoutes);
 router.use("/favorites", favoritesRouter);
 router.use("/coupons", couponRouter);
+router.use("/stock", stockRouter);
+router.use("/alerts", alertRouter);
 
 export default router;

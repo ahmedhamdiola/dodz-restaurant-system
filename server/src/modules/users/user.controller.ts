@@ -3,13 +3,25 @@ import { UserService } from './user.service.js';
 import { UserInterfaceWithoutID } from './user.types.js';
 import { AuthRequest } from '../auth/auth.middleware.js';
 import { UserRole } from '../auth/auth.types.js';
+import { BranchRepository } from '../branch/branch.repository.js';
 import { BadRequestStatus, CheckId, ConflictStatus, CreateStatus, DeletedStatus, ForbiddenStatus, NotFoundStatus, SuccessStatus, UnauthorizedStatus } from '../../utils/response.js';
 
-const USER_ROLES: UserRole[] = ['customer', 'staff', 'admin'];
+const USER_ROLES: UserRole[] = ['customer', 'staff', 'admin', 'branch_admin'];
 
 const service = UserService();
+const branchRepo = BranchRepository();
 
 const currentUser = (req: Request) => (req as AuthRequest).user;
+
+/**
+ * Reads the optional branch assignment off the body: undefined = leave alone,
+ * null = clear, anything else must be a positive branch id.
+ */
+const readBranchId = (raw: unknown): number | null | undefined => {
+    if (raw === undefined) return undefined;
+    if (raw === null || raw === "") return null;
+    return Number(raw);
+};
 
 export const UserController = () => {
     const getUsers = async (req: Request, res: Response) => {
@@ -51,19 +63,38 @@ export const UserController = () => {
         if (req.body.role !== undefined && !USER_ROLES.includes(req.body.role)) {
             return BadRequestStatus(res, 'Invalid role');
         }
+        const branchId = readBranchId(req.body.branchId);
+        if (branchId !== undefined && branchId !== null && (!Number.isInteger(branchId) || branchId <= 0)) {
+            return BadRequestStatus(res, 'Invalid branchId');
+        }
+        const role: string = req.body.role ?? 'customer';
+        if (role === 'branch_admin' && !branchId) {
+            return BadRequestStatus(res, 'A branch admin must be assigned to a branch');
+        }
+        const password: string | null = req.body.password ?? null;
+        if (password !== null && (typeof password !== 'string' || password.length < 8)) {
+            return BadRequestStatus(res, 'Password must be at least 8 characters');
+        }
+        if (branchId && !(await branchRepo.getBranchByID(branchId))) {
+            return NotFoundStatus(res, 'Branch not found');
+        }
+        // Stored lowercase so it matches what /auth/login looks up (it lowercases input).
+        const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : req.body.email;
         const user: UserInterfaceWithoutID = {
             name: req.body.name,
-            email: req.body.email,
+            email,
             phone: req.body.phone ?? null,
             provider: req.body.provider ?? 'email',
             providerID: req.body.providerID ?? null,
-            role: req.body.role ?? 'customer',
+            role,
+            branchId: branchId ?? null,
             avatar: req.body.avatar ?? null,
             gender: req.body.gender ?? null,
             birthdate: req.body.birthdate ? new Date(req.body.birthdate) : null,
             isEmailVerified: req.body.isEmailVerified ?? false,
             isPhoneVerified: req.body.isPhoneVerified ?? false,
             isActive: req.body.isActive ?? true,
+            password,
         };
         if (!user.name || !user.email || (user.birthdate && isNaN(user.birthdate.getTime()))) {
             return BadRequestStatus(res, 'Invalid user data');
@@ -91,6 +122,9 @@ export const UserController = () => {
         if (authed.role !== 'admin' && req.body.role !== undefined) {
             return ForbiddenStatus(res, 'You cannot change your own role');
         }
+        if (authed.role !== 'admin' && req.body.branchId !== undefined) {
+            return ForbiddenStatus(res, 'You cannot change your own branch');
+        }
         if (req.body.role !== undefined && !USER_ROLES.includes(req.body.role)) {
             return BadRequestStatus(res, 'Invalid role');
         }
@@ -98,14 +132,39 @@ export const UserController = () => {
             return BadRequestStatus(res, 'You cannot demote your own account');
         }
 
+        const branchId = readBranchId(req.body.branchId);
+        if (branchId !== undefined && branchId !== null && (!Number.isInteger(branchId) || branchId <= 0)) {
+            return BadRequestStatus(res, 'Invalid branchId');
+        }
+        if (branchId && !(await branchRepo.getBranchByID(branchId))) {
+            return NotFoundStatus(res, 'Branch not found');
+        }
+
+        // The users_branch_admin_requires_branch_check constraint refuses a
+        // branch admin without a branch; resolve what the row WOULD become so
+        // the caller gets a 400 here instead of a 500 from Postgres.
+        if (req.body.role !== undefined || req.body.branchId !== undefined) {
+            const existing = await service.getUserByID(id);
+            if (existing === null) {
+                return NotFoundStatus(res, 'User not found');
+            }
+            const effectiveRole: string = req.body.role ?? existing.role;
+            const effectiveBranch = branchId !== undefined ? branchId : existing.branch_id;
+            if (effectiveRole === 'branch_admin' && !effectiveBranch) {
+                return BadRequestStatus(res, 'A branch admin must be assigned to a branch');
+            }
+        }
+
         // fields are passed through without defaults so partial updates fall back to the existing row in the repository
+        const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : req.body.email;
         const user: UserInterfaceWithoutID = {
             name: req.body.name,
-            email: req.body.email,
+            email,
             phone: req.body.phone ?? null,
             provider: req.body.provider,
             providerID: req.body.providerID ?? null,
             role: req.body.role,
+            branchId,
             avatar: req.body.avatar ?? null,
             gender: req.body.gender ?? null,
             birthdate: req.body.birthdate ? new Date(req.body.birthdate) : null,

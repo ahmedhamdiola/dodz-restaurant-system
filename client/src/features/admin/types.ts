@@ -59,14 +59,27 @@ export interface AdminProduct {
     status: "Active" | "Out of stock";
 }
 
+export type AdminUserRole = "customer" | "staff" | "admin" | "branch_admin";
+
 export interface AdminUser {
     id: number;
     name: string;
     email: string;
-    role: string;
-    orders: number;
-    joined: string;
-    status: "Active" | "Suspended";
+    phone: string | null;
+    role: AdminUserRole;
+    /** Required for branch admins, null for everyone else. */
+    branchId: number | null;
+    isActive: boolean;
+    createdAt: string;
+}
+
+export interface CreateAdminUserInput {
+    name: string;
+    email: string;
+    phone: string;
+    role: AdminUserRole;
+    branchId: number | null;
+    password: string;
 }
 
 export interface AdminBranch {

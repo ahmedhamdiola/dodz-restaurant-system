@@ -1,6 +1,8 @@
 import { useLocation, NavLink } from "react-router-dom";
 import { Bars3Icon, BellIcon, MoonIcon, SparklesIcon, SunIcon } from "@heroicons/react/24/outline";
 import { useTheme } from "../../../contexts/theme/useTheme";
+import { useAuth } from "../../auth/hooks/useAuth";
+import { usePendingAlertCount } from "../hooks/useAdminAlerts";
 
 interface TopbarProps {
     onMenuClick: () => void;
@@ -8,6 +10,7 @@ interface TopbarProps {
 
 const PAGE_TITLES: Record<string, string> = {
     "/admin": "Dashboard",
+    "/admin/alerts": "Branch Alerts",
     "/admin/studio": "Studio",
     "/admin/products": "Products",
     "/admin/users": "Users",
@@ -18,6 +21,7 @@ const PAGE_TITLES: Record<string, string> = {
 
 const PAGE_SUBTITLES: Record<string, string> = {
     "/admin": "A quick look at how your restaurant is doing today.",
+    "/admin/alerts": "Requests and notes coming in from the branches.",
     "/admin/studio": "The playground — organize categories and fine-tune every product.",
     "/admin/products": "Manage your menu, stock, and pricing.",
     "/admin/users": "Manage staff and customer accounts.",
@@ -26,9 +30,27 @@ const PAGE_SUBTITLES: Record<string, string> = {
     "/admin/settings": "Store details, notifications, and account configuration.",
 };
 
+const ROLE_LABELS: Record<string, string> = {
+    admin: "Admin",
+    staff: "Staff",
+    branch_admin: "Branch admin",
+    customer: "Customer",
+};
+
+const initialsOf = (name: string) =>
+    name
+        .split(" ")
+        .filter(Boolean)
+        .map((part) => part[0])
+        .slice(0, 2)
+        .join("")
+        .toUpperCase();
+
 const Topbar = ({ onMenuClick }: TopbarProps) => {
     const { theme, toggleTheme } = useTheme();
     const { pathname } = useLocation();
+    const { data: pendingAlerts = 0 } = usePendingAlertCount();
+    const { user } = useAuth();
     const title = PAGE_TITLES[pathname] ?? "Dashboard";
     const subtitle = PAGE_SUBTITLES[pathname] ?? PAGE_SUBTITLES["/admin"];
 
@@ -74,24 +96,32 @@ const Topbar = ({ onMenuClick }: TopbarProps) => {
                     )}
                 </button>
 
-                <button
-                    type="button"
-                    aria-label="Notifications"
+                <NavLink
+                    to="/admin/alerts"
+                    aria-label={`Alerts${pendingAlerts > 0 ? ` (${pendingAlerts} pending)` : ""}`}
                     className="relative rounded-lg border border-border bg-card p-2 text-secondary transition-colors duration-200 hover:bg-muted"
                 >
                     <BellIcon className="w-5" />
-                    <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-brand ring-2 ring-card" />
-                </button>
+                    {pendingAlerts > 0 && (
+                        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-bold text-white ring-2 ring-card">
+                            {pendingAlerts > 99 ? "99+" : pendingAlerts}
+                        </span>
+                    )}
+                </NavLink>
 
-                <div className="hidden items-center gap-3 sm:flex">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-700 text-xs font-bold uppercase text-white">
-                        ME
-                    </span>
-                    <div className="hidden flex-col leading-tight lg:flex">
-                        <span className="text-sm font-semibold text-secondary">Mostafa El Din</span>
-                        <span className="text-[11px] text-muted-foreground">Owner</span>
+                {user && (
+                    <div className="hidden items-center gap-3 sm:flex">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-700 text-xs font-bold uppercase text-white">
+                            {initialsOf(user.name) || "U"}
+                        </span>
+                        <div className="hidden flex-col leading-tight lg:flex">
+                            <span className="text-sm font-semibold text-secondary">{user.name}</span>
+                            <span className="text-[11px] text-muted-foreground">
+                                {ROLE_LABELS[user.role] ?? user.role}
+                            </span>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
         </header>
     );

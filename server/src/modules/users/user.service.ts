@@ -1,5 +1,8 @@
+import bcrypt from "bcryptjs";
 import { UserRepository } from "./user.repository.js";
 import { UserInterfaceWithoutID } from "./user.types.js";
+
+const BCRYPT_ROUNDS = 10;
 
 export const UserService = () => {
     const repository = UserRepository();
@@ -37,7 +40,10 @@ export const UserService = () => {
             }
         }
 
-        return repository.createUser(user);
+        // Admin-created accounts may carry a password (branch-admin logins made
+        // from the dashboard); signup never reaches this path.
+        const passwordHash = user.password ? await bcrypt.hash(user.password, BCRYPT_ROUNDS) : null;
+        return repository.createUser(user, passwordHash);
     }
 
     const updateUser = async (id: number, user: UserInterfaceWithoutID) => {

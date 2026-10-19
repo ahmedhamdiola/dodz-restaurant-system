@@ -9,6 +9,7 @@ import BranchFilter from "../../../features/admin/components/BranchFilter";
 import DashboardCard from "../../../features/admin/components/DashboardCard";
 import OrderStatusDonut from "../../../features/admin/components/OrderStatusDonut";
 import RecentOrdersTable from "../../../features/admin/components/RecentOrdersTable";
+import PendingAlertsPanel from "../../../features/admin/components/PendingAlertsPanel";
 import RevenueChart from "../../../features/admin/components/RevenueChart";
 import StatCard from "../../../features/admin/components/StatCard";
 import TopProducts from "../../../features/admin/components/TopProducts";
@@ -88,6 +89,8 @@ const DashboardPage = () => {
             </div>
 
             <BranchFilter branches={branches} counts={counts} selectedId={branchId} onSelect={setBranchId} />
+
+            <PendingAlertsPanel />
 
             {isError ? (
                 <div className="flex flex-col items-center gap-3 rounded-xl border border-border bg-card py-14 text-center">

@@ -1,7 +1,7 @@
 import { pool } from "../../config/database.js";
 
 // Columns that may be safely exposed to clients; mirrors sanitizeUser in auth.types.ts
-const PublicUserColumns = "id, name, email, phone, role, avatar, gender, birthdate, is_email_verified, created_at";
+const PublicUserColumns = "id, name, email, phone, role, branch_id, avatar, gender, birthdate, is_email_verified, created_at";
 
 export const AuthRepository = () => {
     // Creates a password-based user (provider = 'email', role = 'customer').

@@ -1,6 +1,6 @@
 export type AuthMode = "login" | "signup";
 
-export type UserRole = "customer" | "staff" | "admin";
+export type UserRole = "customer" | "staff" | "admin" | "branch_admin";
 
 export interface AuthUser {
     id: number;
@@ -8,6 +8,8 @@ export interface AuthUser {
     email: string;
     phone: string | null;
     role: UserRole;
+    /** Set for branch admins: scopes their dashboard to one branch. */
+    branchId: number | null;
     avatar: string | null;
     gender: string | null;
     birthdate: string | null;

@@ -1,5 +1,5 @@
 // Roles allowed by the users table CHECK constraint (schema.sql)
-export type UserRole = "customer" | "staff" | "admin";
+export type UserRole = "customer" | "staff" | "admin" | "branch_admin";
 
 // Shape attached to req.user by the requireAuth middleware
 export interface AuthUser {
@@ -14,6 +14,8 @@ export interface PublicUser {
     email: string;
     phone: string | null;
     role: UserRole;
+    // Set only for branch_admin (the branch they are tied to); null otherwise.
+    branchId: number | null;
     avatar: string | null;
     gender: string | null;
     birthdate: string | null;
@@ -28,6 +30,7 @@ export interface PublicUserRow {
     email: string;
     phone: string | null;
     role: UserRole;
+    branch_id: number | null;
     avatar: string | null;
     gender: string | null;
     birthdate: Date | string | null;
@@ -67,6 +70,7 @@ export const sanitizeUser = (row: PublicUserRow): PublicUser => {
         email: row.email,
         phone: row.phone ?? null,
         role: row.role,
+        branchId: row.branch_id ?? null,
         avatar: row.avatar ?? null,
         gender: row.gender ?? null,
         birthdate: formatBirthdate(row.birthdate),

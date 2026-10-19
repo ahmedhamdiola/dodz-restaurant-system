@@ -6,7 +6,6 @@ import {
 } from "@heroicons/react/24/outline";
 import type {
     AdminBranch,
-    AdminUser,
     OrderStatusSlice,
     RevenuePoint,
     Stat,
@@ -63,17 +62,6 @@ export const TOP_PRODUCTS: TopProduct[] = [
     { name: "Super Nashville Tender", sold: 812, revenue: 300400, share: 58 },
     { name: "Family Meal", sold: 764, revenue: 527200, share: 49 },
     { name: "Solo Crave", sold: 655, revenue: 208000, share: 41 },
-];
-
-export const ADMIN_USERS: AdminUser[] = [
-    { id: 1, name: "Mostafa El Din", email: "mostafa.eldin@gmail.com", role: "Owner", orders: 0, joined: "Jan 12, 2024", status: "Active" },
-    { id: 2, name: "Salma Fathy", email: "salma.fathy@yahoo.com", role: "Manager", orders: 0, joined: "Feb 3, 2024", status: "Active" },
-    { id: 3, name: "Ahmed Hassan", email: "ahmed.hassan@hotmail.com", role: "Cashier", orders: 341, joined: "Mar 18, 2024", status: "Active" },
-    { id: 4, name: "Nour Amin", email: "nour.amin@gmail.com", role: "Cashier", orders: 287, joined: "Apr 2, 2024", status: "Active" },
-    { id: 5, name: "Kareem Sobhy", email: "kareem.sobhy@yahoo.com", role: "Chef", orders: 0, joined: "May 27, 2024", status: "Active" },
-    { id: 6, name: "Dina Sherif", email: "dina.sherif@hotmail.com", role: "Delivery", orders: 519, joined: "Jun 15, 2024", status: "Active" },
-    { id: 7, name: "Omar Yousef", email: "omar.yousef@gmail.com", role: "Delivery", orders: 462, joined: "Jul 9, 2024", status: "Suspended" },
-    { id: 8, name: "Hala Mostafa", email: "hala.mostafa@yahoo.com", role: "Customer", orders: 23, joined: "Aug 1, 2025", status: "Active" },
 ];
 
 export const ADMIN_BRANCHES: AdminBranch[] = [

@@ -97,6 +97,18 @@ export const ProductRepository = () => {
         return result.rows[0] ?? null;
     }
 
+    // Opening stock rows for a brand-new product across every active branch.
+    // Same neutral default as the branch-admins migration backfill; the branch
+    // dashboard overwrites it. Safe to call twice (ON CONFLICT).
+    const seedBranchStock = async (productId: number) => {
+        await pool.query(
+            `INSERT INTO branch_stock (branch_id, product_id, quantity, low_stock_threshold)
+             SELECT id, $1, 50, 10 FROM branches WHERE is_deleted = false
+             ON CONFLICT (branch_id, product_id) DO NOTHING`,
+            [productId]
+        );
+    };
+
     return {
         getProductsByCategoryID,
         getAllProducts,
@@ -106,5 +118,6 @@ export const ProductRepository = () => {
         updateProduct,
         deleteProduct,
         getProductByName,
+        seedBranchStock,
     };
 };

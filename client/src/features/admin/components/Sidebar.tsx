@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import {
     ArrowLeftIcon,
+    BellAlertIcon,
     ClipboardDocumentListIcon,
     Cog6ToothIcon,
     MapPinIcon,
@@ -11,16 +12,22 @@ import {
 } from "@heroicons/react/24/outline";
 import type { ComponentType, SVGProps } from "react";
 import Logo from "../../../assets/logos/Logo.svg";
+import { useAuth } from "../../auth/hooks/useAuth";
+import { useBranchInfo } from "../../branch/hooks/useBranchInfo";
+import { usePendingAlertCount } from "../hooks/useAdminAlerts";
 
 interface NavItem {
     label: string;
     to: string;
     end?: boolean;
     Icon: ComponentType<SVGProps<SVGSVGElement>>;
+    /** When true, render the live pending-alerts count next to the label. */
+    showsAlertBadge?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
     { label: "Dashboard", to: "/admin", end: true, Icon: Squares2X2Icon },
+    { label: "Alerts", to: "/admin/alerts", Icon: BellAlertIcon, showsAlertBadge: true },
     { label: "Products", to: "/admin/products", Icon: ShoppingBagIcon },
     { label: "Users", to: "/admin/users", Icon: UsersIcon },
     { label: "Orders", to: "/admin/orders", Icon: ClipboardDocumentListIcon },
@@ -41,16 +48,19 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ onClose }: SidebarProps) => {
+    const { user } = useAuth();
+    const { data: pendingAlerts = 0 } = usePendingAlertCount();
+
+    // Branch admins show the branch they run; the main admin shows "Admin".
+    const isBranchAdmin = user?.role === "branch_admin";
+    const { data: branch } = useBranchInfo(isBranchAdmin ? user?.branchId : null);
+    const title = isBranchAdmin ? (branch?.name ?? "Branch") : "Admin";
+
     return (
         <div className="flex h-full w-72 flex-col bg-[#0e1014] text-white">
             <div className="flex items-center gap-3 px-5 pt-6 pb-4">
                 <img src={Logo} alt="DODZ Logo" className="w-14 brightness-125" />
-                <div className="flex flex-col leading-tight">
-                    <span className="text-lg font-bold uppercase tracking-tight">DODZ</span>
-                    <span className="text-[10px] font-semibold uppercase tracking-widest text-white/40">
-                        Admin Panel
-                    </span>
-                </div>
+                <span className="truncate text-lg font-bold uppercase tracking-tight">{title}</span>
             </div>
 
             <div className="px-4 pb-2">
@@ -60,7 +70,7 @@ const Sidebar = ({ onClose }: SidebarProps) => {
             </div>
 
             <nav className="flex-1 space-y-1 overflow-y-auto px-4 pb-2 scrollbar-slim">
-                {NAV_ITEMS.map(({ label, to, end, Icon }) => (
+                {NAV_ITEMS.map(({ label, to, end, Icon, showsAlertBadge }) => (
                     <NavLink
                         key={to}
                         to={to}
@@ -75,6 +85,11 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                                 )}
                                 <Icon className="h-5 w-5 shrink-0" />
                                 {label}
+                                {showsAlertBadge && pendingAlerts > 0 && (
+                                    <span className="ml-auto rounded-full bg-brand px-2 py-0.5 text-[10px] font-bold text-white">
+                                        {pendingAlerts > 99 ? "99+" : pendingAlerts}
+                                    </span>
+                                )}
                             </>
                         )}
                     </NavLink>

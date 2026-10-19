@@ -129,7 +129,10 @@ CREATE TABLE IF NOT EXISTS users (
     provider VARCHAR(20) NOT NULL DEFAULT 'email' CHECK (provider IN ('email', 'google', 'facebook', 'apple')),
     provider_id VARCHAR(150), -- id returned by the social provider; combined with provider to link the account
 
-    role VARCHAR(20) NOT NULL DEFAULT 'customer' CHECK (role IN ('customer', 'staff', 'admin')),
+    -- branch_admin = dashboard for exactly one branch (menu + stock + alerts to
+    -- the main admins); enforced together with users.branch_id below.
+    role VARCHAR(20) NOT NULL DEFAULT 'customer' CHECK (role IN ('customer', 'staff', 'admin', 'branch_admin')),
+    branch_id INTEGER REFERENCES branches(id), -- required when role = 'branch_admin' (see migrations/20261019_branch_admins.sql)
 
     avatar TEXT, -- profile image url
     gender VARCHAR(10) CHECK (gender IN ('male', 'female')),
@@ -143,7 +146,9 @@ CREATE TABLE IF NOT EXISTS users (
 
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+
+    CONSTRAINT users_branch_admin_requires_branch_check CHECK (role <> 'branch_admin' OR branch_id IS NOT NULL)
 );
 
 CREATE TABLE IF NOT EXISTS orders (
@@ -223,5 +228,50 @@ CREATE TABLE IF NOT EXISTS user_favorites (
 -- Reads are always "this user's favourites, newest last", and the leading
 -- user_id already serves them through the primary key.
 CREATE INDEX IF NOT EXISTS idx_user_favorites_user_created ON user_favorites (user_id, created_at);
+
+-- Per-branch inventory. Products stay global; each branch counts its own
+-- units. The branch dashboard upserts rows, so (branch, product) is unique.
+-- See migrations/20261019_branch_admins.sql for the role/column this pairs with.
+CREATE TABLE IF NOT EXISTS branch_stock (
+    id SERIAL PRIMARY KEY,
+    branch_id INTEGER NOT NULL REFERENCES branches(id),
+    product_id INTEGER NOT NULL REFERENCES products(id),
+
+    quantity INTEGER NOT NULL DEFAULT 0 CHECK (quantity >= 0),
+    low_stock_threshold INTEGER NOT NULL DEFAULT 10 CHECK (low_stock_threshold >= 0),
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE (branch_id, product_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_branch_stock_branch_id ON branch_stock (branch_id);
+CREATE INDEX IF NOT EXISTS idx_branch_stock_product_id ON branch_stock (product_id);
+
+-- "We need X" / "we're busy" notes from a branch admin to the main admins,
+-- with a pending → acknowledged → resolved workflow.
+CREATE TABLE IF NOT EXISTS branch_alerts (
+    id SERIAL PRIMARY KEY,
+    branch_id INTEGER NOT NULL REFERENCES branches(id),
+    sender_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+
+    type VARCHAR(20) NOT NULL CHECK (type IN ('needs_stock', 'busy', 'other')),
+    message TEXT NOT NULL CHECK (length(btrim(message)) > 0),
+
+    status VARCHAR(20) NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending', 'acknowledged', 'resolved')),
+
+    acknowledged_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    acknowledged_at TIMESTAMP,
+
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE INDEX IF NOT EXISTS idx_branch_alerts_status_created
+    ON branch_alerts (status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_branch_alerts_branch_id ON branch_alerts (branch_id);
 
 -- TODO(future migration): users_addresses table (user_id, address, lat, lng, ...) for delivery addresses

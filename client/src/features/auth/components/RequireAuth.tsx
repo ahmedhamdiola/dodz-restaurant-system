@@ -24,9 +24,13 @@ const RequireAuth = ({ children }: RequireAuthProps) => {
         return <Navigate to={`/login?redirect=${redirect}`} replace />;
     }
 
-    // Customers are sent home; only staff/admin may use the admin area.
+    // Customers are sent home; a branch admin belongs on their branch
+    // dashboard, not in the main-admin area. Staff and admins stay.
     if (user?.role === "customer") {
         return <Navigate to="/" replace />;
+    }
+    if (user?.role === "branch_admin") {
+        return <Navigate to="/branch" replace />;
     }
 
     return <>{children}</>;
