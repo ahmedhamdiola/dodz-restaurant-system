@@ -94,7 +94,11 @@ export type CartErrorType =
     // "Customize Your Meal": 400 when the selection itself is wrong, 409 when a
     // selected option exists but is no longer orderable.
     | "INVALID_OPTIONS"
-    | "OPTION_UNAVAILABLE";
+    | "OPTION_UNAVAILABLE"
+    // The branch does not hold enough units for one or more cart lines. Checked
+    // inside the checkout transaction and answered with 409, like the other
+    // "your cart changed since you looked at it" failures.
+    | "INSUFFICIENT_STOCK";
 
 export class CartError extends Error {
     constructor(

@@ -30,14 +30,17 @@ export const getCartErrorMessage = (err: unknown, fallback: string): string => {
  * so the message-level copy is what survives into the mutation error.
  */
 const toCartError = (err: unknown): never => {
-    if (err instanceof Error) {
-        throw err;
-    }
     const like = err as ErrorLike;
+    // Prefer the server's message over axios's generic "Request failed with
+    // status code 409" — an AxiosError is an Error too, so checking
+    // `instanceof Error` first would swallow it.
     if (like.response?.data?.message) {
         const error = new Error(like.response.data.message) as Error & ErrorLike;
         error.response = like.response;
         throw error;
+    }
+    if (err instanceof Error) {
+        throw err;
     }
     throw err;
 };

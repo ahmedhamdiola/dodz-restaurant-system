@@ -155,6 +155,8 @@ after(async () => {
                 createdProductIds,
             ]);
             await pool.query("DELETE FROM cart_items WHERE product_id = ANY($1::int[])", [createdProductIds]);
+            // branch_stock.product_id is RESTRICT, so the seeded counts go first.
+            await pool.query("DELETE FROM branch_stock WHERE product_id = ANY($1::int[])", [createdProductIds]);
             await pool.query("DELETE FROM products WHERE id = ANY($1::int[])", [createdProductIds]);
         }
     } finally {
@@ -179,6 +181,14 @@ describe("product options", () => {
                 [categoryId, `${name} ${Date.now().toString(36)}`, price]
             );
             createdProductIds.push(result.rows[0].id);
+            // Raw inserts bypass ProductService's branch_stock seeding, and the
+            // checkout suite orders these products, so give every branch stock.
+            await pool.query(
+                `INSERT INTO branch_stock (branch_id, product_id, quantity, low_stock_threshold)
+                 SELECT id, $1, 100, 10 FROM branches WHERE is_deleted = false
+                 ON CONFLICT (branch_id, product_id) DO NOTHING`,
+                [result.rows[0].id]
+            );
             return { id: result.rows[0].id, price: Number(result.rows[0].price) };
         };
 

@@ -30,6 +30,13 @@ export const uniqueGuestToken = (): string => `t_${Date.now().toString(36)}_${++
 
 let server: Server | undefined;
 
+/**
+ * Stock levels as they were before this file ran. Checkout tests really do
+ * deduct units, so the suite would otherwise drain the developer's seeded
+ * inventory a little more on every run.
+ */
+let stockBaseline: { branch_id: number; product_id: number; quantity: number }[] = [];
+
 export const startSuite = async () => {
     // Remove leftovers from a previously interrupted run so each run is deterministic.
     await pool.query("DELETE FROM order_items WHERE order_id IN (SELECT id FROM orders WHERE customer_name = $1)", ["Suite Tester"]);
@@ -37,6 +44,11 @@ export const startSuite = async () => {
     await pool.query("DELETE FROM users WHERE email LIKE '%@suite.test'");
     // Orphan guest carts (no account) from interrupted runs; user carts cascade on user delete above.
     await pool.query("DELETE FROM carts WHERE user_id IS NULL AND created_at < CURRENT_DATE - INTERVAL '1 day'");
+
+    const snapshot = await pool.query<{ branch_id: number; product_id: number; quantity: number }>(
+        `SELECT branch_id, product_id, quantity FROM branch_stock`
+    );
+    stockBaseline = snapshot.rows;
 
     await new Promise<void>((resolve) => {
         server = app.listen(0, "127.0.0.1", () => resolve());
@@ -81,6 +93,8 @@ const createdUserIds: number[] = [];
 const createdOrderIds: number[] = [];
 const createdGuestHashes: string[] = [];
 const createdCouponIds: number[] = [];
+const createdProductIds: number[] = [];
+const createdAlertIds: number[] = [];
 
 export const trackUser = (id: number) => createdUserIds.push(id);
 export const trackOrder = (id: number) => createdOrderIds.push(id);
@@ -88,6 +102,10 @@ export const trackOrder = (id: number) => createdOrderIds.push(id);
 export const trackGuestToken = (token: string) => createdGuestHashes.push(hashToken(token));
 /** Tracks a coupon row so the suite never leaves offers behind in the dev database. */
 export const trackCoupon = (id: number) => createdCouponIds.push(id);
+/** Tracks a product created through the API (its branch_stock rows go with it). */
+export const trackProduct = (id: number) => createdProductIds.push(id);
+/** Tracks a branch alert so the ops inbox is not polluted between runs. */
+export const trackAlert = (id: number) => createdAlertIds.push(id);
 
 /** Inserts a password-authenticated admin directly (the CLI equivalent of create:admin). */
 export const seedAdmin = async (): Promise<{ id: number; email: string; password: string }> => {
@@ -137,6 +155,35 @@ export const finishSuite = async () => {
         }
         if (createdUserIds.length > 0) {
             await pool.query("DELETE FROM users WHERE id = ANY($1::int[])", [createdUserIds]);
+        }
+        // Alerts outlive their sender (sender_id goes NULL), so clear them by id
+        // regardless of whether the branch-admin account is being deleted.
+        if (createdAlertIds.length > 0) {
+            await pool.query("DELETE FROM branch_alerts WHERE id = ANY($1::int[])", [createdAlertIds]);
+        }
+        // branch_stock.product_id is RESTRICT, so the counts must go first.
+        if (createdProductIds.length > 0) {
+            await pool.query("DELETE FROM branch_stock WHERE product_id = ANY($1::int[])", [createdProductIds]);
+            await pool.query("DELETE FROM products WHERE id = ANY($1::int[])", [createdProductIds]);
+        }
+        // Put back every stock count this file moved, so a checkout test run does
+        // not quietly eat the seeded inventory between runs.
+        if (stockBaseline.length > 0) {
+            await pool.query(
+                `UPDATE branch_stock bs
+                 SET quantity = v.quantity
+                 FROM (
+                     SELECT unnest($1::int[]) AS branch_id,
+                            unnest($2::int[]) AS product_id,
+                            unnest($3::int[]) AS quantity
+                 ) v
+                 WHERE bs.branch_id = v.branch_id AND bs.product_id = v.product_id`,
+                [
+                    stockBaseline.map((row) => row.branch_id),
+                    stockBaseline.map((row) => row.product_id),
+                    stockBaseline.map((row) => row.quantity),
+                ]
+            );
         }
         // Redemptions go with their order (ON DELETE CASCADE), so only the coupon
         // rows themselves are left to clear.

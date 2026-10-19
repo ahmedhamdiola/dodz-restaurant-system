@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { pool } from "../../config/database.js";
 import { BranchRepository } from "../branch/branch.repository.js";
-import { insertOrderAndItems, priceOrderItems, PricedItemInput } from "../order/order.repository.js";
+import { InsufficientStockError, insertOrderAndItems, priceOrderItems, PricedItemInput } from "../order/order.repository.js";
 import { resolveDeliveryFee } from "../order/order.totals.js";
 import { CouponRepository } from "../coupon/coupon.repository.js";
 import { CouponService } from "../coupon/coupon.service.js";
@@ -393,6 +393,9 @@ export const CartService = () => {
             const unavailableProductIds: number[] = [];
             const unavailableCartItemIds: number[] = [];
             const pricedInputs: PricedItemInput[] = [];
+            // Maps an ordered product back to the cart lines that need it, so a
+            // stock failure names the exact rows the customer must change.
+            const cartLineIdsByProduct = new Map<number, number[]>();
 
             for (const line of cartItems) {
                 const product = products.get(line.product_id);
@@ -446,6 +449,9 @@ export const CartService = () => {
                     optionsSummary: selection.summary,
                     optionsSnapshot: selection.snapshot as SelectedOptionEntry[],
                 });
+                const lineIds = cartLineIdsByProduct.get(selection.productId) ?? [];
+                lineIds.push(line.id);
+                cartLineIdsByProduct.set(selection.productId, lineIds);
             }
 
             if (failures.length > 0) {
@@ -494,20 +500,33 @@ export const CartService = () => {
                 appliedCoupon = { id: applied.couponId, code: applied.couponCode, discount: applied.discount };
             }
 
-            const { inserted, order } = await insertOrderAndItems(client, {
-                branchID: input.branchID,
-                customerName: input.customerName,
-                customerPhone: input.customerPhone ?? null,
-                orderType: input.orderType,
-                deliveryFee,
-                discount,
-                couponCode: appliedCoupon?.code ?? null,
-                deliveryAddress: input.orderType === "Delivery" ? input.deliveryAddress!.trim() : null,
-                deliveryLat: input.orderType === "Delivery" ? input.deliveryLat! : null,
-                deliveryLng: input.orderType === "Delivery" ? input.deliveryLng! : null,
-                items,
-                idempotencyKey: input.idempotencyKey,
-            });
+            let claim: Awaited<ReturnType<typeof insertOrderAndItems>>;
+            try {
+                claim = await insertOrderAndItems(client, {
+                    branchID: input.branchID,
+                    customerName: input.customerName,
+                    customerPhone: input.customerPhone ?? null,
+                    orderType: input.orderType,
+                    deliveryFee,
+                    discount,
+                    couponCode: appliedCoupon?.code ?? null,
+                    deliveryAddress: input.orderType === "Delivery" ? input.deliveryAddress!.trim() : null,
+                    deliveryLat: input.orderType === "Delivery" ? input.deliveryLat! : null,
+                    deliveryLng: input.orderType === "Delivery" ? input.deliveryLng! : null,
+                    items,
+                    idempotencyKey: input.idempotencyKey,
+                });
+            } catch (error) {
+                if (error instanceof InsufficientStockError) {
+                    // Surfaced through the cart's 409 channel with the offending
+                    // cart line ids, so the drawer can mark those exact rows.
+                    const productIDs = [...new Set(error.shortages.map((item) => item.productID))];
+                    const cartItemIDs = [...new Set(productIDs.flatMap((id) => cartLineIdsByProduct.get(id) ?? []))];
+                    throw new CartError("INSUFFICIENT_STOCK", error.message, productIDs, cartItemIDs);
+                }
+                throw error;
+            }
+            const { inserted, order } = claim;
 
             if (!inserted) {
                 // A concurrent request with this same key won the claim. Its order

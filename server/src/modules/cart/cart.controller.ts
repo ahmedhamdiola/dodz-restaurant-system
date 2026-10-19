@@ -125,6 +125,7 @@ const mapCartError = (res: Response, error: CartError) => {
     switch (error.type) {
         case "UNAVAILABLE_PRODUCT":
         case "OPTION_UNAVAILABLE":
+        case "INSUFFICIENT_STOCK":
             return ConflictStatus(res, error.message, payload);
         case "CART_NOT_FOUND":
             return NotFoundStatus(res, error.message, payload);

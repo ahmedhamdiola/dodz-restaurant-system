@@ -1,6 +1,6 @@
 import { PoolClient } from "pg";
 import { pool } from "../../config/database.js";
-import { OrderFilters, OrderInput, OrderStatus, OrderType } from "./order.types.js";
+import { OrderFilters, OrderInput, OrderStatus, OrderType, canTransitionTo } from "./order.types.js";
 import { computeTotals, resolveDeliveryFee } from "./order.totals.js";
 import { SelectedOptionEntry } from "../product/product.options.types.js";
 
@@ -59,8 +59,34 @@ export const priceOrderItems = (items: PricedItemInput[], products: PricedProduc
     });
 };
 
+/** One product the branch cannot fully cover, with the numbers the UI needs. */
+export interface StockShortage {
+    productID: number;
+    productName: string;
+    requested: number;
+    available: number;
+}
+
+/**
+ * Raised by the order transaction when the branch does not hold enough units.
+ * Callers translate it into their own error channel (cart 409, order 409); the
+ * transaction has already rolled back, so no order row survives.
+ */
+export class InsufficientStockError extends Error {
+    constructor(public shortages: StockShortage[]) {
+        const details = shortages.map((item) =>
+            item.available === 0
+                ? `${item.productName} is out of stock`
+                : `${item.productName}: only ${item.available} left`
+        );
+        super(`Not enough stock at this branch — ${details.join("; ")}`);
+        this.name = "InsufficientStockError";
+    }
+}
+
 export interface InsertOrderInput {
     branchID: number;
+
     customerName: string;
     customerPhone: string | null;
     orderType: OrderType;
@@ -125,6 +151,41 @@ export const insertOrderAndItems = async (client: PoolClient, input: InsertOrder
 
     const orderID = orderResult.rows[0].id;
 
+    // Stock is validated and moved inside the same transaction as the order row.
+    // The claim insert above comes first so a concurrent replay with the same
+    // idempotency key still short-circuits to "already placed" instead of being
+    // rejected for stock that order already consumed.
+    const needed = new Map<number, { quantity: number; name: string }>();
+    for (const item of input.items) {
+        const entry = needed.get(item.productID);
+        if (entry) {
+            entry.quantity += item.quantity;
+        } else {
+            needed.set(item.productID, { quantity: item.quantity, name: item.productName });
+        }
+    }
+
+    // FOR UPDATE serializes concurrent checkouts for the same branch/product, so
+    // two carts cannot both read the last unit and then both spend it.
+    const locked = await client.query<{ product_id: number; quantity: number }>(
+        `SELECT product_id, quantity FROM branch_stock
+         WHERE branch_id = $1 AND product_id = ANY($2::int[])
+         FOR UPDATE`,
+        [input.branchID, [...needed.keys()]]
+    );
+    const available = new Map(locked.rows.map((row) => [row.product_id, Number(row.quantity)]));
+
+    const shortages: StockShortage[] = [];
+    for (const [productID, { quantity, name }] of needed) {
+        const have = available.get(productID) ?? 0;
+        if (quantity > have) {
+            shortages.push({ productID, productName: name, requested: quantity, available: have });
+        }
+    }
+    if (shortages.length > 0) {
+        throw new InsufficientStockError(shortages);
+    }
+
     for (const item of input.items) {
         await client.query(
             `INSERT INTO order_items (order_id, product_id, product_name, unit_price, quantity, subtotal, options_summary, options_snapshot)
@@ -139,6 +200,16 @@ export const insertOrderAndItems = async (client: PoolClient, input: InsertOrder
                 item.optionsSummary,
                 JSON.stringify(item.optionsSnapshot),
             ]
+        );
+    }
+
+    // Stock leaves with the order. A product can sit on several lines (different
+    // option selections), so the per-product total is deducted once.
+    for (const [productID, { quantity }] of needed) {
+        await client.query(
+            `UPDATE branch_stock SET quantity = quantity - $3, updated_at = CURRENT_TIMESTAMP
+             WHERE branch_id = $1 AND product_id = $2`,
+            [input.branchID, productID, quantity]
         );
     }
 
@@ -357,18 +428,50 @@ export const OrderRepository = () => {
     };
 
     const updateOrderStatus = async (id: number, status: OrderStatus) => {
-        const result = await pool.query(
-            `UPDATE orders SET status = $1, updated_at = CURRENT_TIMESTAMP
-             WHERE id = $2 AND is_deleted = false
-               AND (
-                     status = $1                                   -- no-op update
-                     OR (status = 'Preparing' AND $1 IN ('On the way', 'Completed', 'Cancelled'))
-                     OR (status = 'On the way' AND $1 IN ('Completed', 'Cancelled'))
-               )
-             RETURNING *`,
-            [status, id]
-        );
-        return result.rows[0] ?? null;
+        const client = await pool.connect();
+        try {
+            await client.query("BEGIN");
+
+            const existing = await client.query<{ status: OrderStatus; branch_id: number }>(
+                `SELECT status, branch_id FROM orders WHERE id = $1 AND is_deleted = false FOR UPDATE`,
+                [id]
+            );
+            const current = existing.rows[0];
+            if (current === undefined || !canTransitionTo(current.status, status)) {
+                await client.query("ROLLBACK");
+                return null;
+            }
+
+            const result = await client.query(
+                `UPDATE orders SET status = $1, updated_at = CURRENT_TIMESTAMP
+                 WHERE id = $2 RETURNING *`,
+                [status, id]
+            );
+
+            // Cancelling puts the units back on the branch's shelf. The status
+            // guard above means this runs at most once per order, so a repeated
+            // cancel cannot inflate the count.
+            if (status === "Cancelled" && current.status !== "Cancelled") {
+                await client.query(
+                    `UPDATE branch_stock bs
+                     SET quantity = bs.quantity + sold.total, updated_at = CURRENT_TIMESTAMP
+                     FROM (
+                         SELECT product_id, SUM(quantity)::int AS total
+                         FROM order_items WHERE order_id = $1 GROUP BY product_id
+                     ) sold
+                     WHERE bs.branch_id = $2 AND bs.product_id = sold.product_id`,
+                    [id, current.branch_id]
+                );
+            }
+
+            await client.query("COMMIT");
+            return result.rows[0] ?? null;
+        } catch (error) {
+            await client.query("ROLLBACK");
+            throw error;
+        } finally {
+            client.release();
+        }
     };
 
     return {

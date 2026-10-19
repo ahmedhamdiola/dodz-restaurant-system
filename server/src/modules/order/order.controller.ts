@@ -4,11 +4,13 @@ import { OrderInput, OrderStatus, ORDER_STATUSES } from "./order.types.js";
 import { AuthRequest } from "../auth/auth.middleware.js";
 import {
     BadRequestStatus,
+    ConflictStatus,
     CreateStatus,
     NotFoundStatus,
     SuccessStatus,
     UnauthorizedStatus,
 } from "../../utils/response.js";
+import { InsufficientStockError } from "./order.repository.js";
 import { normalizePhone } from "../../utils/phone.js";
 
 const service = OrderService();
@@ -115,11 +117,21 @@ export const OrderController = () => {
             items: req.body.items,
         };
 
-        const result = await service.createOrder(order);
-        if (result === null) {
-            return BadRequestStatus(res, "Invalid order data");
+        try {
+            const result = await service.createOrder(order);
+            if (result === null) {
+                return BadRequestStatus(res, "Invalid order data");
+            }
+            return CreateStatus(res, result);
+        } catch (error) {
+            if (error instanceof InsufficientStockError) {
+                return ConflictStatus(res, error.message, {
+                    type: "INSUFFICIENT_STOCK",
+                    shortages: error.shortages,
+                });
+            }
+            throw error;
         }
-        return CreateStatus(res, result);
     };
 
     const updateOrderStatus = async (req: Request, res: Response) => {

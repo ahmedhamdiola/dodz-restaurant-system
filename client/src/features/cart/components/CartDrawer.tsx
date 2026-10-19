@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRightIcon, ShoppingCartIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useScrollLock } from "../../../components/navbar/hooks/useScrollLock";
@@ -7,6 +7,7 @@ import { formatPrice } from "../../../lib/format";
 import { useAuth } from "../../auth/hooks/useAuth";
 import { useToast } from "../../../components/toast/context";
 import { useFocusTrap } from "../hooks/useFocusTrap";
+import { useBranchAvailability } from "../hooks/useBranchAvailability";
 import { useCart } from "../hooks/useCart";
 import type { OrderView } from "../types";
 import { CartItemRow } from "./CartItemRow";
@@ -43,8 +44,17 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
     const panelRef = useRef<HTMLDivElement>(null);
 
     const { data, isLoading, isError, refetch } = useCart();
+    const availability = useBranchAvailability();
     const [phase, setPhase] = useState<Phase>("cart");
     const [lastOrder, setLastOrder] = useState<OrderView | null>(null);
+
+    // Stock moves while the cart sits closed, so re-check each time it opens.
+    const checkAvailability = availability.refetch;
+    useEffect(() => {
+        if (isOpen) {
+            void checkAvailability();
+        }
+    }, [isOpen, checkAvailability]);
 
     useScrollLock(isOpen);
     useEscapeKey(isOpen, onClose);
@@ -173,20 +183,31 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                                     <CartItemRow
                                         key={item.id}
                                         item={item}
+                                        isOutOfStock={availability.isUnavailable(item.product_id)}
                                         onError={(message) => toast.error(message)}
                                     />
                                 ))}
                             </ul>
+                            {availability.isBlocked && (
+                                <p
+                                    role="alert"
+                                    className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600 dark:bg-red-950/50 dark:text-red-400"
+                                >
+                                    Some items are out of stock at your branch. Remove them to continue.
+                                </p>
+                            )}
                             {phase === "cart" ? (
                                 <button
                                     type="button"
                                     onClick={() => setPhase("checkout")}
-                                    className="mt-4 flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-full bg-brand px-4 py-3 text-sm font-semibold uppercase tracking-wide text-white transition-all hover:opacity-90"
+                                    disabled={availability.isBlocked}
+                                    className="mt-4 flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-full bg-brand px-4 py-3 text-sm font-semibold uppercase tracking-wide text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                     Checkout <ArrowRightIcon className="h-4 w-4" />
                                 </button>
                             ) : (
                                 <CheckoutForm
+                                    blocked={availability.isBlocked}
                                     onSuccess={(order) => {
                                         setLastOrder(order);
                                         setPhase("success");

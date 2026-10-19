@@ -8,6 +8,8 @@ interface QuantityStepperProps {
     cartItemId: number;
     quantity: number;
     compact?: boolean;
+    /** Locks both buttons, e.g. while the line's product is out of stock. */
+    disabled?: boolean;
     onError?: (message: string) => void;
 }
 
@@ -16,7 +18,7 @@ interface QuantityStepperProps {
  * disabled while a cart mutation is in flight so rapid clicks can't race the
  * server (each op is exact-set, so overlapping requests would drop increments).
  */
-export const QuantityStepper = ({ cartItemId, quantity, compact = false, onError }: QuantityStepperProps) => {
+export const QuantityStepper = ({ cartItemId, quantity, compact = false, disabled = false, onError }: QuantityStepperProps) => {
     const updateQuantity = useUpdateQuantity();
     const removeItem = useRemoveItem();
     const busy = updateQuantity.isPending || removeItem.isPending;
@@ -50,7 +52,7 @@ export const QuantityStepper = ({ cartItemId, quantity, compact = false, onError
             <button
                 type="button"
                 onClick={decrement}
-                disabled={busy}
+                disabled={busy || disabled}
                 aria-label="Decrease quantity"
                 className={`${size} flex cursor-pointer items-center justify-center rounded-full text-secondary transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50`}
             >
@@ -60,7 +62,7 @@ export const QuantityStepper = ({ cartItemId, quantity, compact = false, onError
             <button
                 type="button"
                 onClick={increment}
-                disabled={busy || quantity >= MAX_QUANTITY}
+                disabled={busy || disabled || quantity >= MAX_QUANTITY}
                 aria-label="Increase quantity"
                 className={`${size} flex cursor-pointer items-center justify-center rounded-full text-secondary transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50`}
             >

@@ -5,6 +5,7 @@ import { useAuth } from "../../auth/hooks/useAuth";
 import { useOrderType } from "../../order/useOrderType";
 import { useOrderLocation } from "../../order-location/useOrderLocation";
 import { queryClient } from "../../../lib/queryClient";
+import { AVAILABILITY_QUERY_ROOT } from "../hooks/useBranchAvailability";
 import { useCart, useCheckout, useValidateCoupon } from "../hooks/useCart";
 import { getCartErrorMessage } from "../services/cartApi";
 import type { CouponQuote } from "../services/couponApi";
@@ -35,11 +36,13 @@ const makeIdempotencyKey = (): string =>
         : `ik_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
 
 interface CheckoutFormProps {
+    /** A cart line is known to be out of stock at the selected branch. */
+    blocked?: boolean;
     onSuccess: (order: OrderView) => void;
     onCancel: () => void;
 }
 
-export const CheckoutForm = ({ onSuccess, onCancel }: CheckoutFormProps) => {
+export const CheckoutForm = ({ blocked = false, onSuccess, onCancel }: CheckoutFormProps) => {
     const { user } = useAuth();
     const { isDelivery } = useOrderType();
     const { selection, setSelection } = useOrderLocation();
@@ -162,7 +165,12 @@ export const CheckoutForm = ({ onSuccess, onCancel }: CheckoutFormProps) => {
             },
             {
                 onSuccess: place,
-                onError: (err) => setError(getCartErrorMessage(err, "Could not place your order. Please try again.")),
+                onError: (err) => {
+                    // A rejected order usually means stock moved under us; drop the
+                    // cached availability so the cart can no longer trust it.
+                    void queryClient.invalidateQueries({ queryKey: [AVAILABILITY_QUERY_ROOT] });
+                    setError(getCartErrorMessage(err, "Could not place your order. Please try again."));
+                },
             }
         );
     };
@@ -174,6 +182,15 @@ export const CheckoutForm = ({ onSuccess, onCancel }: CheckoutFormProps) => {
             {error && (
                 <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600 dark:bg-red-950/50">
                     {error}
+                </p>
+            )}
+
+            {blocked && (
+                <p
+                    role="alert"
+                    className="rounded-lg bg-red-50 px-3 py-2 text-xs font-medium text-red-600 dark:bg-red-950/50 dark:text-red-400"
+                >
+                    Some items in your cart are out of stock at this branch. Go back and remove them to order.
                 </p>
             )}
 
@@ -331,7 +348,7 @@ export const CheckoutForm = ({ onSuccess, onCancel }: CheckoutFormProps) => {
                 </button>
                 <button
                     type="submit"
-                    disabled={checkout.isPending}
+                    disabled={checkout.isPending || blocked}
                     className="flex-1 cursor-pointer rounded-full bg-brand px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     {checkout.isPending ? "Placing order…" : "Place order"}
