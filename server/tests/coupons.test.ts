@@ -3,7 +3,9 @@ import { after, before, describe, it } from "node:test";
 import { randomUUID } from "node:crypto";
 import {
     finishSuite,
+    login,
     request,
+    seedAdmin,
     signupUser,
     startSuite,
     trackCoupon,
@@ -71,6 +73,7 @@ describe("coupons", () => {
     let productId: number;
     let productPrice: number;
     let customer: { token: string; user: { id: number; name: string; phone: string } };
+    let admin: { token: string };
     let guest: string;
 
     const guestHeaders = () => {
@@ -98,7 +101,25 @@ describe("coupons", () => {
         productPrice = Number(product.rows[0].price);
 
         customer = await signupUser();
+        const adminFixture = await seedAdmin();
+        const adminLogin = await login(adminFixture.email, adminFixture.password);
+        assert.equal(adminLogin.status, 200);
+        admin = { token: adminLogin.body.data.token };
+
         guest = `t_${Date.now().toString(36)}_${randomUUID()}`;
+    });
+
+    /** A body the service should accept, so each CRUD test only states what it varies. */
+    const adminCouponBody = (overrides: Record<string, unknown> = {}) => ({
+        code: `CPN${randomUUID().replace(/\W/g, "").slice(0, 10).toUpperCase()}`,
+        name: "Admin Suite Coupon",
+        type: "percentage",
+        value: 10,
+        minOrderAmount: 0,
+        maxUses: null,
+        isActive: true,
+        expiresAt: new Date(Date.now() + 86_400_000).toISOString(),
+        ...overrides,
     });
 
     describe("percentage", () => {
@@ -353,6 +374,204 @@ describe("coupons", () => {
             assert.equal(status, 201, JSON.stringify(body));
             if (body.data.id) trackOrder(body.data.id);
             assert.equal(Number(body.data.discount_amount), round2(productPrice * 0.2));
+        });
+    });
+
+    describe("admin crud", () => {
+        it("creates a coupon and returns it", async () => {
+            const body = adminCouponBody({ name: "Launch Offer", value: 20, minOrderAmount: 100 });
+
+            const { status, body: res } = await request("/coupons", {
+                method: "POST",
+                token: admin.token,
+                body,
+            });
+
+            assert.equal(status, 201, JSON.stringify(res));
+            trackCoupon(res.data.id);
+            assert.equal(res.data.code, body.code);
+            assert.equal(res.data.name, "Launch Offer");
+            assert.equal(Number(res.data.value), 20);
+            assert.equal(Number(res.data.minOrderAmount), 100);
+            assert.equal(res.data.maxUses, null);
+            assert.equal(res.data.isActive, true);
+        });
+
+        it("lists coupons for an admin, newest first, with usage counts", async () => {
+            const created = await request("/coupons", {
+                method: "POST",
+                token: admin.token,
+                body: adminCouponBody(),
+            });
+            assert.equal(created.status, 201, JSON.stringify(created.body));
+            trackCoupon(created.body.data.id);
+
+            const { status, body } = await request("/coupons", { token: admin.token });
+            assert.equal(status, 200);
+
+            const mine = body.data.find((row: { id: number }) => row.id === created.body.data.id);
+            assert.ok(mine, "the new coupon must appear in the listing");
+            assert.equal(Number(mine.usageCount), 0);
+        });
+
+        it("updates a coupon and keeps its redemptions", async () => {
+            const created = await request("/coupons", {
+                method: "POST",
+                token: admin.token,
+                body: adminCouponBody({ type: "percentage", value: 10 }),
+            });
+            trackCoupon(created.body.data.id);
+            const id = created.body.data.id;
+
+            // Spend it once, so the update can be shown not to disturb history.
+            await addToCart({ token: customer.token }, 1);
+            const spent = await checkout(
+                { token: customer.token },
+                {
+                    branchID: 1,
+                    orderType: "Pickup",
+                    couponCode: created.body.data.code,
+                    idempotencyKey: uniqueGuestToken(),
+                }
+            );
+            assert.equal(spent.status, 201, JSON.stringify(spent.body));
+            if (spent.body.data.id) trackOrder(spent.body.data.id);
+
+            const { status, body } = await request(`/coupons/${id}`, {
+                method: "PUT",
+                token: admin.token,
+                body: adminCouponBody({ code: created.body.data.code, value: 40, isActive: false }),
+            });
+
+            assert.equal(status, 200, JSON.stringify(body));
+            assert.equal(Number(body.data.value), 40);
+            assert.equal(body.data.isActive, false);
+
+            const redemption = await pool.query(
+                "SELECT discount_amount FROM order_coupons WHERE order_id = $1",
+                [spent.body.data.id]
+            );
+            assert.equal(redemption.rows.length, 1);
+            assert.equal(
+                Number(redemption.rows[0].discount_amount),
+                round2(productPrice * 0.1),
+                "the original discount must stand even after the coupon's value changed"
+            );
+        });
+
+        it("soft-deletes, which stops redemption but keeps the audit trail", async () => {
+            const created = await request("/coupons", {
+                method: "POST",
+                token: admin.token,
+                body: adminCouponBody(),
+            });
+            trackCoupon(created.body.data.id);
+            const { code } = created.body.data;
+
+            await addToCart({ token: customer.token }, 1);
+            const spent = await checkout(
+                { token: customer.token },
+                { branchID: 1, orderType: "Pickup", couponCode: code, idempotencyKey: uniqueGuestToken() }
+            );
+            assert.equal(spent.status, 201);
+            if (spent.body.data.id) trackOrder(spent.body.data.id);
+
+            const { status } = await request(`/coupons/${created.body.data.id}`, {
+                method: "DELETE",
+                token: admin.token,
+            });
+            assert.equal(status, 204);
+
+            // The row survives for order_coupons, but is no longer redeemable.
+            const row = await pool.query("SELECT is_deleted FROM coupons WHERE id = $1", [created.body.data.id]);
+            assert.equal(row.rows[0].is_deleted, true);
+
+            await addToCart({ token: customer.token }, 1);
+            const retry = await checkout(
+                { token: customer.token },
+                { branchID: 1, orderType: "Pickup", couponCode: code, idempotencyKey: uniqueGuestToken() }
+            );
+            assert.equal(retry.status, 409, JSON.stringify(retry.body));
+        });
+
+        it("rejects a duplicate code with 409", async () => {
+            const body = adminCouponBody();
+            const first = await request("/coupons", { method: "POST", token: admin.token, body });
+            assert.equal(first.status, 201, JSON.stringify(first.body));
+            trackCoupon(first.body.data.id);
+
+            const second = await request("/coupons", {
+                method: "POST",
+                token: admin.token,
+                body: { ...body, code: body.code.toLowerCase() },
+            });
+            assert.equal(second.status, 409);
+            assert.match(String(second.body.message), /already in use/i);
+        });
+
+        it("rejects an out-of-range percentage rather than letting the DB 500", async () => {
+            const { status, body } = await request("/coupons", {
+                method: "POST",
+                token: admin.token,
+                body: adminCouponBody({ type: "percentage", value: 150 }),
+            });
+            assert.equal(status, 409);
+            assert.match(String(body.message), /between 1 and 100/i);
+
+            const zero = await request("/coupons", {
+                method: "POST",
+                token: admin.token,
+                body: adminCouponBody({ type: "percentage", value: 0 }),
+            });
+            assert.equal(zero.status, 409);
+        });
+
+        it("rejects an amount on a free-delivery coupon", async () => {
+            const { status, body } = await request("/coupons", {
+                method: "POST",
+                token: admin.token,
+                body: adminCouponBody({ type: "free_delivery", value: 25 }),
+            });
+            assert.equal(status, 409);
+            assert.match(String(body.message), /cannot have an amount/i);
+        });
+
+        it("rejects an unknown type and an unparseable id", async () => {
+            const badType = await request("/coupons", {
+                method: "POST",
+                token: admin.token,
+                body: adminCouponBody({ type: "bogo" }),
+            });
+            assert.equal(badType.status, 400);
+
+            const badId = await request("/coupons/abc", { method: "PUT", token: admin.token, body: adminCouponBody() });
+            assert.equal(badId.status, 400);
+
+            const missing = await request("/coupons/99999999", { method: "DELETE", token: admin.token });
+            assert.equal(missing.status, 404);
+        });
+
+        it("keeps coupon management admin-only", async () => {
+            // Each write needs its own path: PUT/DELETE are on /:id, so a bare
+            // /coupons with those verbs is simply a 404 and proves nothing.
+            const attempts = [
+                { method: "POST", path: "/coupons", body: adminCouponBody() },
+                { method: "PUT", path: "/coupons/1", body: adminCouponBody() },
+                { method: "DELETE", path: "/coupons/1", body: {} },
+                { method: "GET", path: "/coupons", body: undefined },
+            ];
+
+            for (const attempt of attempts) {
+                const { status } = await request(attempt.path, {
+                    method: attempt.method,
+                    token: customer.token,
+                    body: attempt.body,
+                });
+                assert.equal(status, 403, `${attempt.method} ${attempt.path} must not be allowed for a customer`);
+            }
+
+            const anon = await request("/coupons");
+            assert.equal(anon.status, 401);
         });
     });
 
