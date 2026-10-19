@@ -5,6 +5,7 @@ import {
     Cog6ToothIcon,
     MapPinIcon,
     ShoppingBagIcon,
+    TagIcon,
     Squares2X2Icon,
     UsersIcon,
 } from "@heroicons/react/24/outline";
@@ -24,6 +25,7 @@ const NAV_ITEMS: NavItem[] = [
     { label: "Users", to: "/admin/users", Icon: UsersIcon },
     { label: "Orders", to: "/admin/orders", Icon: ClipboardDocumentListIcon },
     { label: "Branches", to: "/admin/branches", Icon: MapPinIcon },
+    { label: "Coupons", to: "/admin/coupons", Icon: TagIcon },
     { label: "Settings", to: "/admin/settings", Icon: Cog6ToothIcon },
 ];
 

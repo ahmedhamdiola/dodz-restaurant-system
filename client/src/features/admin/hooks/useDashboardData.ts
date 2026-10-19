@@ -2,7 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "../../../components/toast/context";
 import { MENU_STALE_TIME } from "../../menu/queryKeys";
 import { ordersApi } from "../services/ordersApi";
-import type { OrderStatus, OrdersFilters } from "../types";
+import { couponsApi } from "../services/couponsApi";
+import type { CouponInput, OrderStatus, OrdersFilters } from "../types";
 
 export const adminKeys = {
     branches: ["admin", "branches"] as const,
@@ -56,6 +57,55 @@ export const useUpdateOrderStatus = () => {
         },
         onError: () => {
             toast.error("Could not update the order status");
+        },
+    });
+};
+export const useCoupons = () =>
+    useQuery({
+        queryKey: ["admin", "coupons"],
+        queryFn: couponsApi.getCoupons,
+        staleTime: MENU_STALE_TIME,
+    });
+
+export const useCreateCoupon = () => {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    return useMutation({
+        mutationFn: (input: CouponInput) => couponsApi.createCoupon(input),
+        onSuccess: () => {
+            toast.success("Coupon created");
+            queryClient.invalidateQueries({ queryKey: ["admin", "coupons"] });
+        },
+    });
+};
+
+export const useUpdateCoupon = () => {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    return useMutation({
+        mutationFn: ({ id, input }: { id: number; input: CouponInput }) =>
+            couponsApi.updateCoupon(id, input),
+        onSuccess: () => {
+            toast.success("Coupon updated");
+            queryClient.invalidateQueries({ queryKey: ["admin", "coupons"] });
+        },
+    });
+};
+
+export const useDeleteCoupon = () => {
+    const queryClient = useQueryClient();
+    const toast = useToast();
+
+    return useMutation({
+        mutationFn: (id: number) => couponsApi.deleteCoupon(id),
+        onSuccess: () => {
+            toast.success("Coupon deleted");
+            queryClient.invalidateQueries({ queryKey: ["admin", "coupons"] });
+        },
+        onError: () => {
+            toast.error("Could not delete the coupon");
         },
     });
 };

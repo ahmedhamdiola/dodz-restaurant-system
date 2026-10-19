@@ -102,3 +102,32 @@ export interface Stat {
     change: number;
     Icon: ComponentType<SVGProps<SVGSVGElement>>;
 }
+export type CouponType = "percentage" | "fixed_amount" | "free_delivery";
+
+export interface AdminCoupon {
+    id: number;
+    code: string;
+    name: string;
+    type: CouponType;
+    value: number;
+    minOrderAmount: number;
+    /** null means unlimited redemptions. */
+    maxUses: number | null;
+    isActive: boolean;
+    isDeleted: boolean;
+    expiresAt: string;
+    /** Redemptions so far, so an admin can see a coupon sitting at its cap. */
+    usageCount: number;
+}
+
+/** The editable half of a coupon. `maxUses: null` is unlimited. */
+export interface CouponInput {
+    code: string;
+    name: string;
+    type: CouponType;
+    value: number;
+    minOrderAmount: number;
+    maxUses: number | null;
+    isActive: boolean;
+    expiresAt: string;
+}
