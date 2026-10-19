@@ -18,6 +18,11 @@ export const useFocusTrap = <T extends HTMLElement>(ref: RefObject<T | null>, ac
 
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key !== "Tab") return;
+            // A dialog portaled above us (the location picker) owns focus while it is
+            // open; yanking Tab back into the drawer would strand the user there.
+            const active = document.activeElement;
+            const activeDialog = active instanceof Element ? active.closest('[role="dialog"]') : null;
+            if (activeDialog && activeDialog !== node && !node.contains(active)) return;
             const focusables = Array.from(node.querySelectorAll<HTMLElement>(FOCUSABLE));
             if (focusables.length === 0) return;
 

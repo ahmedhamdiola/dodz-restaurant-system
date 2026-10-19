@@ -136,21 +136,6 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                             <SkeletonRow />
                             <SkeletonRow />
                         </div>
-                    ) : data.items.length === 0 ? (
-                        <div className="flex flex-col items-center gap-3 py-12 text-center">
-                            <ShoppingCartIcon className="h-12 w-12 text-muted-foreground/60" />
-                            <h3 className="text-base font-semibold">Your cart is empty</h3>
-                            <p className="max-w-[240px] text-sm text-muted-foreground">
-                                Add some crispy favorites before you checkout.
-                            </p>
-                            <button
-                                type="button"
-                                onClick={browseMenu}
-                                className="mt-1 cursor-pointer rounded-full bg-brand px-5 py-2.5 text-xs font-semibold uppercase text-white transition-opacity hover:opacity-90"
-                            >
-                                Browse the menu
-                            </button>
-                        </div>
                     ) : phase === "success" && lastOrder ? (
                         <div className="flex flex-col items-center gap-3 py-10 text-center">
                             <ShoppingCartIcon className="h-10 w-10 text-brand" />
@@ -164,6 +149,21 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                                 className="mt-1 cursor-pointer rounded-full bg-brand px-5 py-2.5 text-xs font-semibold uppercase text-white transition-opacity hover:opacity-90"
                             >
                                 Keep browsing
+                            </button>
+                        </div>
+                    ) : data.items.length === 0 ? (
+                        <div className="flex flex-col items-center gap-3 py-12 text-center">
+                            <ShoppingCartIcon className="h-12 w-12 text-muted-foreground/60" />
+                            <h3 className="text-base font-semibold">Your cart is empty</h3>
+                            <p className="max-w-[240px] text-sm text-muted-foreground">
+                                Add some crispy favorites before you checkout.
+                            </p>
+                            <button
+                                type="button"
+                                onClick={browseMenu}
+                                className="mt-1 cursor-pointer rounded-full bg-brand px-5 py-2.5 text-xs font-semibold uppercase text-white transition-opacity hover:opacity-90"
+                            >
+                                Browse the menu
                             </button>
                         </div>
                     ) : (
@@ -187,7 +187,10 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                                 </button>
                             ) : (
                                 <CheckoutForm
-                                    onSuccess={() => setPhase("success")}
+                                    onSuccess={(order) => {
+                                        setLastOrder(order);
+                                        setPhase("success");
+                                    }}
                                     onCancel={() => setPhase("cart")}
                                 />
                             )}

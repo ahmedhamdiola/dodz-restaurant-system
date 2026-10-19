@@ -1,7 +1,7 @@
-import { useEffect } from "react"
 import { createPortal } from "react-dom"
 import { InformationCircleIcon, MapPinIcon, XMarkIcon } from "@heroicons/react/24/outline"
 import { useScrollLock } from "../../../components/navbar/hooks/useScrollLock"
+import { useEscapeKey } from "../../../components/sidebar/hooks/useEscapeKey"
 import { useOrderType } from "../../order/useOrderType"
 import { useOrderLocation } from "../useOrderLocation"
 import { useLocationPicker } from "../useLocationPicker"
@@ -13,9 +13,11 @@ import PickerStatusCard from "./PickerStatusCard"
 interface LocationPickerModalProps {
     open: boolean
     onClose: () => void
+    /** Shifts the modal out of the cart drawer's column (checkout opens it from inside the drawer). */
+    offsetLeft?: boolean
 }
 
-const LocationPickerModal = ({ open, onClose }: LocationPickerModalProps) => {
+const LocationPickerModal = ({ open, onClose, offsetLeft = false }: LocationPickerModalProps) => {
     const { isDelivery } = useOrderType()
     const { selection, setSelection } = useOrderLocation()
     const {
@@ -38,18 +40,10 @@ const LocationPickerModal = ({ open, onClose }: LocationPickerModalProps) => {
         handleSearchSubmit,
         handleUseMyLocation,
         handleConfirm,
-    } = useLocationPicker({ isDelivery, initialSelection: selection })
+    } = useLocationPicker({ isDelivery, initialSelection: selection, open })
 
     useScrollLock(open)
-
-    useEffect(() => {
-        if (!open) return
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === "Escape") onClose()
-        }
-        window.addEventListener("keydown", handleKeyDown)
-        return () => window.removeEventListener("keydown", handleKeyDown)
-    }, [open, onClose])
+    useEscapeKey(open, onClose)
 
     const handleModalConfirm = () => {
         const nextSelection = handleConfirm()
@@ -63,7 +57,11 @@ const LocationPickerModal = ({ open, onClose }: LocationPickerModalProps) => {
 
     return createPortal(
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+            className={`fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 ${
+                // Drawer is 420px wide from sm up; only split the space when there is
+                // room for it (lg+). Below that the modal stays centered on top of it.
+                offsetLeft ? "lg:pr-[420px]" : ""
+            }`}
             role="dialog"
             aria-modal="true"
         >

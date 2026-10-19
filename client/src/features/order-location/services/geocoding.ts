@@ -32,3 +32,23 @@ export const searchPlaces = async (query: string): Promise<GeocodingResult[]> =>
         lng: Number(item.lon),
     }))
 }
+
+/**
+ * Turns a raw pin drop into a readable address for the checkout field.
+ * Returns null when OSM has nothing to say for the point.
+ */
+export const reverseGeocode = async (lat: number, lng: number): Promise<string | null> => {
+    const params = new URLSearchParams({
+        lat: String(lat),
+        lon: String(lng),
+        format: "json",
+        zoom: "18",
+        countrycodes: "eg",
+        accept_language: "ar",
+    })
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?${params.toString()}`)
+    if (!response.ok) throw new Error("Reverse geocoding failed")
+
+    const data = (await response.json()) as { display_name?: string }
+    return data.display_name ?? null
+}

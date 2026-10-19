@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { STORE_LOCATIONS } from "../store-locations/data"
 import type { StoreLocation } from "../store-locations/types"
-import { searchPlaces, type GeocodingResult } from "./services/geocoding"
+import { reverseGeocode, searchPlaces, type GeocodingResult } from "./services/geocoding"
 import { CAIRO_CENTER, CAIRO_ZOOM, FOCUS_ZOOM } from "./lib/leaflet"
 import { findServingBranch } from "./utils/geo"
 import {
@@ -14,6 +14,7 @@ import {
 interface UseLocationPickerParams {
     isDelivery: boolean
     initialSelection: OrderLocation | null
+    open?: boolean
 }
 
 const DELIVERY_INITIAL_STATUS: PickerStatus = {
@@ -28,27 +29,62 @@ const PICKUP_INITIAL_STATUS: PickerStatus = {
     body: "Choose one of our branches below or tap a pin on the map.",
 }
 
-export const useLocationPicker = ({ isDelivery, initialSelection }: UseLocationPickerParams) => {
-    const [marker, setMarker] = useState<GeoPosition | null>(
+export const useLocationPicker = ({
+    isDelivery,
+    initialSelection,
+    open = true,
+}: UseLocationPickerParams) => {
+    const seedMarker = (): GeoPosition | null =>
         initialSelection?.mode === "delivery"
             ? { lat: initialSelection.lat, lng: initialSelection.lng }
             : null
-    )
-    const [address, setAddress] = useState<string | null>(
+    const seedAddress = (): string | null =>
         initialSelection?.mode === "delivery" ? initialSelection.address ?? null : null
-    )
-    const [selectedBranch, setSelectedBranch] = useState<StoreLocation | null>(
+    const seedBranch = (): StoreLocation | null =>
         initialSelection?.mode === "pickup"
             ? STORE_LOCATIONS.find((branch) => branch.id === initialSelection.branchId) ?? null
             : null
-    )
-    const [query, setQuery] = useState("")
+
+    const [marker, setMarker] = useState<GeoPosition | null>(seedMarker)
+    const [address, setAddress] = useState<string | null>(seedAddress)
+    const [selectedBranch, setSelectedBranch] = useState<StoreLocation | null>(seedBranch)
+    const [query, setQuery] = useState(initialSelection?.mode === "delivery" ? initialSelection.address ?? "" : "")
     const [results, setResults] = useState<GeocodingResult[]>([])
     const [isSearching, setIsSearching] = useState(false)
     const [isLocating, setIsLocating] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [noResults, setNoResults] = useState(false)
     const searchTimeout = useRef<number | null>(null)
+    const pickTokenRef = useRef(0)
+
+    // The picker stays mounted while closed, so its state would otherwise go
+    // stale against edits made in the form (e.g. a typed address written back to
+    // the selection). Re-seed from the current selection whenever it opens.
+    const [prevOpen, setPrevOpen] = useState(open)
+    if (open !== prevOpen) {
+        setPrevOpen(open)
+        if (open) {
+            setMarker(seedMarker())
+            setAddress(seedAddress())
+            setSelectedBranch(seedBranch())
+            setQuery(initialSelection?.mode === "delivery" ? initialSelection.address ?? "" : "")
+            setResults([])
+            setIsSearching(false)
+            setIsLocating(false)
+            setError(null)
+            setNoResults(false)
+        }
+    }
+
+    // Drop pending searches when closed so a late response can't mutate
+    // reopened state.
+    useEffect(() => {
+        if (open) return
+        if (searchTimeout.current) {
+            window.clearTimeout(searchTimeout.current)
+            searchTimeout.current = null
+        }
+    }, [open])
 
     useEffect(() => {
         return () => {
@@ -89,11 +125,26 @@ export const useLocationPicker = ({ isDelivery, initialSelection }: UseLocationP
     const canConfirm = isDelivery ? serving?.isInZone === true : selectedBranch !== null
 
     const handlePick = useCallback((position: GeoPosition) => {
+        const token = ++pickTokenRef.current
+        // Fill the field immediately with the serving area so it is never empty
+        // when the customer confirms, then upgrade to the full geocoded label
+        // once it arrives (dropped if the pin moved on in the meantime).
+        const provisional =
+            findServingBranch(position, STORE_LOCATIONS, MAX_DELIVERY_KM)?.branch.area ?? null
         setMarker(position)
-        setAddress(null)
+        setAddress(provisional)
         setResults([])
         setNoResults(false)
         setError(null)
+
+        void reverseGeocode(position.lat, position.lng)
+            .then((label) => {
+                if (label && pickTokenRef.current === token) setAddress(label)
+            })
+            .catch(() => {
+                // Keep the provisional label; the zone status card already
+                // reports anything worth telling the customer.
+            })
     }, [])
 
     const handleSelectBranch = useCallback((branch: StoreLocation) => {

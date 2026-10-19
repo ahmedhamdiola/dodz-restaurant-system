@@ -1,7 +1,8 @@
 import { lazy, Suspense, useRef, useState, type FormEvent } from "react";
-import { CheckIcon, ChevronDownIcon, TagIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import { CheckIcon, MapPinIcon, TagIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { formatPrice } from "../../../lib/format";
 import { useAuth } from "../../auth/hooks/useAuth";
+import { useOrderType } from "../../order/useOrderType";
 import { useOrderLocation } from "../../order-location/useOrderLocation";
 import { queryClient } from "../../../lib/queryClient";
 import { useCart, useCheckout, useValidateCoupon } from "../hooks/useCart";
@@ -40,10 +41,16 @@ interface CheckoutFormProps {
 
 export const CheckoutForm = ({ onSuccess, onCancel }: CheckoutFormProps) => {
     const { user } = useAuth();
-    const { selection } = useOrderLocation();
+    const { isDelivery } = useOrderType();
+    const { selection, setSelection } = useOrderLocation();
     const checkout = useCheckout();
     const { data: cart } = useCart();
     const validateCoupon = useValidateCoupon();
+
+    // A selection made under the other mode (e.g. a pickup branch while the
+    // navbar now says Delivery) is not usable for this checkout.
+    const deliverySelection = isDelivery && selection?.mode === "delivery" ? selection : null;
+    const pickupSelection = !isDelivery && selection?.mode === "pickup" ? selection : null;
 
     const [isPickerOpen, setIsPickerOpen] = useState(false);
     const [name, setName] = useState(user?.name ?? "");
@@ -53,6 +60,13 @@ export const CheckoutForm = ({ onSuccess, onCancel }: CheckoutFormProps) => {
     const [couponError, setCouponError] = useState<string | null>(null);
     const [appliedCoupon, setAppliedCoupon] = useState<CouponQuote | null>(null);
     const idempotencyKeyRef = useRef<string>(makeIdempotencyKey());
+
+    // The address lives in the persisted selection, not component state, so it
+    // survives the drawer closing and page reloads (per-account localStorage).
+    const address = deliverySelection?.address ?? "";
+    const setAddress = (value: string) => {
+        if (deliverySelection) setSelection({ ...deliverySelection, address: value.trim() ? value : null });
+    };
 
     /**
      * The quoted discount is not spent here and is not trusted. Checkout
@@ -101,7 +115,18 @@ export const CheckoutForm = ({ onSuccess, onCancel }: CheckoutFormProps) => {
         event.preventDefault();
 
         const trimmedName = name.trim();
-        if (!selection) {
+        const trimmedAddress = address.trim();
+
+        if (isDelivery) {
+            if (!deliverySelection) {
+                setError("Set your delivery location before checking out.");
+                return;
+            }
+            if (!trimmedAddress) {
+                setError("Please enter your delivery address.");
+                return;
+            }
+        } else if (!pickupSelection) {
             setError("Select a branch before checking out.");
             return;
         }
@@ -119,16 +144,19 @@ export const CheckoutForm = ({ onSuccess, onCancel }: CheckoutFormProps) => {
             }
         }
 
+        const activeSelection = isDelivery ? deliverySelection : pickupSelection;
+        if (!activeSelection) return;
+
         setError(null);
         checkout.mutate(
             {
-                branchID: selection.branchId,
+                branchID: activeSelection.branchId,
                 customerName: trimmedName,
                 customerPhone: normalizedPhone ?? undefined,
-                orderType: selection.mode === "delivery" ? "Delivery" : "Pickup",
-                deliveryAddress: selection.mode === "delivery" ? selection.address ?? undefined : undefined,
-                deliveryLat: selection.mode === "delivery" && typeof selection.lat === "number" ? selection.lat : undefined,
-                deliveryLng: selection.mode === "delivery" && typeof selection.lng === "number" ? selection.lng : undefined,
+                orderType: isDelivery ? "Delivery" : "Pickup",
+                deliveryAddress: isDelivery ? trimmedAddress : undefined,
+                deliveryLat: isDelivery ? activeSelection.lat : undefined,
+                deliveryLng: isDelivery ? activeSelection.lng : undefined,
                 couponCode: appliedCoupon?.couponCode,
                 idempotencyKey: idempotencyKeyRef.current,
             },
@@ -149,29 +177,65 @@ export const CheckoutForm = ({ onSuccess, onCancel }: CheckoutFormProps) => {
                 </p>
             )}
 
-            <div>
-                <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">Branch</span>
-                {selection ? (
-                    <button
-                        type="button"
-                        onClick={() => setIsPickerOpen(true)}
-                        className="flex w-full cursor-pointer items-center justify-between rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm text-secondary transition-colors hover:border-brand"
-                    >
-                        <span className="truncate">
-                            {selection.mode === "delivery" ? selection.area : selection.branchName}
-                        </span>
-                        <ChevronDownIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
-                    </button>
-                ) : (
-                    <button
-                        type="button"
-                        onClick={() => setIsPickerOpen(true)}
-                        className="w-full cursor-pointer rounded-lg border border-dashed border-brand px-3 py-2 text-sm font-medium text-brand transition-colors hover:bg-brand/5"
-                    >
-                        Select a branch to continue
-                    </button>
-                )}
-            </div>
+            {isDelivery ? (
+                <div>
+                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        Delivery address
+                    </span>
+                    {deliverySelection ? (
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={address}
+                                onChange={(event) => setAddress(event.target.value)}
+                                placeholder="Street, building, floor, landmark…"
+                                autoComplete="street-address"
+                                className={inputClass}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setIsPickerOpen(true)}
+                                className="flex shrink-0 cursor-pointer items-center gap-1 rounded-lg border border-border px-3 py-2 text-xs font-semibold uppercase tracking-wide text-secondary transition-colors hover:border-brand"
+                            >
+                                <MapPinIcon className="h-4 w-4" />
+                                Pin
+                            </button>
+                        </div>
+                    ) : (
+                        <>
+                            <button
+                                type="button"
+                                onClick={() => setIsPickerOpen(true)}
+                                className="w-full cursor-pointer rounded-lg border border-dashed border-brand px-3 py-2 text-sm font-medium text-brand transition-colors hover:bg-brand/5"
+                            >
+                                {user ? "Set your delivery location on the map" : "Pick your location on the map"}
+                            </button>
+                            {!user && (
+                                <p className="mt-1 text-[11px] text-muted-foreground">
+                                    Your pick is saved on this device. Log in to keep it across devices.
+                                </p>
+                            )}
+                        </>
+                    )}
+                </div>
+            ) : (
+                <div>
+                    <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">Branch</span>
+                    {pickupSelection ? (
+                        <div className="w-full rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm text-secondary">
+                            {pickupSelection.branchName}
+                        </div>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => setIsPickerOpen(true)}
+                            className="w-full cursor-pointer rounded-lg border border-dashed border-brand px-3 py-2 text-sm font-medium text-brand transition-colors hover:bg-brand/5"
+                        >
+                            Select a branch to continue
+                        </button>
+                    )}
+                </div>
+            )}
 
             <label className="block">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-muted-foreground">Name</span>
@@ -279,7 +343,11 @@ export const CheckoutForm = ({ onSuccess, onCancel }: CheckoutFormProps) => {
             </p>
 
             <Suspense fallback={null}>
-                <LocationPickerModal open={isPickerOpen} onClose={() => setIsPickerOpen(false)} />
+                <LocationPickerModal
+                    open={isPickerOpen}
+                    onClose={() => setIsPickerOpen(false)}
+                    offsetLeft
+                />
             </Suspense>
         </form>
     );

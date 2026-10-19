@@ -23,8 +23,8 @@ const Provider = () => {
                     <ThemeProvider>
                         <ToastProvider>
                             <OrderTypeProvider>
-                                <OrderLocationProvider>
-                                    <AuthProvider>
+                                <AuthProvider>
+                                    <OrderLocationProvider>
                                         <FavoritesProvider>
                                             <CartProvider>
                                                 <CustomizeProvider>
@@ -32,8 +32,8 @@ const Provider = () => {
                                                 </CustomizeProvider>
                                             </CartProvider>
                                         </FavoritesProvider>
-                                    </AuthProvider>
-                                </OrderLocationProvider>
+                                    </OrderLocationProvider>
+                                </AuthProvider>
                             </OrderTypeProvider>
                         </ToastProvider>
                     </ThemeProvider>
